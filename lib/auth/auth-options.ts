@@ -1,56 +1,81 @@
-import { NextAuthOptions } from 'next-auth'
+import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import { compare } from 'bcryptjs'
+
 import { prisma } from '../db/prisma'
 
 export const authOptions: NextAuthOptions = {
-  session: { strategy: 'jwt' },
+  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: 'jwt',
+  },
+  pages: {
+    signIn: '/admin/login',
+  },
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
+        email: {
+          label: 'Email',
+          type: 'email',
+        },
+        password: {
+          label: 'Password',
+          type: 'password',
+        },
       },
       async authorize(credentials) {
-        if (!credentials) return null
-        const { email, password } = credentials as { email: string; password: string }
+        if (!credentials?.email || !credentials?.password) {
+          return null
+        }
 
-        const user = await prisma.adminUser.findUnique({ where: { email } })
-        if (!user) return null
+        const email = credentials.email.trim().toLowerCase()
+        const password = credentials.password
 
-        // NOTE: This is a placeholder check. In production, store hashed passwords and compare with bcrypt.
-        if (password !== user.passwordHash) return null
+        const user = await prisma.adminUser.findUnique({
+          where: { email },
+        })
+
+        if (!user || !user.isActive) {
+          return null
+        }
+
+        const isValidPassword = await compare(password, user.passwordHash)
+
+        if (!isValidPassword) {
+          return null
+        }
 
         return {
           id: user.id,
           name: user.name,
           email: user.email,
-          role: user.role
+          role: user.role,
         }
-      }
-    })
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // @ts-ignore
-        token.role = (user as any).role
-        // @ts-ignore
-        token.id = (user as any).id
+        token.sub = user.id
+        ;(token as typeof token & { role?: string }).role = (user as { role?: string }).role
       }
+
       return token
     },
     async session({ session, token }) {
-      // @ts-ignore
-      session.user = session.user ?? {}
-      // @ts-ignore
-      session.user.id = token.id
-      // @ts-ignore
-      session.user.role = token.role
+      if (session.user) {
+        ;(session.user as typeof session.user & { id?: string; role?: string }).id = token.sub
+        ;(session.user as typeof session.user & { id?: string; role?: string }).role = (
+          token as typeof token & { role?: string }
+        ).role
+      }
+
       return session
-    }
-  }
+    },
+  },
 }
 
 export default authOptions
-

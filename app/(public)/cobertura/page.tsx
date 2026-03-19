@@ -1,11 +1,13 @@
-import React from 'react'
-import PageShell from '../../../components/layout/page-shell'
+import { prisma } from '@/lib/db/prisma'
+import CoberturaClient from './cobertura-client'
 
-export default function Cobertura() {
-  return (
-    <PageShell>
-      <h1 className="text-2xl font-semibold">Cobertura</h1>
-      <p className="text-secondary mt-2">Verifique a cobertura na sua região.</p>
-    </PageShell>
-  )
+export default async function CoberturaPage() {
+  const areas = await prisma.coverageArea.findMany({
+    where: {
+      isAvailable: true,
+    },
+    orderBy: [{ city: 'asc' }, { district: 'asc' }],
+  })
+
+  return <CoberturaClient areas={areas} />
 }

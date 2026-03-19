@@ -1,19 +1,55 @@
-import React from 'react'
 import Link from 'next/link'
+
+const navItems = [
+  { href: '/planos', label: 'Planos' },
+  { href: '/cobertura', label: 'Cobertura' },
+  { href: '/status', label: 'Status' },
+  { href: '/suporte', label: 'Suporte' },
+  { href: '/contato', label: 'Contato' },
+]
 
 export default function Navbar() {
   return (
-    <header className="w-full border-b border-border bg-surface">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="font-bold text-accent">Verde Vale</Link>
-        <nav className="hidden md:flex gap-6">
-          <Link href="/planos">Planos</Link>
-          <Link href="/cobertura">Cobertura</Link>
-          <Link href="/suporte">Suporte</Link>
-          <Link href="/contato">Contato</Link>
+    <header className="sticky top-0 z-40 border-b border-border/80 bg-[rgba(8,10,15,0.82)] backdrop-blur-xl">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
+        <div className="flex items-center gap-3">
+          <Link href="/" className="group inline-flex items-center gap-3">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-bold text-accent shadow-sm transition group-hover:border-white/20">
+              VV
+            </span>
+
+            <div className="leading-tight">
+              <span className="block text-sm font-semibold text-primary">
+                Verde Vale
+              </span>
+              <span className="block text-xs text-secondary">
+                Fibra • Cobertura • Transparência
+              </span>
+            </div>
+          </Link>
+        </div>
+
+        <nav className="hidden items-center gap-6 md:flex">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-sm text-secondary transition hover:text-primary"
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
+
+        <div className="hidden md:block">
+          <Link
+            href="/contratar"
+            className="inline-flex items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
+          >
+            Contratar agora
+          </Link>
+        </div>
       </div>
     </header>
   )
 }
-

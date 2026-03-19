@@ -1,3 +1,0 @@
-module.exports=[93695,(a,b,c)=>{b.exports=a.x("next/dist/shared/lib/no-fallback-error.external.js",()=>require("next/dist/shared/lib/no-fallback-error.external.js"))},70864,a=>{a.n(a.i(33290))},2894,a=>{a.n(a.i(66188))},13718,a=>{a.n(a.i(85523))},18198,a=>{a.n(a.i(45518))},62212,a=>{a.n(a.i(66114))},97471,a=>{a.n(a.i(48873))},48873,a=>{"use strict";var b=a.i(7997),c=a.i(45504);function d(){return(0,b.jsxs)(c.default,{children:[(0,b.jsx)("h1",{className:"text-2xl font-semibold",children:"Planos"}),(0,b.jsx)("p",{className:"text-secondary mt-2",children:"Página placeholder de planos."})]})}a.s(["default",()=>d])}];
-
-//# sourceMappingURL=%5Broot-of-the-server%5D__adfce314._.js.map

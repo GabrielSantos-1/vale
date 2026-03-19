@@ -1,5 +1,3 @@
-const nextConfig = {
-  reactStrictMode: true
-}
+const nextConfig = {}
 
 export default nextConfig

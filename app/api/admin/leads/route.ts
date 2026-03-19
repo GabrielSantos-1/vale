@@ -1,32 +1,67 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import authOptions from '../../../../lib/auth/auth-options'
-import { prisma } from '../../../../lib/db/prisma'
+import { NextRequest, NextResponse } from 'next/server'
+import { LeadStatus } from '@prisma/client'
 
-async function requireAdmin() {
-  const session = await getServerSession(authOptions as any)
-  if (!session || (session as any).user?.role !== 'admin') return null
-  return session
+import { prisma } from '@/lib/db/prisma'
+import { requireAdmin } from '@/lib/api/admin'
+import {
+  unauthorizedResponse,
+  internalErrorResponse,
+} from '@/lib/api/responses'
+
+function isValidLeadStatus(value: string | null): value is LeadStatus {
+  if (!value) return false
+  return Object.values(LeadStatus).includes(value as LeadStatus)
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const session = await requireAdmin()
-  if (!session) return NextResponse.json({ success: false, error: 'unauthorized' }, { status: 401 })
-  const items = await prisma.lead.findMany()
-  return NextResponse.json({ success: true, data: items })
-}
 
-export async function POST(req: Request) {
-  const session = await requireAdmin()
-  if (!session) return NextResponse.json({ success: false, error: 'unauthorized' }, { status: 401 })
+  if (!session) {
+    return unauthorizedResponse()
+  }
 
   try {
-    const body = await req.json()
-    // For admin creation of leads we accept same shape as Lead model
-    const created = await prisma.lead.create({ data: body as any })
-    return NextResponse.json({ success: true, data: created }, { status: 201 })
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: 'Erro interno' }, { status: 500 })
+    const { searchParams } = new URL(request.url)
+    const statusParam = searchParams.get('status')
+
+    const whereClause: {
+      deletedAt: null
+      status?: LeadStatus
+    } = {
+      deletedAt: null,
+    }
+
+    if (statusParam && statusParam !== 'ALL') {
+      if (!isValidLeadStatus(statusParam)) {
+        return NextResponse.json(
+          { success: false, error: 'Status inválido' },
+          { status: 400 }
+        )
+      }
+
+      whereClause.status = statusParam
+    }
+
+    const leads = await prisma.lead.findMany({
+      where: whereClause,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        plan: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    })
+
+    return NextResponse.json({
+      success: true,
+      data: leads,
+    })
+  } catch {
+    return internalErrorResponse('Erro ao buscar leads')
   }
 }
-

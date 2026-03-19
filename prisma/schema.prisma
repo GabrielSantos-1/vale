@@ -7,6 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum LeadStatus {
+  NOVO
+  EM_ATENDIMENTO
+  CONVERTIDO
+  DESCARTADO
+  ARQUIVADO
+}
+
 model AdminUser {
   id           String   @id @default(uuid())
   name         String
@@ -30,35 +38,45 @@ model Plan {
   benefitsJson  Json
   badge         String?
   isActive      Boolean  @default(true)
+  leads         Lead[]
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
 
 model CoverageArea {
-  id         String   @id @default(uuid())
-  city       String
-  district   String
-  cepStart   String
-  cepEnd     String
-  isAvailable Boolean @default(false)
-  notes      String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(uuid())
+  city        String
+  district    String
+  cepStart    String
+  cepEnd      String
+  isAvailable Boolean  @default(false)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Lead {
-  id        String   @id @default(uuid())
-  name      String
-  email     String
-  phone     String?
-  city      String?
-  district  String?
-  cep       String?
-  message   String?
-  source    String?
-  status    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String      @id @default(uuid())
+  name       String
+  email      String
+  phone      String?
+  city       String?
+  district   String?
+  cep        String?
+  message    String?
+  planId     String?
+  plan       Plan?       @relation(fields: [planId], references: [id])
+  source     String?
+  status     LeadStatus  @default(NOVO)
+  archivedAt DateTime?
+  deletedAt  DateTime?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([archivedAt])
+  @@index([deletedAt])
 }
 
 model ContactMessage {
@@ -96,11 +114,11 @@ model NetworkStatus {
 }
 
 model AuditLog {
-  id          String   @id @default(uuid())
-  actorUserId String?
-  action      String
-  entity      String
-  entityId    String?
+  id           String   @id @default(uuid())
+  actorUserId  String?
+  action       String
+  entity       String
+  entityId     String?
   metadataJson Json?
-  createdAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
 }

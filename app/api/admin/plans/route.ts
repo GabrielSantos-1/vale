@@ -1,37 +1,74 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import authOptions from '../../../../lib/auth/auth-options'
-import planSchema from '../../../../lib/validations/plan'
-import { prisma } from '../../../../lib/db/prisma'
+import { Prisma } from '@prisma/client'
 
-async function requireAdmin() {
-  const session = await getServerSession(authOptions as any)
-  if (!session || (session as any).user?.role !== 'admin') {
-    return null
-  }
-  return session
-}
+import { prisma } from '@/lib/db/prisma'
+import { requireAdmin } from '@/lib/api/admin'
+import {
+  unauthorizedResponse,
+  badRequestResponse,
+  conflictResponse,
+  internalErrorResponse,
+} from '@/lib/api/responses'
+import planSchema from '@/lib/validations/plan'
 
 export async function GET() {
   const session = await requireAdmin()
-  if (!session) return NextResponse.json({ success: false, error: 'unauthorized' }, { status: 401 })
 
-  const plans = await prisma.plan.findMany()
-  return NextResponse.json({ success: true, data: plans })
+  if (!session) {
+    return unauthorizedResponse()
+  }
+
+  try {
+    const plans = await prisma.plan.findMany({
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return NextResponse.json({ success: true, data: plans })
+  } catch {
+    return internalErrorResponse('Erro ao buscar planos')
+  }
 }
 
 export async function POST(req: Request) {
   const session = await requireAdmin()
-  if (!session) return NextResponse.json({ success: false, error: 'unauthorized' }, { status: 401 })
+
+  if (!session) {
+    return unauthorizedResponse()
+  }
 
   try {
     const body = await req.json()
     const parsed = planSchema.parse(body)
-    const created = await prisma.plan.create({ data: parsed })
-    return NextResponse.json({ success: true, data: created }, { status: 201 })
-  } catch (err: any) {
-    if (err?.errors) return NextResponse.json({ success: false, error: err.errors }, { status: 400 })
-    return NextResponse.json({ success: false, error: 'Erro interno' }, { status: 500 })
+
+    const created = await prisma.plan.create({
+      data: {
+        name: parsed.name,
+        slug: parsed.slug,
+        downloadMbps: parsed.downloadMbps,
+        uploadMbps: parsed.uploadMbps,
+        latencyTarget: parsed.latencyTarget,
+        priceCents: parsed.priceCents,
+        featured: parsed.featured,
+        benefitsJson: parsed.benefitsJson as Prisma.InputJsonValue,
+        badge: parsed.badge,
+      },
+    })
+
+    return NextResponse.json(
+      { success: true, data: created },
+      { status: 201 }
+    )
+  } catch (error) {
+    const badRequest = badRequestResponse(error)
+    if (badRequest) return badRequest
+
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2002'
+    ) {
+      return conflictResponse('Já existe um plano com esse slug.')
+    }
+
+    return internalErrorResponse('Erro interno ao criar plano.')
   }
 }
-

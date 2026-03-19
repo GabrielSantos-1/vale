@@ -1,16 +1,17 @@
-// Use require() to avoid TypeScript resolution issues with generated Prisma client in bootstrap
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { PrismaClient } = require('@prisma/client')
+import { PrismaClient } from '@prisma/client'
 
-declare global {
-  // allow global `var` in development to avoid multiple instances
-  // eslint-disable-next-line no-var
-  var prisma: any
+const globalForPrisma = globalThis as unknown as {
+  prisma?: PrismaClient
 }
 
-const client = global.prisma ?? new PrismaClient({ log: process.env.NODE_ENV === 'development' ? ['query'] : [] })
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'warn', 'error'] : ['error'],
+  })
 
-if (process.env.NODE_ENV !== 'production') global.prisma = client
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma
+}
 
-export const prisma = client
 export default prisma
