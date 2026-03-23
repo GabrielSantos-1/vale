@@ -1,20 +1,26 @@
-import NextAuth from 'next-auth'
+import NextAuth from 'next-auth';
+import type { NextRequest } from 'next/server';
+import { authOptions } from '@/lib/auth/auth-options';
+import { buildRateLimitKey, rateLimit } from '@/lib/security/rate-limit';
 
-import { authOptions } from '@/lib/auth/auth-options'
-import { buildRateLimitKey, rateLimit } from '@/lib/security/rate-limit'
+const nextAuthHandler = NextAuth(authOptions);
 
-const handler = NextAuth(authOptions)
+type RouteContext = {
+  params: Promise<{
+    nextauth: string[];
+  }>;
+};
 
-export async function GET(req: Request) {
-  return handler(req)
+export async function GET(req: NextRequest, ctx: RouteContext) {
+  return nextAuthHandler(req, ctx);
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest, ctx: RouteContext) {
   const rl = rateLimit({
     key: buildRateLimitKey('auth-login', req),
     limit: 5,
     windowMs: 10 * 60 * 1000,
-  })
+  });
 
   if (!rl.ok) {
     return new Response(
@@ -31,9 +37,9 @@ export async function POST(req: Request) {
           'X-RateLimit-Remaining': String(rl.remaining),
           'X-RateLimit-Reset': String(Math.ceil(rl.resetAt / 1000)),
         },
-      }
-    )
+      },
+    );
   }
 
-  return handler(req)
+  return nextAuthHandler(req, ctx);
 }

@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../app/not-found.tsx"],"sourcesContent":["export default function NotFound() {\n  return (\n    <main className=\"p-8\">\n      <h1>Página não encontrada</h1>\n    </main>\n  );\n}\n"],"names":[],"mappings":"uDAAe,SAAS,IACtB,MACE,CAAA,EAAA,EAAA,GAAA,EAAC,OAAA,CAAK,UAAU,eACd,CAAA,EAAA,EAAA,GAAA,EAAC,KAAA,UAAG,2BAGV"}

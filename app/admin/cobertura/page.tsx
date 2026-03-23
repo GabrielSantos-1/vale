@@ -1,158 +1,178 @@
-'use client'
+"use client";
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from "react";
+import { Badge } from "@/components/ui/core/badge";
+import { Button } from "@/components/ui/core/button";
+import { SectionHeader } from "@/components/ui/core/section-header";
+import { StatCard } from "@/components/ui/core/stat-card";
+import { Input } from "@/components/ui/forms/input";
+import { Label } from "@/components/ui/forms/label";
+import { Textarea } from "@/components/ui/forms/textarea";
 
 type CoverageArea = {
-  id: string
-  city: string
-  district: string
-  cepStart: string
-  cepEnd: string
-  isAvailable: boolean
-  notes?: string | null
-  createdAt: string
-  updatedAt: string
-}
+  id: string;
+  city: string;
+  district: string;
+  cepStart: string;
+  cepEnd: string;
+  isAvailable: boolean;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
 
 type ApiErrorItem = {
-  message?: string
-  path?: string[]
-}
+  message?: string;
+  path?: string[];
+};
 
 type ApiResponse<T> = {
-  success: boolean
-  data?: T
-  error?: string | ApiErrorItem[]
-}
+  success: boolean;
+  data?: T;
+  error?: string | ApiErrorItem[];
+};
 
 type CoverageFormState = {
-  city: string
-  district: string
-  cepStart: string
-  cepEnd: string
-  isAvailable: boolean
-  notes: string
-}
+  city: string;
+  district: string;
+  cepStart: string;
+  cepEnd: string;
+  isAvailable: boolean;
+  notes: string;
+};
 
 const initialForm: CoverageFormState = {
-  city: '',
-  district: '',
-  cepStart: '',
-  cepEnd: '',
+  city: "",
+  district: "",
+  cepStart: "",
+  cepEnd: "",
   isAvailable: true,
-  notes: '',
-}
+  notes: "",
+};
 
 function normalizeCep(value: string) {
-  return value.replace(/\D/g, '').slice(0, 8)
+  return value.replace(/\D/g, "").slice(0, 8);
 }
 
 function formatCep(value: string) {
-  const digits = normalizeCep(value)
-  if (digits.length <= 5) return digits
-  return `${digits.slice(0, 5)}-${digits.slice(5)}`
+  const digits = normalizeCep(value);
+  if (digits.length <= 5) return digits;
+  return `${digits.slice(0, 5)}-${digits.slice(5)}`;
 }
 
 function normalizeApiError(error: unknown, fallback: string) {
   if (Array.isArray(error)) {
-    return error
-      .map((item) => item?.message)
-      .filter(Boolean)
-      .join(', ') || fallback
+    return (
+      error
+        .map((item) => item?.message)
+        .filter(Boolean)
+        .join(", ") || fallback
+    );
   }
 
-  if (typeof error === 'string' && error.trim()) {
-    return error
+  if (typeof error === "string" && error.trim()) {
+    return error;
   }
 
-  return fallback
+  return fallback;
+}
+
+function formatDate(value: string) {
+  try {
+    return new Intl.DateTimeFormat("pt-BR", {
+      dateStyle: "short",
+      timeStyle: "short",
+    }).format(new Date(value));
+  } catch {
+    return value;
+  }
 }
 
 export default function CoberturaPage() {
-  const [areas, setAreas] = useState<CoverageArea[]>([])
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-  const [form, setForm] = useState<CoverageFormState>(initialForm)
+  const [areas, setAreas] = useState<CoverageArea[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [form, setForm] = useState<CoverageFormState>(initialForm);
 
-  const isEditing = editingId !== null
+  const isEditing = editingId !== null;
 
   async function loadCoverage() {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
-      const response = await fetch('/api/admin/coverage', {
-        method: 'GET',
-        credentials: 'include',
-        cache: 'no-store',
-      })
+      const response = await fetch("/api/admin/coverage", {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      });
 
-      const result: ApiResponse<CoverageArea[]> = await response.json()
+      const result: ApiResponse<CoverageArea[]> = await response.json();
 
       if (!response.ok || !result.success) {
         throw new Error(
-          normalizeApiError(result.error, 'Falha ao carregar áreas de cobertura')
-        )
+          normalizeApiError(result.error, "Falha ao carregar áreas de cobertura")
+        );
       }
 
-      setAreas(Array.isArray(result.data) ? result.data : [])
+      setAreas(Array.isArray(result.data) ? result.data : []);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Erro ao carregar áreas de cobertura'
-      )
+        err instanceof Error ? err.message : "Erro ao carregar áreas de cobertura"
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   useEffect(() => {
-    void loadCoverage()
-  }, [])
+    void loadCoverage();
+  }, []);
 
   function updateField<K extends keyof CoverageFormState>(
     field: K,
     value: CoverageFormState[K]
   ) {
-    setForm((current) => ({ ...current, [field]: value }))
+    setForm((current) => ({ ...current, [field]: value }));
   }
 
   function resetFormState() {
-    setForm(initialForm)
-    setEditingId(null)
+    setForm(initialForm);
+    setEditingId(null);
   }
 
   function handleEdit(area: CoverageArea) {
-    setEditingId(area.id)
+    setEditingId(area.id);
     setForm({
       city: area.city,
       district: area.district,
       cepStart: area.cepStart,
       cepEnd: area.cepEnd,
       isAvailable: area.isAvailable,
-      notes: area.notes || '',
-    })
-    setError(null)
-    setSuccess(null)
+      notes: area.notes || "",
+    });
+    setError(null);
+    setSuccess(null);
   }
 
   function handleCancelEdit() {
-    resetFormState()
-    setError(null)
-    setSuccess(null)
+    resetFormState();
+    setError(null);
+    setSuccess(null);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
-    if (submitting) return
+    if (submitting) return;
 
-    setSubmitting(true)
-    setError(null)
-    setSuccess(null)
+    setSubmitting(true);
+    setError(null);
+    setSuccess(null);
 
     try {
       const payload = {
@@ -162,186 +182,201 @@ export default function CoberturaPage() {
         cepEnd: normalizeCep(form.cepEnd),
         isAvailable: Boolean(form.isAvailable),
         notes: form.notes.trim() || undefined,
-      }
+      };
 
-      if (!payload.city) {
-        throw new Error('Cidade é obrigatória.')
-      }
-
-      if (!payload.district) {
-        throw new Error('Bairro é obrigatório.')
-      }
-
+      if (!payload.city) throw new Error("Cidade é obrigatória.");
+      if (!payload.district) throw new Error("Bairro é obrigatório.");
       if (payload.cepStart.length !== 8 || payload.cepEnd.length !== 8) {
-        throw new Error('CEP inicial e CEP final devem ter 8 dígitos.')
+        throw new Error("CEP inicial e CEP final devem ter 8 dígitos.");
       }
-
       if (Number(payload.cepStart) > Number(payload.cepEnd)) {
-        throw new Error('O CEP inicial não pode ser maior que o CEP final.')
+        throw new Error("O CEP inicial não pode ser maior que o CEP final.");
       }
 
       const url = isEditing
         ? `/api/admin/coverage/${editingId}`
-        : '/api/admin/coverage'
-      const method = isEditing ? 'PUT' : 'POST'
+        : "/api/admin/coverage";
+      const method = isEditing ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify(payload),
-      })
+      });
 
-      const result: ApiResponse<CoverageArea> = await response.json()
+      const result: ApiResponse<CoverageArea> = await response.json();
 
       if (!response.ok || !result.success) {
         throw new Error(
-          normalizeApiError(result.error, 'Falha ao salvar área de cobertura')
-        )
+          normalizeApiError(result.error, "Falha ao salvar área de cobertura")
+        );
       }
 
       setSuccess(
         isEditing
-          ? 'Área de cobertura atualizada com sucesso.'
-          : 'Área de cobertura cadastrada com sucesso.'
-      )
+          ? "Área de cobertura atualizada com sucesso."
+          : "Área de cobertura cadastrada com sucesso."
+      );
 
-      resetFormState()
-      await loadCoverage()
+      resetFormState();
+      await loadCoverage();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Erro ao salvar área de cobertura'
-      )
+        err instanceof Error ? err.message : "Erro ao salvar área de cobertura"
+      );
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
   async function handleDelete(area: CoverageArea) {
     const confirmed = window.confirm(
       `Deseja excluir a área "${area.city} - ${area.district}"? Esta ação não pode ser desfeita.`
-    )
+    );
 
-    if (!confirmed) return
-    if (deletingId) return
+    if (!confirmed) return;
+    if (deletingId) return;
 
     try {
-      setDeletingId(area.id)
-      setError(null)
-      setSuccess(null)
+      setDeletingId(area.id);
+      setError(null);
+      setSuccess(null);
 
       const response = await fetch(`/api/admin/coverage/${area.id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      })
+        method: "DELETE",
+        credentials: "include",
+      });
 
-      const result: ApiResponse<null> = await response.json()
+      const result: ApiResponse<null> = await response.json();
 
       if (!response.ok || !result.success) {
         throw new Error(
-          normalizeApiError(result.error, 'Falha ao excluir área de cobertura')
-        )
+          normalizeApiError(result.error, "Falha ao excluir área de cobertura")
+        );
       }
 
       if (editingId === area.id) {
-        resetFormState()
+        resetFormState();
       }
 
-      setSuccess('Área de cobertura excluída com sucesso.')
-      await loadCoverage()
+      setSuccess("Área de cobertura excluída com sucesso.");
+      await loadCoverage();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Erro ao excluir área de cobertura'
-      )
+        err instanceof Error ? err.message : "Erro ao excluir área de cobertura"
+      );
     } finally {
-      setDeletingId(null)
+      setDeletingId(null);
     }
   }
 
-  const totalAreas = useMemo(() => areas.length, [areas])
+  const totalAreas = useMemo(() => areas.length, [areas]);
   const totalAvailable = useMemo(
     () => areas.filter((area) => area.isAvailable).length,
     [areas]
-  )
+  );
+  const totalUnavailable = useMemo(
+    () => areas.filter((area) => !area.isAvailable).length,
+    [areas]
+  );
 
   return (
-    <main className="min-h-screen bg-background p-8 text-foreground">
-      <div className="mx-auto max-w-7xl">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold">Gestão de Cobertura</h1>
-          <p className="mt-2 text-sm text-white/70">
-            Cadastre e visualize cidades, bairros e faixas de CEP atendidas.
-          </p>
-        </header>
+    <div className="space-y-6">
+      <section className="rounded-2xl border border-border bg-surface p-6 shadow-soft">
+        <SectionHeader
+          badge={
+            <Badge variant="info" className="w-fit">
+              Admin • Cobertura
+            </Badge>
+          }
+          title="Gestão de cobertura"
+          description="Cadastre, edite e gerencie regiões atendidas com precisão operacional e melhor controle da disponibilidade por CEP."
+        />
+      </section>
 
-        <section className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <article className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <p className="text-sm text-white/70">Total de áreas</p>
-            <p className="mt-3 text-3xl font-bold">{totalAreas}</p>
-          </article>
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <StatCard
+          label="Total de áreas"
+          value={totalAreas}
+          description="Quantidade total cadastrada no sistema."
+          accent="text-primary"
+        />
 
-          <article className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <p className="text-sm text-white/70">Áreas disponíveis</p>
-            <p className="mt-3 text-3xl font-bold">{totalAvailable}</p>
-          </article>
-        </section>
+        <StatCard
+          label="Disponíveis"
+          value={totalAvailable}
+          description="Áreas marcadas como disponíveis para atendimento."
+          accent="text-emerald-600"
+        />
 
-        <div className="grid gap-8 xl:grid-cols-[420px_minmax(0,1fr)]">
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold">
-              {isEditing ? 'Editar área de cobertura' : 'Nova área de cobertura'}
+        <StatCard
+          label="Indisponíveis"
+          value={totalUnavailable}
+          description="Áreas cadastradas sem disponibilidade ativa."
+          accent="text-amber-600"
+        />
+      </section>
+
+      {error && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          {success}
+        </div>
+      )}
+
+      <div className="grid gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
+        <section className="rounded-2xl border border-border bg-surface shadow-soft">
+          <div className="border-b border-border p-5">
+            <h2 className="text-lg font-semibold text-primary">
+              {isEditing ? "Editar área" : "Nova área"}
             </h2>
-
-            <p className="mt-2 text-sm text-white/70">
-              {isEditing
-                ? 'Atualize os dados da área selecionada.'
-                : 'Preencha os dados da região atendida.'}
+            <p className="mt-1 text-sm text-secondary">
+              Preencha os dados da região atendida.
             </p>
+          </div>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div className="p-5">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="city" className="mb-1 block text-sm text-white/80">
-                  Cidade
-                </label>
-                <input
+                <Label htmlFor="city">Cidade</Label>
+                <Input
                   id="city"
-                  className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
                   value={form.city}
-                  onChange={(e) => updateField('city', e.target.value)}
-                  placeholder="Ex.: Peruíbe"
+                  onChange={(e) => updateField("city", e.target.value)}
+                  placeholder="Peruíbe"
                   maxLength={120}
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="district" className="mb-1 block text-sm text-white/80">
-                  Bairro
-                </label>
-                <input
+                <Label htmlFor="district">Bairro</Label>
+                <Input
                   id="district"
-                  className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
                   value={form.district}
-                  onChange={(e) => updateField('district', e.target.value)}
-                  placeholder="Ex.: Centro"
+                  onChange={(e) => updateField("district", e.target.value)}
+                  placeholder="Centro"
                   maxLength={120}
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="cepStart" className="mb-1 block text-sm text-white/80">
-                    CEP inicial
-                  </label>
-                  <input
+                  <Label htmlFor="cepStart">CEP inicial</Label>
+                  <Input
                     id="cepStart"
-                    className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
                     value={formatCep(form.cepStart)}
                     onChange={(e) =>
-                      updateField('cepStart', normalizeCep(e.target.value))
+                      updateField("cepStart", normalizeCep(e.target.value))
                     }
                     placeholder="11750-000"
                     required
@@ -349,15 +384,12 @@ export default function CoberturaPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="cepEnd" className="mb-1 block text-sm text-white/80">
-                    CEP final
-                  </label>
-                  <input
+                  <Label htmlFor="cepEnd">CEP final</Label>
+                  <Input
                     id="cepEnd"
-                    className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
                     value={formatCep(form.cepEnd)}
                     onChange={(e) =>
-                      updateField('cepEnd', normalizeCep(e.target.value))
+                      updateField("cepEnd", normalizeCep(e.target.value))
                     }
                     placeholder="11759-999"
                     required
@@ -366,152 +398,145 @@ export default function CoberturaPage() {
               </div>
 
               <div>
-                <label htmlFor="notes" className="mb-1 block text-sm text-white/80">
-                  Observações
-                </label>
-                <textarea
+                <Label htmlFor="notes">Observações</Label>
+                <Textarea
                   id="notes"
-                  className="min-h-[110px] w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
                   value={form.notes}
-                  onChange={(e) => updateField('notes', e.target.value)}
+                  onChange={(e) => updateField("notes", e.target.value)}
                   placeholder="Ex.: Atendimento disponível apenas em algumas ruas."
+                  className="min-h-[110px]"
                   maxLength={2000}
                 />
               </div>
 
-              <label className="flex items-center gap-2 text-sm text-white/80">
+              <label className="flex items-center gap-3 rounded-2xl border border-border bg-surface-secondary px-4 py-3 text-sm text-primary">
                 <input
                   type="checkbox"
                   checked={form.isAvailable}
-                  onChange={(e) => updateField('isAvailable', e.target.checked)}
+                  onChange={(e) => updateField("isAvailable", e.target.checked)}
+                  className="h-4 w-4 accent-emerald-600"
                 />
                 Marcar como disponível
               </label>
 
-              {error ? (
-                <div
-                  role="alert"
-                  className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300"
-                >
-                  {error}
-                </div>
-              ) : null}
+              <div className="flex flex-col gap-2 pt-2">
+                <Button type="submit" isLoading={submitting}>
+                  {isEditing ? "Salvar alterações" : "Cadastrar área"}
+                </Button>
 
-              {success ? (
-                <div
-                  role="status"
-                  className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300"
-                >
-                  {success}
-                </div>
-              ) : null}
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full rounded-lg bg-emerald-500 px-4 py-2 font-medium text-black transition hover:opacity-90 disabled:opacity-60"
-              >
-                {submitting
-                  ? 'Salvando...'
-                  : isEditing
-                    ? 'Salvar alterações'
-                    : 'Cadastrar área'}
-              </button>
-
-              {isEditing ? (
-                <button
-                  type="button"
-                  onClick={handleCancelEdit}
-                  disabled={submitting}
-                  className="w-full rounded-lg border border-white/10 px-4 py-2 text-sm disabled:opacity-60"
-                >
-                  Cancelar edição
-                </button>
-              ) : null}
+                {isEditing && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleCancelEdit}
+                    disabled={submitting}
+                  >
+                    Cancelar edição
+                  </Button>
+                )}
+              </div>
             </form>
-          </section>
+          </div>
+        </section>
 
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <h2 className="text-xl font-semibold">Áreas cadastradas</h2>
-              <button
-                type="button"
-                onClick={() => void loadCoverage()}
-                className="rounded-lg border border-white/10 px-4 py-2 text-sm"
-              >
-                Atualizar
-              </button>
+        <section className="rounded-2xl border border-border bg-surface shadow-soft">
+          <div className="flex flex-col gap-3 border-b border-border p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-primary">Áreas cadastradas</h2>
+              <p className="mt-1 text-sm text-secondary">
+                Regiões já registradas no sistema.
+              </p>
             </div>
 
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => void loadCoverage()}
+            >
+              Atualizar
+            </Button>
+          </div>
+
+          <div className="p-5">
             {loading ? (
-              <p className="text-sm text-white/70">Carregando áreas...</p>
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-28 animate-pulse rounded-2xl border border-border bg-surface-secondary"
+                  />
+                ))}
+              </div>
             ) : areas.length === 0 ? (
-              <p className="text-sm text-white/70">
-                Nenhuma área cadastrada ainda.
-              </p>
+              <div className="rounded-2xl border border-dashed border-border bg-surface-secondary px-6 py-12 text-center">
+                <p className="text-sm text-secondary">
+                  Nenhuma área cadastrada ainda.
+                </p>
+              </div>
             ) : (
-              <div className="grid gap-4">
+              <div className="space-y-4">
                 {areas.map((area) => (
                   <article
                     key={area.id}
-                    className="rounded-xl border border-white/10 bg-black/20 p-4"
+                    className="rounded-2xl border border-border bg-surface-secondary p-5 transition hover:border-border-strong"
                   >
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <h3 className="text-lg font-semibold">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0">
+                        <h3 className="text-base font-semibold text-primary sm:text-lg">
                           {area.city} — {area.district}
                         </h3>
-                        <p className="text-sm text-white/60">
+
+                        <p className="mt-1 text-sm text-secondary">
                           CEP: {formatCep(area.cepStart)} até {formatCep(area.cepEnd)}
+                        </p>
+
+                        <p className="mt-1 text-xs text-muted">
+                          Atualizado em {formatDate(area.updatedAt)}
                         </p>
                       </div>
 
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs ${
-                          area.isAvailable
-                            ? 'bg-emerald-500/20 text-emerald-300'
-                            : 'bg-yellow-500/20 text-yellow-300'
-                        }`}
-                      >
-                        {area.isAvailable ? 'Disponível' : 'Indisponível'}
-                      </span>
+                      <Badge variant={area.isAvailable ? "success" : "warning"}>
+                        {area.isAvailable ? "Disponível" : "Indisponível"}
+                      </Badge>
                     </div>
 
-                    {area.notes ? (
-                      <div className="mt-4">
-                        <p className="mb-1 text-xs text-white/50">Observações</p>
-                        <p className="text-sm text-white/80 whitespace-pre-line">
+                    {area.notes && (
+                      <div className="mt-4 rounded-xl border border-border bg-white px-4 py-3">
+                        <p className="mb-1 text-xs uppercase tracking-[0.16em] text-muted">
+                          Observações
+                        </p>
+                        <p className="whitespace-pre-line text-sm leading-6 text-secondary">
                           {area.notes}
                         </p>
                       </div>
-                    ) : null}
+                    )}
 
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <button
+                    <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                      <Button
                         type="button"
+                        variant="secondary"
                         onClick={() => handleEdit(area)}
                         disabled={submitting || deletingId === area.id}
-                        className="rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-sm text-blue-300 disabled:opacity-60"
                       >
                         Editar
-                      </button>
+                      </Button>
 
-                      <button
+                      <Button
                         type="button"
+                        variant="danger"
                         onClick={() => void handleDelete(area)}
                         disabled={submitting || deletingId === area.id}
-                        className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300 disabled:opacity-60"
                       >
-                        {deletingId === area.id ? 'Excluindo...' : 'Excluir'}
-                      </button>
+                        {deletingId === area.id ? "Excluindo..." : "Excluir"}
+                      </Button>
                     </div>
                   </article>
                 ))}
               </div>
             )}
-          </section>
-        </div>
+          </div>
+        </section>
       </div>
-    </main>
-  )
+    </div>
+  );
 }

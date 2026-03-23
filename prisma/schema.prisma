@@ -56,22 +56,22 @@ model CoverageArea {
 }
 
 model Lead {
-  id         String      @id @default(uuid())
+  id         String     @id @default(uuid())
   name       String
-  email      String
+  email      String?
   phone      String?
   city       String?
   district   String?
   cep        String?
   message    String?
   planId     String?
-  plan       Plan?       @relation(fields: [planId], references: [id])
+  plan       Plan?      @relation(fields: [planId], references: [id])
   source     String?
-  status     LeadStatus  @default(NOVO)
+  status     LeadStatus @default(NOVO)
   archivedAt DateTime?
   deletedAt  DateTime?
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   @@index([status])
   @@index([createdAt])
@@ -79,14 +79,31 @@ model Lead {
   @@index([deletedAt])
 }
 
+enum ContactMessageStatus {
+  NOVA
+  LIDA
+  RESPONDIDA
+  ARQUIVADA
+}
+
 model ContactMessage {
-  id        String   @id @default(uuid())
-  name      String
-  email     String
-  phone     String?
-  subject   String?
-  message   String
-  createdAt DateTime @default(now())
+  id         String               @id @default(uuid())
+  name       String
+  email      String
+  phone      String?
+  subject    String?
+  message    String
+  status     ContactMessageStatus @default(NOVA)
+  readAt     DateTime?
+  archivedAt DateTime?
+  deletedAt  DateTime?
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([archivedAt])
+  @@index([deletedAt])
 }
 
 model FAQ {
@@ -101,16 +118,16 @@ model FAQ {
 }
 
 model NetworkStatus {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   title       String
-  slug        String   @unique
+  slug        String    @unique
   status      String
   description String?
   startedAt   DateTime?
   resolvedAt  DateTime?
-  isVisible   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isVisible   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model AuditLog {

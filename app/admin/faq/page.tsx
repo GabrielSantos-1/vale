@@ -1,140 +1,153 @@
-'use client'
+"use client";
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from "react";
+import { Badge } from "@/components/ui/core/badge";
+import { Button } from "@/components/ui/core/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/core/card";
+import { Input } from "@/components/ui/forms/input";
+import { Label } from "@/components/ui/forms/label";
+import { Textarea } from "@/components/ui/forms/textarea";
 
 type FAQItem = {
-  id: string
-  question: string
-  answer: string
-  category?: string | null
-  order: number
-  isPublished: boolean
-  createdAt: string
-  updatedAt: string
-}
+  id: string;
+  question: string;
+  answer: string;
+  category?: string | null;
+  order: number;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
 
 type ApiErrorItem = {
-  message?: string
-  path?: string[]
-}
+  message?: string;
+  path?: string[];
+};
 
 type ApiResponse<T> = {
-  success: boolean
-  data?: T
-  error?: string | ApiErrorItem[]
-}
+  success: boolean;
+  data?: T;
+  error?: string | ApiErrorItem[];
+};
 
 type FaqFormState = {
-  question: string
-  answer: string
-  category: string
-  order: number
-  isPublished: boolean
-}
+  question: string;
+  answer: string;
+  category: string;
+  order: number;
+  isPublished: boolean;
+};
 
 const initialForm: FaqFormState = {
-  question: '',
-  answer: '',
-  category: '',
+  question: "",
+  answer: "",
+  category: "",
   order: 0,
   isPublished: true,
-}
+};
 
 function normalizeApiError(error: unknown, fallback: string) {
   if (Array.isArray(error)) {
-    return error
-      .map((item) => item?.message)
-      .filter(Boolean)
-      .join(', ') || fallback
+    return (
+      error
+        .map((item) => item?.message)
+        .filter(Boolean)
+        .join(", ") || fallback
+    );
   }
 
-  if (typeof error === 'string' && error.trim()) {
-    return error
+  if (typeof error === "string" && error.trim()) {
+    return error;
   }
 
-  return fallback
+  return fallback;
 }
 
 export default function FaqAdminPage() {
-  const [faqs, setFaqs] = useState<FAQItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-  const [form, setForm] = useState<FaqFormState>(initialForm)
-  const [editingId, setEditingId] = useState<string | null>(null)
+  const [faqs, setFaqs] = useState<FAQItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [form, setForm] = useState<FaqFormState>(initialForm);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const isEditing = editingId !== null
+  const isEditing = editingId !== null;
 
   async function loadFaqs() {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
-      const response = await fetch('/api/admin/faq', {
-        method: 'GET',
-        credentials: 'include',
-        cache: 'no-store',
-      })
+      const response = await fetch("/api/admin/faq", {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      });
 
-      const result: ApiResponse<FAQItem[]> = await response.json()
+      const result: ApiResponse<FAQItem[]> = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(normalizeApiError(result.error, 'Falha ao carregar FAQs'))
+        throw new Error(normalizeApiError(result.error, "Falha ao carregar FAQs"));
       }
 
-      setFaqs(Array.isArray(result.data) ? result.data : [])
+      setFaqs(Array.isArray(result.data) ? result.data : []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar FAQs')
+      setError(err instanceof Error ? err.message : "Erro ao carregar FAQs");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   useEffect(() => {
-    void loadFaqs()
-  }, [])
+    void loadFaqs();
+  }, []);
 
   function updateField<K extends keyof FaqFormState>(
     field: K,
     value: FaqFormState[K]
   ) {
-    setForm((current) => ({ ...current, [field]: value }))
+    setForm((current) => ({ ...current, [field]: value }));
   }
 
   function resetFormState() {
-    setForm(initialForm)
-    setEditingId(null)
+    setForm(initialForm);
+    setEditingId(null);
   }
 
   function handleEdit(item: FAQItem) {
-    setEditingId(item.id)
+    setEditingId(item.id);
     setForm({
       question: item.question,
       answer: item.answer,
-      category: item.category || '',
+      category: item.category || "",
       order: item.order,
       isPublished: item.isPublished,
-    })
-    setError(null)
-    setSuccess(null)
+    });
+    setError(null);
+    setSuccess(null);
   }
 
   function handleCancelEdit() {
-    resetFormState()
-    setError(null)
-    setSuccess(null)
+    resetFormState();
+    setError(null);
+    setSuccess(null);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
-    if (submitting) return
+    if (submitting) return;
 
-    setSubmitting(true)
-    setError(null)
-    setSuccess(null)
+    setSubmitting(true);
+    setError(null);
+    setSuccess(null);
 
     try {
       const payload = {
@@ -143,135 +156,165 @@ export default function FaqAdminPage() {
         category: form.category.trim() || undefined,
         order: Number.isFinite(Number(form.order)) ? Number(form.order) : 0,
         isPublished: Boolean(form.isPublished),
-      }
+      };
 
       if (!payload.question) {
-        throw new Error('Pergunta é obrigatória.')
+        throw new Error("Pergunta é obrigatória.");
       }
 
       if (!payload.answer) {
-        throw new Error('Resposta é obrigatória.')
+        throw new Error("Resposta é obrigatória.");
       }
 
       if (payload.order < 0) {
-        throw new Error('A ordem de exibição não pode ser negativa.')
+        throw new Error("A ordem de exibição não pode ser negativa.");
       }
 
-      const url = isEditing ? `/api/admin/faq/${editingId}` : '/api/admin/faq'
-      const method = isEditing ? 'PUT' : 'POST'
+      const url = isEditing ? `/api/admin/faq/${editingId}` : "/api/admin/faq";
+      const method = isEditing ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify(payload),
-      })
+      });
 
-      const result: ApiResponse<FAQItem> = await response.json()
+      const result: ApiResponse<FAQItem> = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(normalizeApiError(result.error, 'Falha ao salvar FAQ'))
+        throw new Error(normalizeApiError(result.error, "Falha ao salvar FAQ"));
       }
 
-      setSuccess(isEditing ? 'FAQ atualizada com sucesso.' : 'FAQ cadastrada com sucesso.')
-      resetFormState()
-      await loadFaqs()
+      setSuccess(
+        isEditing ? "FAQ atualizada com sucesso." : "FAQ cadastrada com sucesso."
+      );
+      resetFormState();
+      await loadFaqs();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao salvar FAQ')
+      setError(err instanceof Error ? err.message : "Erro ao salvar FAQ");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
   async function handleDelete(item: FAQItem) {
     const confirmed = window.confirm(
       `Deseja excluir a FAQ "${item.question}"? Esta ação não pode ser desfeita.`
-    )
+    );
 
-    if (!confirmed) return
-    if (deletingId) return
+    if (!confirmed) return;
+    if (deletingId) return;
 
     try {
-      setDeletingId(item.id)
-      setError(null)
-      setSuccess(null)
+      setDeletingId(item.id);
+      setError(null);
+      setSuccess(null);
 
       const response = await fetch(`/api/admin/faq/${item.id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      })
+        method: "DELETE",
+        credentials: "include",
+      });
 
-      const result: ApiResponse<null> = await response.json()
+      const result: ApiResponse<null> = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(normalizeApiError(result.error, 'Falha ao excluir FAQ'))
+        throw new Error(normalizeApiError(result.error, "Falha ao excluir FAQ"));
       }
 
       if (editingId === item.id) {
-        resetFormState()
+        resetFormState();
       }
 
-      setSuccess('FAQ excluída com sucesso.')
-      await loadFaqs()
+      setSuccess("FAQ excluída com sucesso.");
+      await loadFaqs();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao excluir FAQ')
+      setError(err instanceof Error ? err.message : "Erro ao excluir FAQ");
     } finally {
-      setDeletingId(null)
+      setDeletingId(null);
     }
   }
 
-  const totalFaqs = useMemo(() => faqs.length, [faqs])
+  const totalFaqs = useMemo(() => faqs.length, [faqs]);
   const totalPublished = useMemo(
     () => faqs.filter((item) => item.isPublished).length,
     [faqs]
-  )
+  );
 
   return (
-    <main className="min-h-screen bg-background p-8 text-foreground">
-      <div className="mx-auto max-w-7xl">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold">Gestão de FAQ</h1>
-          <p className="mt-2 text-sm text-white/70">
+    <div className="space-y-8">
+      <header className="space-y-3">
+        <Badge variant="info">Admin • FAQ</Badge>
+
+        <div className="max-w-3xl">
+          <h2 className="text-3xl font-bold text-primary md:text-4xl">
+            Gestão de FAQ
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-secondary md:text-base">
             Gerencie perguntas frequentes exibidas no site público.
           </p>
-        </header>
+        </div>
+      </header>
 
-        <section className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <article className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <p className="text-sm text-white/70">Total de FAQs</p>
-            <p className="mt-3 text-3xl font-bold">{totalFaqs}</p>
-          </article>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Total de FAQs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold text-primary">{totalFaqs}</p>
+          </CardContent>
+        </Card>
 
-          <article className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <p className="text-sm text-white/70">Publicadas</p>
-            <p className="mt-3 text-3xl font-bold">{totalPublished}</p>
-          </article>
-        </section>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Publicadas</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold text-emerald-600">{totalPublished}</p>
+          </CardContent>
+        </Card>
 
-        <div className="grid gap-8 xl:grid-cols-[420px_minmax(0,1fr)]">
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold">
-              {isEditing ? 'Editar FAQ' : 'Nova FAQ'}
-            </h2>
-
-            <p className="mt-2 text-sm text-white/70">
-              {isEditing
-                ? 'Atualize os dados da FAQ selecionada.'
-                : 'Preencha pergunta e resposta para adicionar ao site.'}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Operação</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm leading-6 text-secondary">
+              Mantenha o conteúdo público de dúvidas frequentes atualizado e organizado.
             </p>
+          </CardContent>
+        </Card>
+      </div>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          {success}
+        </div>
+      )}
+
+      <div className="grid gap-8 xl:grid-cols-[420px_minmax(0,1fr)]">
+        <Card>
+          <CardHeader>
+            <CardTitle>{isEditing ? "Editar FAQ" : "Nova FAQ"}</CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="question" className="mb-1 block text-sm text-white/80">
-                  Pergunta
-                </label>
-                <input
+                <Label htmlFor="question">Pergunta</Label>
+                <Input
                   id="question"
-                  className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
                   value={form.question}
-                  onChange={(e) => updateField('question', e.target.value)}
+                  onChange={(e) => updateField("question", e.target.value)}
                   placeholder="Ex.: Qual o prazo de instalação?"
                   maxLength={180}
                   required
@@ -279,14 +322,12 @@ export default function FaqAdminPage() {
               </div>
 
               <div>
-                <label htmlFor="answer" className="mb-1 block text-sm text-white/80">
-                  Resposta
-                </label>
-                <textarea
+                <Label htmlFor="answer">Resposta</Label>
+                <Textarea
                   id="answer"
-                  className="min-h-[140px] w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
+                  className="min-h-[140px]"
                   value={form.answer}
-                  onChange={(e) => updateField('answer', e.target.value)}
+                  onChange={(e) => updateField("answer", e.target.value)}
                   placeholder="Ex.: A instalação é realizada em até 48 horas úteis."
                   maxLength={3000}
                   required
@@ -294,168 +335,152 @@ export default function FaqAdminPage() {
               </div>
 
               <div>
-                <label htmlFor="category" className="mb-1 block text-sm text-white/80">
-                  Categoria
-                </label>
-                <input
+                <Label htmlFor="category">Categoria</Label>
+                <Input
                   id="category"
-                  className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
                   value={form.category}
-                  onChange={(e) => updateField('category', e.target.value)}
+                  onChange={(e) => updateField("category", e.target.value)}
                   placeholder="Ex.: instalação"
                   maxLength={80}
                 />
               </div>
 
               <div>
-                <label htmlFor="order" className="mb-1 block text-sm text-white/80">
-                  Ordem de exibição
-                </label>
-                <input
+                <Label htmlFor="order">Ordem de exibição</Label>
+                <Input
                   id="order"
                   type="number"
                   min={0}
                   step={1}
-                  className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
                   value={form.order}
-                  onChange={(e) => updateField('order', Number(e.target.value))}
+                  onChange={(e) => updateField("order", Number(e.target.value))}
                 />
               </div>
 
-              <label className="flex items-center gap-2 text-sm text-white/80">
+              <label className="flex items-center gap-3 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-sm text-primary">
                 <input
                   type="checkbox"
                   checked={form.isPublished}
-                  onChange={(e) => updateField('isPublished', e.target.checked)}
+                  onChange={(e) => updateField("isPublished", e.target.checked)}
+                  className="h-4 w-4 accent-[var(--accent)]"
                 />
                 Publicar no site
               </label>
 
-              {error ? (
-                <div
-                  role="alert"
-                  className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300"
-                >
-                  {error}
-                </div>
-              ) : null}
+              <div className="flex flex-col gap-3">
+                <Button type="submit" disabled={submitting} isLoading={submitting}>
+                  {isEditing ? "Salvar alterações" : "Cadastrar FAQ"}
+                </Button>
 
-              {success ? (
-                <div
-                  role="status"
-                  className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300"
-                >
-                  {success}
-                </div>
-              ) : null}
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full rounded-lg bg-emerald-500 px-4 py-2 font-medium text-black transition hover:opacity-90 disabled:opacity-60"
-              >
-                {submitting
-                  ? 'Salvando...'
-                  : isEditing
-                    ? 'Salvar alterações'
-                    : 'Cadastrar FAQ'}
-              </button>
-
-              {isEditing ? (
-                <button
-                  type="button"
-                  onClick={handleCancelEdit}
-                  disabled={submitting}
-                  className="w-full rounded-lg border border-white/10 px-4 py-2 text-sm disabled:opacity-60"
-                >
-                  Cancelar edição
-                </button>
-              ) : null}
+                {isEditing && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleCancelEdit}
+                    disabled={submitting}
+                  >
+                    Cancelar edição
+                  </Button>
+                )}
+              </div>
             </form>
-          </section>
+          </CardContent>
+        </Card>
 
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <h2 className="text-xl font-semibold">FAQs cadastradas</h2>
-              <button
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between gap-3">
+              <CardTitle>FAQs cadastradas</CardTitle>
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={() => void loadFaqs()}
-                className="rounded-lg border border-white/10 px-4 py-2 text-sm"
               >
                 Atualizar
-              </button>
+              </Button>
             </div>
+          </CardHeader>
 
+          <CardContent>
             {loading ? (
-              <p className="text-sm text-white/70">Carregando FAQs...</p>
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="rounded-xl border border-border bg-surface-secondary p-4"
+                  >
+                    <div className="animate-pulse space-y-3">
+                      <div className="h-5 w-40 rounded bg-slate-200" />
+                      <div className="h-4 w-28 rounded bg-slate-200" />
+                      <div className="h-12 w-full rounded bg-slate-200" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : faqs.length === 0 ? (
-              <p className="text-sm text-white/70">
+              <div className="rounded-xl border border-dashed border-border bg-surface-secondary p-8 text-center text-sm text-secondary">
                 Nenhuma FAQ cadastrada ainda.
-              </p>
+              </div>
             ) : (
               <div className="grid gap-4">
                 {faqs.map((item) => (
                   <article
                     key={item.id}
-                    className="rounded-xl border border-white/10 bg-black/20 p-4"
+                    className="rounded-2xl border border-border bg-surface-secondary p-5"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <h3 className="text-lg font-semibold">{item.question}</h3>
-                        <p className="text-sm text-white/60">
-                          Categoria: {item.category || 'geral'}
+                        <h3 className="text-lg font-semibold text-primary">
+                          {item.question}
+                        </h3>
+                        <p className="text-sm text-secondary">
+                          Categoria: {item.category || "geral"}
                         </p>
                       </div>
 
                       <div className="flex flex-col items-end gap-2">
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs ${
-                            item.isPublished
-                              ? 'bg-emerald-500/20 text-emerald-300'
-                              : 'bg-yellow-500/20 text-yellow-300'
-                          }`}
-                        >
-                          {item.isPublished ? 'Publicada' : 'Rascunho'}
-                        </span>
+                        <Badge variant={item.isPublished ? "success" : "warning"}>
+                          {item.isPublished ? "Publicada" : "Rascunho"}
+                        </Badge>
 
-                        <span className="text-xs text-white/50">
+                        <span className="text-xs text-muted">
                           Ordem: {item.order}
                         </span>
                       </div>
                     </div>
 
                     <div className="mt-4">
-                      <p className="text-sm text-white/80 whitespace-pre-line">
+                      <p className="whitespace-pre-line text-sm leading-6 text-secondary">
                         {item.answer}
                       </p>
                     </div>
 
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <button
+                      <Button
                         type="button"
+                        variant="secondary"
                         onClick={() => handleEdit(item)}
                         disabled={submitting || deletingId === item.id}
-                        className="rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-sm text-blue-300 disabled:opacity-60"
                       >
                         Editar
-                      </button>
+                      </Button>
 
-                      <button
+                      <Button
                         type="button"
+                        variant="danger"
                         onClick={() => void handleDelete(item)}
                         disabled={submitting || deletingId === item.id}
-                        className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300 disabled:opacity-60"
                       >
-                        {deletingId === item.id ? 'Excluindo...' : 'Excluir'}
-                      </button>
+                        {deletingId === item.id ? "Excluindo..." : "Excluir"}
+                      </Button>
                     </div>
                   </article>
                 ))}
               </div>
             )}
-          </section>
-        </div>
+          </CardContent>
+        </Card>
       </div>
-    </main>
-  )
+    </div>
+  );
 }

@@ -1,186 +1,233 @@
-'use client'
+"use client";
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from "react";
+import { Badge } from "@/components/ui/core/badge";
+import { Button } from "@/components/ui/core/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/core/card";
+import { Input } from "@/components/ui/forms/input";
+import { Label } from "@/components/ui/forms/label";
+import { Textarea } from "@/components/ui/forms/textarea";
 
 type NetworkStatusItem = {
-  id: string
-  title: string
-  slug: string
-  status: string
-  description?: string | null
-  startedAt?: string | null
-  resolvedAt?: string | null
-  isVisible: boolean
-  createdAt: string
-  updatedAt: string
-}
+  id: string;
+  title: string;
+  slug: string;
+  status: string;
+  description?: string | null;
+  startedAt?: string | null;
+  resolvedAt?: string | null;
+  isVisible: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
 
 type ApiErrorItem = {
-  message?: string
-  path?: string[]
-}
+  message?: string;
+  path?: string[];
+};
 
 type ApiResponse<T> = {
-  success: boolean
-  data?: T
-  error?: string | ApiErrorItem[]
-}
+  success: boolean;
+  data?: T;
+  error?: string | ApiErrorItem[];
+};
 
 type StatusFormState = {
-  title: string
-  slug: string
-  status: string
-  description: string
-  startedAt: string
-  resolvedAt: string
-  isVisible: boolean
-}
+  title: string;
+  slug: string;
+  status: string;
+  description: string;
+  startedAt: string;
+  resolvedAt: string;
+  isVisible: boolean;
+};
 
 const initialForm: StatusFormState = {
-  title: '',
-  slug: '',
-  status: 'monitorando',
-  description: '',
-  startedAt: '',
-  resolvedAt: '',
+  title: "",
+  slug: "",
+  status: "monitorando",
+  description: "",
+  startedAt: "",
+  resolvedAt: "",
   isVisible: true,
-}
+};
 
 function toDatetimeLocalValue(value?: string | null) {
-  if (!value) return ''
+  if (!value) return "";
 
-  const date = new Date(value)
-  const pad = (n: number) => String(n).padStart(2, '0')
+  const date = new Date(value);
+  const pad = (n: number) => String(n).padStart(2, "0");
 
-  const year = date.getFullYear()
-  const month = pad(date.getMonth() + 1)
-  const day = pad(date.getDate())
-  const hours = pad(date.getHours())
-  const minutes = pad(date.getMinutes())
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
 
-  return `${year}-${month}-${day}T${hours}:${minutes}`
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
 function formatDateTime(value?: string | null) {
-  if (!value) return '—'
-  return new Date(value).toLocaleString('pt-BR')
+  if (!value) return "—";
+  return new Date(value).toLocaleString("pt-BR");
 }
 
 function normalizeSlug(value: string) {
   return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 }
 
 function normalizeApiError(error: unknown, fallback: string) {
   if (Array.isArray(error)) {
-    return error
-      .map((item) => item?.message)
-      .filter(Boolean)
-      .join(', ') || fallback
+    return (
+      error
+        .map((item) => item?.message)
+        .filter(Boolean)
+        .join(", ") || fallback
+    );
   }
 
-  if (typeof error === 'string' && error.trim()) {
-    return error
+  if (typeof error === "string" && error.trim()) {
+    return error;
   }
 
-  return fallback
+  return fallback;
+}
+
+function mapVisibilityVariant(isVisible: boolean) {
+  return isVisible ? "success" : "warning";
+}
+
+function mapStatusVariant(status: string) {
+  const normalized = status.toLowerCase();
+
+  if (
+    normalized.includes("resolvido") ||
+    normalized.includes("normal") ||
+    normalized.includes("operacional")
+  ) {
+    return "success" as const;
+  }
+
+  if (
+    normalized.includes("manutencao") ||
+    normalized.includes("manutenção") ||
+    normalized.includes("monitorando")
+  ) {
+    return "warning" as const;
+  }
+
+  if (
+    normalized.includes("indisponivel") ||
+    normalized.includes("indisponível") ||
+    normalized.includes("degradado")
+  ) {
+    return "danger" as const;
+  }
+
+  return "info" as const;
 }
 
 export default function StatusAdminPage() {
-  const [items, setItems] = useState<NetworkStatusItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-  const [form, setForm] = useState<StatusFormState>(initialForm)
+  const [items, setItems] = useState<NetworkStatusItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [form, setForm] = useState<StatusFormState>(initialForm);
 
-  const isEditing = editingId !== null
+  const isEditing = editingId !== null;
 
   async function loadStatusItems() {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
-      const response = await fetch('/api/admin/status', {
-        method: 'GET',
-        credentials: 'include',
-        cache: 'no-store',
-      })
+      const response = await fetch("/api/admin/status", {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      });
 
-      const result: ApiResponse<NetworkStatusItem[]> = await response.json()
+      const result: ApiResponse<NetworkStatusItem[]> = await response.json();
 
       if (!response.ok || !result.success) {
         throw new Error(
-          normalizeApiError(result.error, 'Falha ao carregar status da rede')
-        )
+          normalizeApiError(result.error, "Falha ao carregar status da rede")
+        );
       }
 
-      setItems(Array.isArray(result.data) ? result.data : [])
+      setItems(Array.isArray(result.data) ? result.data : []);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Erro ao carregar status da rede'
-      )
+        err instanceof Error ? err.message : "Erro ao carregar status da rede"
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   useEffect(() => {
-    void loadStatusItems()
-  }, [])
+    void loadStatusItems();
+  }, []);
 
   function updateField<K extends keyof StatusFormState>(
     field: K,
     value: StatusFormState[K]
   ) {
-    setForm((current) => ({ ...current, [field]: value }))
+    setForm((current) => ({ ...current, [field]: value }));
   }
 
   function resetFormState() {
-    setForm(initialForm)
-    setEditingId(null)
+    setForm(initialForm);
+    setEditingId(null);
   }
 
   function handleEdit(item: NetworkStatusItem) {
-    setEditingId(item.id)
+    setEditingId(item.id);
     setForm({
       title: item.title,
       slug: item.slug,
       status: item.status,
-      description: item.description || '',
+      description: item.description || "",
       startedAt: toDatetimeLocalValue(item.startedAt),
       resolvedAt: toDatetimeLocalValue(item.resolvedAt),
       isVisible: item.isVisible,
-    })
-    setError(null)
-    setSuccess(null)
+    });
+    setError(null);
+    setSuccess(null);
   }
 
   function handleCancelEdit() {
-    resetFormState()
-    setError(null)
-    setSuccess(null)
+    resetFormState();
+    setError(null);
+    setSuccess(null);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
-    if (submitting) return
+    if (submitting) return;
 
-    setSubmitting(true)
-    setError(null)
-    setSuccess(null)
+    setSubmitting(true);
+    setError(null);
+    setSuccess(null);
 
     try {
-      const normalizedSlug = normalizeSlug(form.slug || form.title)
+      const normalizedSlug = normalizeSlug(form.slug || form.title);
 
       const payload = {
         title: form.title.trim(),
@@ -194,18 +241,18 @@ export default function StatusAdminPage() {
           ? new Date(form.resolvedAt).toISOString()
           : undefined,
         isVisible: Boolean(form.isVisible),
-      }
+      };
 
       if (!payload.title) {
-        throw new Error('Título é obrigatório.')
+        throw new Error("Título é obrigatório.");
       }
 
       if (!payload.slug) {
-        throw new Error('Slug é obrigatório.')
+        throw new Error("Slug é obrigatório.");
       }
 
       if (!payload.status) {
-        throw new Error('Status é obrigatório.')
+        throw new Error("Status é obrigatório.");
       }
 
       if (
@@ -213,136 +260,170 @@ export default function StatusAdminPage() {
         payload.resolvedAt &&
         new Date(payload.resolvedAt).getTime() < new Date(payload.startedAt).getTime()
       ) {
-        throw new Error('A data de resolução não pode ser anterior à data de início.')
+        throw new Error(
+          "A data de resolução não pode ser anterior à data de início."
+        );
       }
 
       const url = isEditing
         ? `/api/admin/status/${editingId}`
-        : '/api/admin/status'
-      const method = isEditing ? 'PUT' : 'POST'
+        : "/api/admin/status";
+      const method = isEditing ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify(payload),
-      })
+      });
 
-      const result: ApiResponse<NetworkStatusItem> = await response.json()
+      const result: ApiResponse<NetworkStatusItem> = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(normalizeApiError(result.error, 'Falha ao salvar status'))
+        throw new Error(normalizeApiError(result.error, "Falha ao salvar status"));
       }
 
       setSuccess(
         isEditing
-          ? 'Status atualizado com sucesso.'
-          : 'Status cadastrado com sucesso.'
-      )
+          ? "Status atualizado com sucesso."
+          : "Status cadastrado com sucesso."
+      );
 
-      resetFormState()
-      await loadStatusItems()
+      resetFormState();
+      await loadStatusItems();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao salvar status')
+      setError(err instanceof Error ? err.message : "Erro ao salvar status");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
   async function handleDelete(item: NetworkStatusItem) {
     const confirmed = window.confirm(
       `Deseja excluir o status "${item.title}"? Esta ação não pode ser desfeita.`
-    )
+    );
 
-    if (!confirmed) return
-    if (deletingId) return
+    if (!confirmed) return;
+    if (deletingId) return;
 
     try {
-      setDeletingId(item.id)
-      setError(null)
-      setSuccess(null)
+      setDeletingId(item.id);
+      setError(null);
+      setSuccess(null);
 
       const response = await fetch(`/api/admin/status/${item.id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      })
+        method: "DELETE",
+        credentials: "include",
+      });
 
-      const result: ApiResponse<null> = await response.json()
+      const result: ApiResponse<null> = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(normalizeApiError(result.error, 'Falha ao excluir status'))
+        throw new Error(normalizeApiError(result.error, "Falha ao excluir status"));
       }
 
       if (editingId === item.id) {
-        resetFormState()
+        resetFormState();
       }
 
-      setSuccess('Status excluído com sucesso.')
-      await loadStatusItems()
+      setSuccess("Status excluído com sucesso.");
+      await loadStatusItems();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao excluir status')
+      setError(err instanceof Error ? err.message : "Erro ao excluir status");
     } finally {
-      setDeletingId(null)
+      setDeletingId(null);
     }
   }
 
-  const totalItems = useMemo(() => items.length, [items])
+  const totalItems = useMemo(() => items.length, [items]);
   const totalVisible = useMemo(
     () => items.filter((item) => item.isVisible).length,
     [items]
-  )
+  );
 
   return (
-    <main className="min-h-screen bg-background p-8 text-foreground">
-      <div className="mx-auto max-w-7xl">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold">Gestão de Status da Rede</h1>
-          <p className="mt-2 text-sm text-white/70">
+    <div className="space-y-8">
+      <header className="space-y-3">
+        <Badge variant="info">Admin • Status da rede</Badge>
+
+        <div className="max-w-3xl">
+          <h2 className="text-3xl font-bold text-primary md:text-4xl">
+            Gestão de status da rede
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-secondary md:text-base">
             Cadastre incidentes, manutenções e avisos para exibição no site.
           </p>
-        </header>
+        </div>
+      </header>
 
-        <section className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <article className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <p className="text-sm text-white/70">Total de registros</p>
-            <p className="mt-3 text-3xl font-bold">{totalItems}</p>
-          </article>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Total de registros</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold text-primary">{totalItems}</p>
+          </CardContent>
+        </Card>
 
-          <article className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <p className="text-sm text-white/70">Visíveis no site</p>
-            <p className="mt-3 text-3xl font-bold">{totalVisible}</p>
-          </article>
-        </section>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Visíveis no site</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold text-emerald-600">{totalVisible}</p>
+          </CardContent>
+        </Card>
 
-        <div className="grid gap-8 xl:grid-cols-[440px_minmax(0,1fr)]">
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold">
-              {isEditing ? 'Editar status' : 'Novo status'}
-            </h2>
-
-            <p className="mt-2 text-sm text-white/70">
-              {isEditing
-                ? 'Atualize os dados do registro selecionado.'
-                : 'Registre um aviso, incidente ou manutenção programada.'}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Operação</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm leading-6 text-secondary">
+              Publique somente eventos relevantes para manter transparência sem ruído.
             </p>
+          </CardContent>
+        </Card>
+      </div>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          {success}
+        </div>
+      )}
+
+      <div className="grid gap-8 xl:grid-cols-[440px_minmax(0,1fr)]">
+        <Card>
+          <CardHeader>
+            <CardTitle>{isEditing ? "Editar status" : "Novo status"}</CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="title" className="mb-1 block text-sm text-white/80">
-                  Título
-                </label>
-                <input
+                <Label htmlFor="title">Título</Label>
+                <Input
                   id="title"
-                  className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
                   value={form.title}
                   onChange={(e) => {
-                    const title = e.target.value
-                    updateField('title', title)
+                    const title = e.target.value;
+                    updateField("title", title);
 
-                    if (!isEditing && (!form.slug || normalizeSlug(form.slug) === normalizeSlug(form.title))) {
-                      updateField('slug', normalizeSlug(title))
+                    if (
+                      !isEditing &&
+                      (!form.slug ||
+                        normalizeSlug(form.slug) === normalizeSlug(form.title))
+                    ) {
+                      updateField("slug", normalizeSlug(title));
                     }
                   }}
                   placeholder="Ex.: Instabilidade em Peruíbe"
@@ -352,14 +433,11 @@ export default function StatusAdminPage() {
               </div>
 
               <div>
-                <label htmlFor="slug" className="mb-1 block text-sm text-white/80">
-                  Slug
-                </label>
-                <input
+                <Label htmlFor="slug">Slug</Label>
+                <Input
                   id="slug"
-                  className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
                   value={form.slug}
-                  onChange={(e) => updateField('slug', normalizeSlug(e.target.value))}
+                  onChange={(e) => updateField("slug", normalizeSlug(e.target.value))}
                   placeholder="instabilidade-peruibe"
                   maxLength={180}
                   required
@@ -367,14 +445,12 @@ export default function StatusAdminPage() {
               </div>
 
               <div>
-                <label htmlFor="status" className="mb-1 block text-sm text-white/80">
-                  Status
-                </label>
+                <Label htmlFor="status">Status</Label>
                 <select
                   id="status"
-                  className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
+                  className="w-full rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-primary outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   value={form.status}
-                  onChange={(e) => updateField('status', e.target.value)}
+                  onChange={(e) => updateField("status", e.target.value)}
                 >
                   <option value="monitorando">Monitorando</option>
                   <option value="degradado">Serviço degradado</option>
@@ -385,14 +461,12 @@ export default function StatusAdminPage() {
               </div>
 
               <div>
-                <label htmlFor="description" className="mb-1 block text-sm text-white/80">
-                  Descrição
-                </label>
-                <textarea
+                <Label htmlFor="description">Descrição</Label>
+                <Textarea
                   id="description"
-                  className="min-h-[130px] w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
+                  className="min-h-[130px]"
                   value={form.description}
-                  onChange={(e) => updateField('description', e.target.value)}
+                  onChange={(e) => updateField("description", e.target.value)}
                   placeholder="Ex.: Clientes podem notar lentidão e instabilidade temporária."
                   maxLength={3000}
                 />
@@ -400,182 +474,166 @@ export default function StatusAdminPage() {
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label htmlFor="startedAt" className="mb-1 block text-sm text-white/80">
-                    Início
-                  </label>
-                  <input
+                  <Label htmlFor="startedAt">Início</Label>
+                  <Input
                     id="startedAt"
                     type="datetime-local"
-                    className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
                     value={form.startedAt}
-                    onChange={(e) => updateField('startedAt', e.target.value)}
+                    onChange={(e) => updateField("startedAt", e.target.value)}
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="resolvedAt" className="mb-1 block text-sm text-white/80">
-                    Resolução
-                  </label>
-                  <input
+                  <Label htmlFor="resolvedAt">Resolução</Label>
+                  <Input
                     id="resolvedAt"
                     type="datetime-local"
-                    className="w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 outline-none"
                     value={form.resolvedAt}
-                    onChange={(e) => updateField('resolvedAt', e.target.value)}
+                    onChange={(e) => updateField("resolvedAt", e.target.value)}
                   />
                 </div>
               </div>
 
-              <label className="flex items-center gap-2 text-sm text-white/80">
+              <label className="flex items-center gap-3 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-sm text-primary">
                 <input
                   type="checkbox"
                   checked={form.isVisible}
-                  onChange={(e) => updateField('isVisible', e.target.checked)}
+                  onChange={(e) => updateField("isVisible", e.target.checked)}
+                  className="h-4 w-4 accent-[var(--accent)]"
                 />
                 Exibir no site
               </label>
 
-              {error ? (
-                <div
-                  role="alert"
-                  className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300"
-                >
-                  {error}
-                </div>
-              ) : null}
+              <div className="flex flex-col gap-3">
+                <Button type="submit" disabled={submitting} isLoading={submitting}>
+                  {isEditing ? "Salvar alterações" : "Cadastrar status"}
+                </Button>
 
-              {success ? (
-                <div
-                  role="status"
-                  className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300"
-                >
-                  {success}
-                </div>
-              ) : null}
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full rounded-lg bg-emerald-500 px-4 py-2 font-medium text-black transition hover:opacity-90 disabled:opacity-60"
-              >
-                {submitting
-                  ? 'Salvando...'
-                  : isEditing
-                    ? 'Salvar alterações'
-                    : 'Cadastrar status'}
-              </button>
-
-              {isEditing ? (
-                <button
-                  type="button"
-                  onClick={handleCancelEdit}
-                  disabled={submitting}
-                  className="w-full rounded-lg border border-white/10 px-4 py-2 text-sm disabled:opacity-60"
-                >
-                  Cancelar edição
-                </button>
-              ) : null}
+                {isEditing && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleCancelEdit}
+                    disabled={submitting}
+                  >
+                    Cancelar edição
+                  </Button>
+                )}
+              </div>
             </form>
-          </section>
+          </CardContent>
+        </Card>
 
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <h2 className="text-xl font-semibold">Status cadastrados</h2>
-              <button
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between gap-3">
+              <CardTitle>Status cadastrados</CardTitle>
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={() => void loadStatusItems()}
-                className="rounded-lg border border-white/10 px-4 py-2 text-sm"
               >
                 Atualizar
-              </button>
+              </Button>
             </div>
+          </CardHeader>
 
+          <CardContent>
             {loading ? (
-              <p className="text-sm text-white/70">Carregando status...</p>
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="rounded-xl border border-border bg-surface-secondary p-4"
+                  >
+                    <div className="animate-pulse space-y-3">
+                      <div className="h-5 w-40 rounded bg-slate-200" />
+                      <div className="h-4 w-28 rounded bg-slate-200" />
+                      <div className="h-12 w-full rounded bg-slate-200" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : items.length === 0 ? (
-              <p className="text-sm text-white/70">
+              <div className="rounded-xl border border-dashed border-border bg-surface-secondary p-8 text-center text-sm text-secondary">
                 Nenhum status cadastrado ainda.
-              </p>
+              </div>
             ) : (
               <div className="grid gap-4">
                 {items.map((item) => (
                   <article
                     key={item.id}
-                    className="rounded-xl border border-white/10 bg-black/20 p-4"
+                    className="rounded-2xl border border-border bg-surface-secondary p-5"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <h3 className="text-lg font-semibold">{item.title}</h3>
-                        <p className="text-sm text-white/60">Slug: {item.slug}</p>
+                        <h3 className="text-lg font-semibold text-primary">
+                          {item.title}
+                        </h3>
+                        <p className="text-sm text-secondary">Slug: {item.slug}</p>
                       </div>
 
                       <div className="flex flex-col items-end gap-2">
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs ${
-                            item.isVisible
-                              ? 'bg-emerald-500/20 text-emerald-300'
-                              : 'bg-yellow-500/20 text-yellow-300'
-                          }`}
-                        >
-                          {item.isVisible ? 'Visível' : 'Oculto'}
-                        </span>
+                        <Badge variant={mapVisibilityVariant(item.isVisible)}>
+                          {item.isVisible ? "Visível" : "Oculto"}
+                        </Badge>
 
-                        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/80">
+                        <Badge variant={mapStatusVariant(item.status)}>
                           {item.status}
-                        </span>
+                        </Badge>
                       </div>
                     </div>
 
-                    {item.description ? (
+                    {item.description && (
                       <div className="mt-4">
-                        <p className="text-sm text-white/80 whitespace-pre-line">
+                        <p className="whitespace-pre-line text-sm leading-6 text-secondary">
                           {item.description}
                         </p>
                       </div>
-                    ) : null}
+                    )}
 
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       <div>
-                        <p className="text-xs text-white/50">Início</p>
-                        <p className="text-sm text-white/80">
+                        <p className="text-xs text-muted">Início</p>
+                        <p className="text-sm text-secondary">
                           {formatDateTime(item.startedAt)}
                         </p>
                       </div>
 
                       <div>
-                        <p className="text-xs text-white/50">Resolução</p>
-                        <p className="text-sm text-white/80">
+                        <p className="text-xs text-muted">Resolução</p>
+                        <p className="text-sm text-secondary">
                           {formatDateTime(item.resolvedAt)}
                         </p>
                       </div>
                     </div>
 
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <button
+                      <Button
                         type="button"
+                        variant="secondary"
                         onClick={() => handleEdit(item)}
                         disabled={submitting || deletingId === item.id}
-                        className="rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-sm text-blue-300 disabled:opacity-60"
                       >
                         Editar
-                      </button>
+                      </Button>
 
-                      <button
+                      <Button
                         type="button"
+                        variant="danger"
                         onClick={() => void handleDelete(item)}
                         disabled={submitting || deletingId === item.id}
-                        className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300 disabled:opacity-60"
                       >
-                        {deletingId === item.id ? 'Excluindo...' : 'Excluir'}
-                      </button>
+                        {deletingId === item.id ? "Excluindo..." : "Excluir"}
+                      </Button>
                     </div>
                   </article>
                 ))}
               </div>
             )}
-          </section>
-        </div>
+          </CardContent>
+        </Card>
       </div>
-    </main>
-  )
+    </div>
+  );
 }

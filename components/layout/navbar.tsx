@@ -1,20 +1,20 @@
-import Link from 'next/link'
+import Link from "next/link";
 
 const navItems = [
-  { href: '/planos', label: 'Planos' },
-  { href: '/cobertura', label: 'Cobertura' },
-  { href: '/status', label: 'Status' },
-  { href: '/suporte', label: 'Suporte' },
-  { href: '/contato', label: 'Contato' },
-]
+  { href: "/planos", label: "Planos" },
+  { href: "/cobertura", label: "Cobertura" },
+  { href: "/status", label: "Status" },
+  { href: "/suporte", label: "Suporte" },
+  { href: "/contato", label: "Contato" },
+];
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/80 bg-[rgba(8,10,15,0.82)] backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-border bg-header">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
         <div className="flex items-center gap-3">
           <Link href="/" className="group inline-flex items-center gap-3">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-bold text-accent shadow-sm transition group-hover:border-white/20">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-sm font-bold text-white shadow-soft transition group-hover:brightness-95">
               VV
             </span>
 
@@ -44,12 +44,12 @@ export default function Navbar() {
         <div className="hidden md:block">
           <Link
             href="/contratar"
-            className="inline-flex items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
+            className="inline-flex items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:brightness-95"
           >
             Contratar agora
           </Link>
         </div>
       </div>
     </header>
-  )
+  );
 }

@@ -11,12 +11,12 @@ export default function SobrePage() {
       <section className="mx-auto max-w-4xl">
         <header className="mb-8">
           <h1 className="text-3xl font-bold">Sobre</h1>
-          <p className="mt-2 text-sm text-white/70">
+          <p className="mt-2 text-sm text-secondary/70">
             Conheça um pouco mais sobre a Verde Vale e nossa proposta de atendimento.
           </p>
         </header>
 
-        <div className="space-y-6 text-sm leading-7 text-white/80">
+        <div className="space-y-6 text-sm leading-7 text-secondary/80">
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <h2 className="text-xl font-semibold">Nossa proposta</h2>
             <p className="mt-3">

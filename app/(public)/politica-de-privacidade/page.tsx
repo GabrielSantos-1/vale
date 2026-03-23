@@ -11,12 +11,12 @@ export default function PoliticaPrivacidadePage() {
       <section className="mx-auto max-w-4xl">
         <header className="mb-8">
           <h1 className="text-3xl font-bold">Política de Privacidade</h1>
-          <p className="mt-2 text-sm text-white/70">
+          <p className="mt-2 text-sm text-secondary/70">
             Entenda como os dados enviados pelo site podem ser utilizados.
           </p>
         </header>
 
-        <div className="space-y-6 text-sm leading-7 text-white/80">
+        <div className="space-y-6 text-sm leading-7 text-secondary/80">
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <h2 className="text-xl font-semibold">1. Dados coletados</h2>
             <p className="mt-3">
@@ -26,7 +26,7 @@ export default function PoliticaPrivacidadePage() {
             </p>
           </section>
 
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <section className="rounded-2xl border border-border bg-surface-secondary p-6">
             <h2 className="text-xl font-semibold">2. Finalidade do uso</h2>
             <p className="mt-3">
               Os dados podem ser utilizados para retorno comercial, atendimento,

@@ -10,15 +10,15 @@ export default function TermosPage() {
     <PageShell>
       <section className="mx-auto max-w-4xl">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold">Termos de Uso</h1>
-          <p className="mt-2 text-sm text-white/70">
+          <h1 className="text-3xl font-bold text-primary">Termos de Uso</h1>
+          <p className="mt-2 text-sm text-secondary/70">
             Estes termos regulam o uso do site e dos canais digitais da Verde Vale.
           </p>
         </header>
 
-        <div className="space-y-6 text-sm leading-7 text-white/80">
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold">1. Uso do site</h2>
+        <div className="space-y-6 text-sm leading-7 text-secondary/80">
+          <section className="rounded-2xl border border-border bg-surface-secondary p-6">
+            <h2 className="text-xl font-semibold text-primary">1. Uso do site</h2>
             <p className="mt-3">
               O site tem finalidade informativa, comercial e de atendimento. O uso dos
               formulários e recursos disponibilizados deve ocorrer de forma legítima,
@@ -27,7 +27,7 @@ export default function TermosPage() {
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold">2. Informações fornecidas</h2>
+            <h2 className="text-xl font-semibold text-primary">2. Informações fornecidas</h2>
             <p className="mt-3">
               Ao enviar dados por formulários, o usuário declara que as informações
               fornecidas são verdadeiras, atualizadas e suficientes para contato e
@@ -36,7 +36,7 @@ export default function TermosPage() {
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold">3. Disponibilidade dos serviços</h2>
+            <h2 className="text-xl font-semibold text-primary">3. Disponibilidade dos serviços</h2>
             <p className="mt-3">
               As informações de cobertura, planos, preços e disponibilidade podem ser
               alteradas sem aviso prévio. A contratação efetiva depende de análise
