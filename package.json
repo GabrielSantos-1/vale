@@ -54,6 +54,10 @@
     "jsdom": "^29.0.1",
     "playwright": "^1.58.2",
     "prettier": "^3.8.1",
+    "tsx": "^4.21.0",
     "vitest": "^4.0.18"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }
