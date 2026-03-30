@@ -10,6 +10,7 @@ export type PlanCardData = {
   slug: string;
   priceCents: number;
   featured: boolean;
+  badge?: string | null;
   downloadMbps: number;
   uploadMbps: number;
   latencyTarget: number;
@@ -50,6 +51,11 @@ export function PlanCard({
   compact = false,
   className,
 }: PlanCardProps) {
+  const commercialBadge =
+    typeof plan.badge === "string" && plan.badge.trim().length > 0
+      ? plan.badge.trim()
+      : null;
+
   return (
     <Card
       className={cn(
@@ -70,9 +76,16 @@ export function PlanCard({
 
       <CardHeader className="space-y-5 border-b border-border/70 p-5 sm:p-6">
         <div className="min-w-0 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
-            {getPlanEyebrow(plan)}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+              {getPlanEyebrow(plan)}
+            </p>
+            {commercialBadge ? (
+              <span className="rounded-full border border-border-strong bg-white/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
+                {commercialBadge}
+              </span>
+            ) : null}
+          </div>
 
           <CardTitle className="break-words text-2xl tracking-tight text-primary">
             {plan.name}
@@ -93,28 +106,30 @@ export function PlanCard({
             <p className="text-xs leading-5 text-secondary">{getPlanHint(plan)}</p>
           </div>
 
-          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border border-border bg-surface p-3">
-              <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
-                Download
-              </p>
-              <p className="mt-2 break-words text-base font-semibold text-primary">
-                {plan.downloadMbps} Mbps
-              </p>
+          <div className="mt-5 space-y-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-border bg-surface p-3.5">
+                <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
+                  Download
+                </p>
+                <p className="mt-2 break-words text-base font-semibold text-primary sm:text-lg">
+                  {plan.downloadMbps} Mbps
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-surface p-3.5">
+                <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
+                  Upload
+                </p>
+                <p className="mt-2 break-words text-base font-semibold text-primary sm:text-lg">
+                  {plan.uploadMbps} Mbps
+                </p>
+              </div>
             </div>
 
-            <div className="rounded-2xl border border-border bg-surface p-3">
+            <div className="rounded-2xl border border-border bg-surface p-3.5">
               <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
-                Upload
-              </p>
-              <p className="mt-2 break-words text-base font-semibold text-primary">
-                {plan.uploadMbps} Mbps
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-surface p-3">
-              <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
-                Latência
+                Latência alvo
               </p>
               <p className="mt-2 break-words text-base font-semibold text-primary">
                 {plan.latencyTarget} ms

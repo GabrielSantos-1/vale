@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 async function main() {
   const adminEmail = 'admin@verdevale.com';
   const adminPassword = 'TroqueAgora123!';
-
   const passwordHash = await bcrypt.hash(adminPassword, 12);
 
   await prisma.adminUser.upsert({
@@ -14,14 +13,14 @@ async function main() {
     update: {
       name: 'Administrador',
       passwordHash,
-      role: 'ADMIN',
+      role: 'admin',
       isActive: true,
     },
     create: {
       name: 'Administrador',
       email: adminEmail,
       passwordHash,
-      role: 'ADMIN',
+      role: 'admin',
       isActive: true,
     },
   });

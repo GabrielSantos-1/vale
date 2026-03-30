@@ -168,6 +168,7 @@ export default function PlanosPage() {
         .split("\n")
         .map((item) => item.trim())
         .filter(Boolean);
+      const normalizedBadge = form.badge.trim();
 
       const payload = {
         name: form.name.trim(),
@@ -177,7 +178,7 @@ export default function PlanosPage() {
         latencyTarget: Number(form.latencyTarget),
         priceCents: Number(form.priceCents),
         featured: form.featured,
-        badge: form.badge.trim() || undefined,
+        badge: normalizedBadge,
         benefitsJson,
       };
 
@@ -514,7 +515,7 @@ export default function PlanosPage() {
                                 <Badge variant="success">Destaque</Badge>
                               ) : null}
 
-                              {plan.badge ? (
+                              {typeof plan.badge === "string" && plan.badge.trim().length > 0 ? (
                                 <Badge variant="info">{plan.badge}</Badge>
                               ) : null}
                             </div>
@@ -523,7 +524,7 @@ export default function PlanosPage() {
                               <p>Slug: {plan.slug}</p>
                               <p>Preço: {formatPrice(plan.priceCents)}</p>
                               <p>
-                                {plan.downloadMbps} Mbps â†“ â€¢ {plan.uploadMbps} Mbps â†‘
+                                {plan.downloadMbps} Mbps ↓ • {plan.uploadMbps} Mbps ↑
                               </p>
                               <p>Latência alvo: {plan.latencyTarget} ms</p>
                               <p>Atualizado: {formatDate(plan.updatedAt)}</p>
@@ -575,5 +576,3 @@ export default function PlanosPage() {
     </div>
   );
 }
-
-

@@ -38,6 +38,7 @@ async function getHomeData(): Promise<HomeData> {
         slug: true,
         priceCents: true,
         featured: true,
+        badge: true,
         downloadMbps: true,
         uploadMbps: true,
         latencyTarget: true,
