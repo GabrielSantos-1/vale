@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import authOptions from '../../../../lib/auth/auth-options'
-import faqSchema from '../../../../lib/validations/faq'
+import { authOptions } from '../../../../lib/auth/auth-options'
+import { faqSchema } from '../../../../lib/validations/faq'
 import { prisma } from '../../../../lib/db/prisma'
 
 async function requireAdmin() {
@@ -31,4 +31,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: 'Erro interno' }, { status: 500 })
   }
 }
-

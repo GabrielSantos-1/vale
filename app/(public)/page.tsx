@@ -1,34 +1,18 @@
 import Link from "next/link";
+
 import { prisma } from "@/lib/db/prisma";
 import { Container } from "@/components/ui/core/container";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/core/card";
-import { Badge } from "@/components/ui/core/badge";
+import { Card, CardContent } from "@/components/ui/core/card";
 import { Button } from "@/components/ui/core/button";
-
-function formatPrice(priceCents: number) {
-  return (priceCents / 100).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
+import { Hero } from "@/components/marketing/hero";
+import { PlanCard, type PlanCardData } from "@/components/marketing/plan-card";
+import { StatusBanner } from "@/components/marketing/status-banner";
+import { resolveStatusTone } from "@/components/marketing/status-tone";
+import { FeaturesGrid } from "@/components/marketing/features-grid";
+import { FaqPreview } from "@/components/marketing/faq-preview";
 
 type HomeData = {
-  plans: {
-    id: string;
-    name: string;
-    slug: string;
-    priceCents: number;
-    featured: boolean;
-    downloadMbps: number;
-    uploadMbps: number;
-    latencyTarget: number;
-  }[];
+  plans: PlanCardData[];
   faqs: {
     id: string;
     question: string;
@@ -48,229 +32,246 @@ async function getHomeData(): Promise<HomeData> {
       where: { isActive: true },
       orderBy: [{ featured: "desc" }, { priceCents: "asc" }],
       take: 3,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        priceCents: true,
+        featured: true,
+        downloadMbps: true,
+        uploadMbps: true,
+        latencyTarget: true,
+      },
     }),
     prisma.fAQ.findMany({
       where: { isPublished: true },
       orderBy: [{ order: "asc" }, { createdAt: "desc" }],
       take: 4,
+      select: {
+        id: true,
+        question: true,
+        answer: true,
+      },
     }),
     prisma.networkStatus.findMany({
       where: { isVisible: true },
       orderBy: { startedAt: "desc" },
       take: 3,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        status: true,
+      },
     }),
   ]);
 
   return { plans, faqs, visibleStatus };
 }
 
-function mapStatusVariant(status: string) {
-  const normalized = status.toLowerCase();
+const metrics = [
+  {
+    label: "Clientes atendidos",
+    value: "+1.200",
+    description: "Atendimento mais direto e suporte mais claro.",
+  },
+  {
+    label: "Instalação",
+    value: "Até 24h",
+    description: "Processo comercial mais rápido e objetivo.",
+  },
+  {
+    label: "Disponibilidade",
+    value: "99.9%",
+    description: "Transparência para manutenção e status.",
+  },
+  {
+    label: "Velocidade",
+    value: "Fibra pura",
+    description: "Experiência com menos ruído visual.",
+  },
+] as const;
 
-  if (
-    normalized.includes("operacional") ||
-    normalized.includes("normal") ||
-    normalized.includes("online")
-  ) {
-    return "success";
-  }
-
-  if (
-    normalized.includes("manutenção") ||
-    normalized.includes("manutencao") ||
-    normalized.includes("atenção")
-  ) {
-    return "warning";
-  }
-
-  if (
-    normalized.includes("incidente") ||
-    normalized.includes("indisponível") ||
-    normalized.includes("indisponivel") ||
-    normalized.includes("offline")
-  ) {
-    return "danger";
-  }
-
-  return "info";
-}
+const fallbackStatusItems = [
+  {
+    id: "status-fallback",
+    title: "Sem incidentes públicos no momento",
+    description:
+      "Acompanhe esta área para manutenção programada, avisos operacionais e atualizações da rede.",
+    status: "Operacional",
+  },
+];
 
 export default async function Home() {
   const { plans, faqs, visibleStatus } = await getHomeData();
 
+  const statusItems = visibleStatus.length > 0 ? visibleStatus : fallbackStatusItems;
+
   return (
-    <Container as="main" className="py-8 md:py-12">
-      <div className="space-y-12 md:space-y-16">
-        {/* HERO */}
-        <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-[var(--surface-primary)] px-6 py-10 shadow-[0_16px_40px_rgba(0,0,0,0.28)] md:px-10 md:py-14">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,255,65,0.10),transparent_30%)]" />
-          <div className="relative max-w-3xl">
-            <Badge variant="default" className="mb-4">
-              Fibra óptica • cobertura • status em tempo real
-            </Badge>
+    <Container as="main" className="py-6 md:py-10">
+      <div className="space-y-10 md:space-y-14">
+        <Hero
+          eyebrow="Fibra óptica • cobertura • status em tempo real"
+          badge="Rede premium"
+          title="Internet fibra com mais profundidade, clareza e percepção de alto padrão"
+          description="Consulte planos, verifique cobertura, acompanhe o status da rede e entre em contato em uma experiência mais cinematográfica, legível e confiável."
+          primaryCta={{ label: "Ver planos", href: "/planos#comparacao-planos" }}
+          secondaryCta={{ label: "Consultar cobertura", href: "/cobertura#consulta-cobertura" }}
+          note="Fibra óptica, transparência operacional e conversão comercial em uma única experiência."
+          stats={[
+            { label: "Cobertura", value: "Consulta rápida" },
+            { label: "Jornada", value: "Sem atrito" },
+            { label: "Status", value: "Em destaque" },
+            { label: "Suporte", value: "Mais claro" },
+          ]}
+        />
 
-            <h1 className="text-4xl font-bold leading-tight text-primary md:text-5xl md:leading-tight">
-              Internet fibra com transparência, estabilidade e gestão moderna
-            </h1>
-
-            <p className="mt-4 max-w-2xl text-base leading-7 text-secondary md:text-lg">
-              Consulte planos, verifique cobertura, acompanhe o status da rede e
-              entre em contato com rapidez em uma experiência clara e confiável.
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg">
-                <Link href="/planos">Ver planos</Link>
-              </Button>
-
-              <Button asChild variant="outline" size="lg">
-                <Link href="/contato">Entrar em contato</Link>
-              </Button>
-            </div>
+        <section
+          aria-label="Indicadores principais"
+          className="rounded-[24px] border border-border bg-surface p-4 shadow-soft md:p-5"
+        >
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {metrics.map((metric) => (
+              <div
+                key={metric.label}
+                className="rounded-2xl border border-border/80 bg-surface px-4 py-3 shadow-soft"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
+                    {metric.label}
+                  </p>
+                  <p className="text-sm font-semibold tracking-tight text-primary md:text-base">
+                    {metric.value}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
-                {/* PLANOS */}
+        <FeaturesGrid
+          eyebrow="Diferenciais"
+          title="Uma vitrine comercial com mais consistência e autoridade"
+          description="Menos ruído, mais foco visual e uma leitura que ajuda o cliente a entender valor, cobertura e confiança rapidamente."
+          items={[
+            {
+              title: "Hierarquia mais forte",
+              description:
+                "Título, CTA e blocos de apoio trabalham em camadas visuais mais claras e premium.",
+            },
+            {
+              title: "Contraste controlado",
+              description:
+                "Sombras, bordas e superfícies passam a ter ritmo visual consistente entre desktop e mobile.",
+            },
+            {
+              title: "Identidade unificada",
+              description:
+                "A mesma imagem e a mesma linguagem visual aparecem em toda a jornada pública.",
+            },
+          ]}
+        />
+
         <section className="space-y-6 md:space-y-8">
-          <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-            <div>
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div className="space-y-2">
               <p className="text-sm font-medium uppercase tracking-[0.18em] text-accent">
                 Planos
               </p>
-              <h2 className="text-2xl font-semibold text-primary md:text-3xl">
+              <h2 className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">
                 Planos em destaque
               </h2>
+              <p className="max-w-2xl text-sm leading-6 text-secondary md:text-base">
+                Compare velocidades, escolha a melhor opção e avance para contratação sem atrito.
+              </p>
             </div>
 
             <Button asChild variant="ghost">
-              <Link href="/planos">Ver todos os planos</Link>
+              <Link href="/planos#comparacao-planos">Ver todos os planos</Link>
             </Button>
           </div>
 
-          <div className="grid items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {plans.map((plan) => (
-              <Card key={plan.id} className="flex h-full flex-col">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <CardTitle>{plan.name}</CardTitle>
-                      <CardDescription>{plan.slug}</CardDescription>
-                    </div>
+          {plans.length > 0 ? (
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {plans.map((plan) => (
+                <PlanCard
+                  key={plan.id}
+                  plan={plan}
+                  compact
+                  ctaLabel="Contratar plano"
+                />
+              ))}
+            </div>
+          ) : (
+            <Card className="rounded-[28px] border-border public-card">
+              <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
+                <div className="max-w-2xl space-y-2">
+                  <h3 className="text-lg font-semibold text-primary md:text-xl">
+                    Planos em atualização
+                  </h3>
+                  <p className="text-sm leading-6 text-secondary">
+                    Estamos organizando as opções públicas para exibir cobertura, velocidade e contratação de forma mais clara.
+                  </p>
+                </div>
 
-                    {plan.featured && <Badge variant="default">Destaque</Badge>}
-                  </div>
-                </CardHeader>
-
-                <CardContent className="flex flex-1 flex-col gap-6">
-                  <div className="space-y-3">
-                    <p className="text-3xl font-bold text-primary">
-                      {formatPrice(plan.priceCents)}
-                      <span className="ml-1 text-sm font-medium text-slate-400">
-                        /mês
-                      </span>
-                    </p>
-
-                    <div className="grid grid-cols-2 gap-3 text-sm text-secondary">
-                      <div className="rounded-xl border border-white/8 bg-white/5 p-3">
-                        <p className="text-xs uppercase tracking-wide text-slate-500">
-                          Download
-                        </p>
-                        <p className="mt-1 font-semibold text-primary">
-                          {plan.downloadMbps} Mbps
-                        </p>
-                      </div>
-
-                      <div className="rounded-xl border border-white/8 bg-white/5 p-3">
-                        <p className="text-xs uppercase tracking-wide text-slate-500">
-                          Upload
-                        </p>
-                        <p className="mt-1 font-semibold text-primary">
-                          {plan.uploadMbps} Mbps
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="rounded-xl border border-white/8 bg-white/5 p-3">
-                      <p className="text-xs uppercase tracking-wide text-slate-500">
-                        Latência alvo
-                      </p>
-                      <p className="mt-1 font-semibold text-primary">
-                        {plan.latencyTarget} ms
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-auto pt-2">
-                    <Button asChild className="w-full">
-                      <Link href="/planos">Contratar plano</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                <Button asChild className="w-full md:w-auto">
+                  <Link href="/contato#formulario-contato">Falar com atendimento</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </section>
 
-        {/* STATUS */}
         <section className="space-y-6 md:space-y-8">
-          <div>
+          <div className="space-y-2">
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-accent">
               Operação
             </p>
-            <h2 className="text-2xl font-semibold text-primary md:text-3xl">
+            <h2 className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">
               Status da rede
             </h2>
+            <p className="max-w-2xl text-sm leading-6 text-secondary md:text-base">
+              Transparência operacional para manutenção, normalização e comunicação com o cliente.
+            </p>
           </div>
+
+          <StatusBanner status={statusItems[0]?.status} />
 
           <div className="grid gap-4 lg:grid-cols-3">
-            {visibleStatus.map((item) => (
-              <Card key={item.id} className="h-full">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-3">
-                    <CardTitle className="text-base">{item.title}</CardTitle>
-                    <Badge variant={mapStatusVariant(item.status)}>
-                      {item.status}
-                    </Badge>
+            {statusItems.map((item) => {
+              const tone = resolveStatusTone(item.status);
+
+              return (
+                <div
+                  key={item.id}
+                  className="rounded-[24px] border border-border bg-surface p-5 shadow-soft sm:p-6"
+                >
+                  <div className="flex items-start gap-3">
+                    <span
+                      className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${tone.dotClassName}`}
+                    />
+                    <div className="space-y-1">
+                      <h3 className="text-base leading-6 text-primary">
+                        {item.title}
+                      </h3>
+                      <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted">
+                        {item.status}
+                      </p>
+                    </div>
                   </div>
-                </CardHeader>
 
-                <CardContent>
-                  <p className="text-sm leading-6 text-secondary">
-                    {item.description || "Sem descrição adicional no momento."}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+                  <div className={`mt-4 rounded-2xl border p-4 ${tone.cardClassName}`}>
+                    <p className="text-sm leading-6 text-secondary">
+                      {item.description || "Sem descrição adicional no momento."}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
 
-        {/* FAQ */}
-        <section className="space-y-6">
-          <div>
-            <p className="text-sm font-medium uppercase tracking-[0.18em] text-accent">
-              Dúvidas
-            </p>
-            <h2 className="text-2xl font-semibold text-primary md:text-3xl">
-              Perguntas frequentes
-            </h2>
-          </div>
-
-          <div className="grid gap-4 lg:grid-cols-2">
-            {faqs.map((faq) => (
-              <Card key={faq.id}>
-                <CardHeader>
-                  <CardTitle className="text-base">{faq.question}</CardTitle>
-                </CardHeader>
-
-                <CardContent>
-                  <p className="text-sm leading-6 text-secondary">
-                    {faq.answer}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
+        <FaqPreview items={faqs} />
       </div>
     </Container>
   );

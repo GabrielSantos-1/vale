@@ -31,24 +31,33 @@ export function FormField({
   const errorId = `${id}-error`;
 
   const describedBy =
-    [hint ? hintId : null, error ? errorId : null]
-      .filter(Boolean)
-      .join(" ") || undefined;
+    [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ") ||
+    undefined;
 
   const child = React.isValidElement(children)
-    ? React.cloneElement(children as React.ReactElement<Record<string, unknown>>, {
-        id,
-        disabled: (children.props as Record<string, unknown>).disabled ?? disabled,
-        required: (children.props as Record<string, unknown>).required ?? required,
-        "aria-invalid": error ? true : undefined,
-        "aria-describedby": describedBy,
-        "aria-errormessage": error ? errorId : undefined,
-      })
+    ? React.cloneElement(
+        children as React.ReactElement<Record<string, unknown>>,
+        {
+          id,
+          disabled:
+            (children.props as Record<string, unknown>).disabled ?? disabled,
+          required:
+            (children.props as Record<string, unknown>).required ?? required,
+          "aria-invalid": error ? true : undefined,
+          "aria-describedby": [
+            (children.props as Record<string, unknown>)["aria-describedby"],
+            describedBy,
+          ]
+            .filter(Boolean)
+            .join(" ") || undefined,
+          "aria-errormessage": error ? errorId : undefined,
+        }
+      )
     : children;
 
   return (
     <div
-      className={cn("space-y-2", disabled && "opacity-70", className)}
+      className={cn("space-y-2.5", disabled && "opacity-85", className)}
       {...props}
     >
       {label ? (
@@ -57,7 +66,7 @@ export function FormField({
             {label}
             {required ? (
               <>
-                <span className="ml-1 text-red-400" aria-hidden="true">
+                <span className="ml-1 text-danger" aria-hidden="true">
                   *
                 </span>
                 <span className="sr-only"> obrigatório</span>
@@ -70,13 +79,17 @@ export function FormField({
       <div className={contentClassName}>{child}</div>
 
       {hint ? (
-        <p id={hintId} className="text-sm leading-5 text-slate-500">
+        <p id={hintId} className="text-xs leading-5 text-secondary md:text-sm">
           {hint}
         </p>
       ) : null}
 
       {error ? (
-        <p id={errorId} className="text-sm leading-5 text-red-300" role="alert">
+        <p
+          id={errorId}
+          className="text-xs font-medium leading-5 text-danger md:text-sm"
+          role="alert"
+        >
           {error}
         </p>
       ) : null}

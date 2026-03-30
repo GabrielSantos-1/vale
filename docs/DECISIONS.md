@@ -2,54 +2,72 @@
 
 ## Objetivo
 
-Registrar decisões arquiteturais importantes.
-
-Evitar perda de contexto ao longo do projeto.
+Registrar decisoes arquiteturais e de processo relevantes, mantendo historico auditavel.
 
 ---
 
-# Decisão 001
-
-Stack escolhida.
+## Decisao 001 - Stack oficial
 
 Next.js + TypeScript + Tailwind + PostgreSQL + Prisma.
 
-Motivo:
-
-equilíbrio entre produtividade e escalabilidade.
+**Motivo:** equilibrio entre produtividade, seguranca e escalabilidade.
 
 ---
 
-# Decisão 002
+## Decisao 002 - Autenticacao por cookie HttpOnly
 
-Autenticação baseada em cookie HttpOnly.
+Sessao baseada em cookie HttpOnly para area administrativa.
 
-Motivo:
-
-maior segurança contra XSS.
+**Motivo:** reduzir superficie de ataque de XSS sobre credenciais.
 
 ---
 
-# Decisão 003
+## Decisao 003 - Validacao com Zod
 
-Validação com Zod.
+Validacao de entrada padronizada no servidor com schemas Zod.
 
-Motivo:
-
-tipagem forte e validação consistente.
+**Motivo:** tipagem forte e contratos consistentes.
 
 ---
 
-# Decisão 004
+## Decisao 004 - Arquitetura modular
 
-Arquitetura modular.
+Separacao clara entre UI, aplicacao, seguranca e persistencia.
 
-Motivo:
-
-facilitar manutenção e expansão.
+**Motivo:** manutencao e evolucao incremental sem reescrita ampla.
 
 ---
 
-# Regra
+## Decisao 005 - Direcao visual premium publica
 
-Toda decisão arquitetural relevante deve ser registrada aqui.
+Hero premium reutilizavel com fundo de fibra, superficies profundas e contraste controlado.
+
+**Motivo:** alinhar percepcao de qualidade entre publico e admin.
+
+---
+
+## Decisao 006 - Sistema visual publico com ativos curados
+
+Padronizacao de hero e blocos visuais reutilizaveis para planos, cobertura, status, suporte e contato.
+
+**Motivo:** consistencia visual e melhor conversao sem perder responsividade.
+
+---
+
+## Decisao 007 - Politica de checkpoint datado de estado
+
+Sempre registrar checkpoint tecnico datado em `docs/CHECKPOINT_YYYY-MM-DD.md` ao consolidar rodada relevante.
+
+Regras da politica:
+
+- manter checkpoints anteriores como historico imutavel;
+- refletir data igual em `PROJECT_STATE.md` e `TASKS.md`;
+- registrar evidencias minimas de validacao (`lint` e `typecheck`) no checkpoint.
+
+**Motivo:** melhorar rastreabilidade, continuidade e reducao de regressao em workspace com alto volume de alteracoes.
+
+---
+
+## Regra
+
+Toda decisao arquitetural ou de processo que altere a forma de evolucao do projeto deve ser registrada aqui.

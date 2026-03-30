@@ -1,7 +1,11 @@
 import NextAuth from 'next-auth';
 import type { NextRequest } from 'next/server';
+
 import { authOptions } from '@/lib/auth/auth-options';
+import { logger } from '@/lib/security/logger';
+import { fail } from '@/lib/security/response';
 import { buildRateLimitKey, rateLimit } from '@/lib/security/rate-limit';
+import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
 
 const nextAuthHandler = NextAuth(authOptions);
 
@@ -16,6 +20,8 @@ export async function GET(req: NextRequest, ctx: RouteContext) {
 }
 
 export async function POST(req: NextRequest, ctx: RouteContext) {
+  const correlationId = getCorrelationId(req);
+
   const rl = rateLimit({
     key: buildRateLimitKey('auth-login', req),
     limit: 5,
@@ -23,21 +29,21 @@ export async function POST(req: NextRequest, ctx: RouteContext) {
   });
 
   if (!rl.ok) {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: 'Muitas tentativas de login. Tente novamente mais tarde.',
-      }),
-      {
+    logger.warn('Rate limit hit on auth route', {
+      correlationId,
+      route: '/api/auth/[...nextauth]',
+      limit: rl.limit,
+      remaining: rl.remaining,
+      resetAt: rl.resetAt,
+    });
+
+    return withRequestMeta(
+      fail('Muitas tentativas de login. Tente novamente mais tarde.', {
         status: 429,
-        headers: {
-          'Content-Type': 'application/json',
-          'Retry-After': String(rl.retryAfter),
-          'X-RateLimit-Limit': String(rl.limit),
-          'X-RateLimit-Remaining': String(rl.remaining),
-          'X-RateLimit-Reset': String(Math.ceil(rl.resetAt / 1000)),
-        },
-      },
+        code: 'RATE_LIMITED',
+        correlationId,
+      }),
+      { correlationId, rl },
     );
   }
 

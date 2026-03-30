@@ -1,10 +1,15 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/core/badge";
 import { Button } from "@/components/ui/core/button";
-import { SectionHeader } from "@/components/ui/core/section-header";
 import { StatCard } from "@/components/ui/core/stat-card";
+import {
+  DataTable,
+  type DataTableColumn,
+} from "@/components/ui/data-display/data-table";
+import { Select } from "@/components/ui/forms/select";
+import { AdminHero } from "@/components/admin/layout/admin-hero";
 
 type LeadStatus =
   | "NOVO"
@@ -28,19 +33,57 @@ type Lead = {
   deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
+  planId?: string | null;
   plan?: {
     id: string;
     name: string;
   } | null;
 };
 
-type ApiResponse<T> = {
-  success: boolean;
-  data?: T;
-  error?: string;
+type LeadFilterStatus = "ALL" | LeadStatus;
+type LeadSortField = "createdAt" | "name" | "status";
+type LeadSortOrder = "asc" | "desc";
+
+type LeadsPagination = {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
 };
 
-type LeadFilterStatus = "ALL" | LeadStatus;
+type LeadsCounts = Record<LeadFilterStatus, number>;
+
+type LeadsResponse = {
+  success: boolean;
+  data?: Lead[];
+  meta?: {
+    pagination?: LeadsPagination;
+    filters?: {
+      status?: LeadFilterStatus;
+      q?: string;
+      sort?: LeadSortField;
+      order?: LeadSortOrder;
+    };
+    counts?: LeadsCounts;
+  };
+  error?: {
+    code?: string;
+    message?: string;
+    details?: unknown;
+    correlationId?: string;
+  };
+};
+
+type LeadMutationResponse = {
+  success: boolean;
+  data?: Lead | null;
+  error?: {
+    code?: string;
+    message?: string;
+    details?: unknown;
+    correlationId?: string;
+  };
+};
 
 const statusOptions: Array<{ value: LeadFilterStatus; label: string }> = [
   { value: "ALL", label: "Todos" },
@@ -49,6 +92,12 @@ const statusOptions: Array<{ value: LeadFilterStatus; label: string }> = [
   { value: "CONVERTIDO", label: "Convertido" },
   { value: "DESCARTADO", label: "Descartado" },
   { value: "ARQUIVADO", label: "Arquivado" },
+];
+
+const sortOptions: Array<{ value: LeadSortField; label: string }> = [
+  { value: "createdAt", label: "Data de criação" },
+  { value: "name", label: "Nome" },
+  { value: "status", label: "Status" },
 ];
 
 function getStatusBadgeVariant(status: LeadStatus) {
@@ -96,57 +145,121 @@ function formatDate(value: string) {
   }
 }
 
+function normalizeText(value?: string | null) {
+  return value?.trim() ? value : "Não informado";
+}
+
+function getPrimaryAction(status: LeadStatus) {
+  switch (status) {
+    case "NOVO":
+      return { label: "Iniciar atendimento", nextStatus: "EM_ATENDIMENTO" as const };
+    case "EM_ATENDIMENTO":
+      return { label: "Converter", nextStatus: "CONVERTIDO" as const };
+    case "CONVERTIDO":
+    case "DESCARTADO":
+    case "ARQUIVADO":
+      return null;
+    default:
+      return null;
+  }
+}
+
+const EMPTY_COUNTS: LeadsCounts = {
+  ALL: 0,
+  NOVO: 0,
+  EM_ATENDIMENTO: 0,
+  CONVERTIDO: 0,
+  DESCARTADO: 0,
+  ARQUIVADO: 0,
+};
+
+const EMPTY_PAGINATION: LeadsPagination = {
+  page: 1,
+  pageSize: 20,
+  total: 0,
+  totalPages: 1,
+};
+
+function logClientError(error: unknown) {
+  if (process.env.NODE_ENV === "development") {
+    console.error(error);
+  }
+}
+
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterStatus, setFilterStatus] = useState<LeadFilterStatus>("ALL");
-  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const loadLeads = useCallback(
-    async (selectedStatus: LeadFilterStatus = filterStatus) => {
-      try {
-        setLoading(true);
-        setError(null);
+  const [filterStatus, setFilterStatus] = useState<LeadFilterStatus>("ALL");
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [sort, setSort] = useState<LeadSortField>("createdAt");
+  const [order, setOrder] = useState<LeadSortOrder>("desc");
+  const [page, setPage] = useState(1);
 
-        const query =
-          selectedStatus === "ALL"
-            ? "/api/admin/leads?status=ALL"
-            : `/api/admin/leads?status=${selectedStatus}`;
+  const [pagination, setPagination] = useState<LeadsPagination>(EMPTY_PAGINATION);
+  const [counts, setCounts] = useState<LeadsCounts>(EMPTY_COUNTS);
 
-        const res = await fetch(query, {
-          credentials: "include",
-          cache: "no-store",
-        });
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
 
-        const data: ApiResponse<Lead[]> = await res.json();
+  const loadLeads = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        if (!data.success) {
-          setError(data.error || "Erro ao carregar leads");
-          setLeads([]);
-          return;
-        }
+      const params = new URLSearchParams({
+        status: filterStatus,
+        page: String(page),
+        pageSize: "20",
+        sort,
+        order,
+      });
 
-        setLeads(Array.isArray(data.data) ? data.data : []);
-      } catch (err) {
-        console.error(err);
-        setError("Erro ao carregar leads");
-        setLeads([]);
-      } finally {
-        setLoading(false);
+      if (search.trim()) {
+        params.set("q", search.trim());
       }
-    },
-    [filterStatus]
-  );
+
+      const res = await fetch(`/api/admin/leads?${params.toString()}`, {
+        credentials: "include",
+        cache: "no-store",
+      });
+
+      const payload: LeadsResponse = await res.json();
+
+      if (!payload.success) {
+        setError(payload.error?.message || "Erro ao carregar leads");
+        setLeads([]);
+        setCounts(EMPTY_COUNTS);
+        setPagination(EMPTY_PAGINATION);
+        return;
+      }
+
+      setLeads(Array.isArray(payload.data) ? payload.data : []);
+      setPagination(payload.meta?.pagination ?? EMPTY_PAGINATION);
+      setCounts(payload.meta?.counts ?? EMPTY_COUNTS);
+    } catch (err) {
+      logClientError(err);
+      setError("Erro ao carregar leads");
+      setLeads([]);
+      setCounts(EMPTY_COUNTS);
+      setPagination(EMPTY_PAGINATION);
+    } finally {
+      setLoading(false);
+    }
+  }, [filterStatus, page, search, sort, order]);
 
   useEffect(() => {
-    void loadLeads(filterStatus);
-  }, [filterStatus, loadLeads]);
+    void loadLeads();
+  }, [loadLeads]);
 
   const updateLeadStatus = useCallback(
     async (id: string, status: LeadStatus) => {
       try {
         setActionLoadingId(id);
+        setFeedback(null);
+        setError(null);
 
         const res = await fetch(`/api/admin/leads/${id}/status`, {
           method: "PATCH",
@@ -157,17 +270,18 @@ export default function LeadsPage() {
           body: JSON.stringify({ status }),
         });
 
-        const data: ApiResponse<Lead> = await res.json();
+        const payload: LeadMutationResponse = await res.json();
 
-        if (!data.success) {
-          alert(data.error || "Erro ao atualizar status");
+        if (!payload.success) {
+          setError(payload.error?.message || "Erro ao atualizar status");
           return;
         }
 
+        setFeedback("Status atualizado com sucesso.");
         await loadLeads();
       } catch (err) {
-        console.error(err);
-        alert("Erro ao atualizar status");
+        logClientError(err);
+        setError("Erro ao atualizar status");
       } finally {
         setActionLoadingId(null);
       }
@@ -175,288 +289,406 @@ export default function LeadsPage() {
     [loadLeads]
   );
 
-  const archiveLead = async (id: string) => {
-    try {
-      setActionLoadingId(id);
+  const archiveLead = useCallback(
+    async (id: string) => {
+      try {
+        setActionLoadingId(id);
+        setFeedback(null);
+        setError(null);
 
-      const res = await fetch(`/api/admin/leads/${id}/archive`, {
-        method: "PATCH",
-        credentials: "include",
-      });
+        const res = await fetch(`/api/admin/leads/${id}/archive`, {
+          method: "PATCH",
+          credentials: "include",
+        });
 
-      const data: ApiResponse<Lead> = await res.json();
+        const payload: LeadMutationResponse = await res.json();
 
-      if (!data.success) {
-        alert(data.error || "Erro ao arquivar lead");
-        return;
+        if (!payload.success) {
+          setError(payload.error?.message || "Erro ao arquivar lead");
+          return;
+        }
+
+        setFeedback("Lead arquivado com sucesso.");
+        await loadLeads();
+      } catch (err) {
+        logClientError(err);
+        setError("Erro ao arquivar lead");
+      } finally {
+        setActionLoadingId(null);
       }
+    },
+    [loadLeads]
+  );
 
-      await loadLeads();
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao arquivar lead");
-    } finally {
-      setActionLoadingId(null);
-    }
-  };
+  const deleteLead = useCallback(
+    async (id: string) => {
+      const confirmed = window.confirm(
+        "Tem certeza que deseja excluir este lead? A exclusão será lógica e ele sairá da listagem."
+      );
 
-  const deleteLead = async (id: string) => {
-    const confirmed = window.confirm(
-      "Tem certeza que deseja excluir este lead? A exclusão será lógica e ele sairá da listagem."
-    );
+      if (!confirmed) return;
 
-    if (!confirmed) return;
+      try {
+        setActionLoadingId(id);
+        setFeedback(null);
+        setError(null);
 
-    try {
-      setActionLoadingId(id);
+        const res = await fetch(`/api/admin/leads/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
 
-      const res = await fetch(`/api/admin/leads/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+        const payload: LeadMutationResponse = await res.json();
 
-      const data: ApiResponse<null> = await res.json();
+        if (!payload.success) {
+          setError(payload.error?.message || "Erro ao excluir lead");
+          return;
+        }
 
-      if (!data.success) {
-        alert(data.error || "Erro ao excluir lead");
-        return;
+        setFeedback("Lead excluído com sucesso.");
+        await loadLeads();
+      } catch (err) {
+        logClientError(err);
+        setError("Erro ao excluir lead");
+      } finally {
+        setActionLoadingId(null);
       }
+    },
+    [loadLeads]
+  );
 
-      await loadLeads();
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao excluir lead");
-    } finally {
-      setActionLoadingId(null);
-    }
-  };
+  const columns = useMemo<DataTableColumn<Lead>[]>((() => {
+    return [
+      {
+        key: "name",
+        header: "Lead",
+        cellClassName: "min-w-[240px]",
+        render: (lead) => (
+          <div className="space-y-1">
+            <p className="font-semibold text-primary">{lead.name}</p>
+            <p className="text-xs text-secondary">{lead.email}</p>
+            <p className="text-xs text-secondary">{normalizeText(lead.phone)}</p>
+          </div>
+        ),
+      },
+      {
+        key: "location",
+        header: "Local",
+        cellClassName: "min-w-[180px]",
+        render: (lead) => (
+          <div className="space-y-1">
+            <p className="text-sm text-primary">{normalizeText(lead.city)}</p>
+            <p className="text-xs text-secondary">{normalizeText(lead.district)}</p>
+            <p className="text-xs text-secondary">{normalizeText(lead.cep)}</p>
+          </div>
+        ),
+      },
+      {
+        key: "plan",
+        header: "Plano",
+        cellClassName: "min-w-[160px]",
+        render: (lead) => (
+          <span className="text-sm text-primary">
+            {lead.plan?.name || "Não informado"}
+          </span>
+        ),
+      },
+      {
+        key: "status",
+        header: "Status",
+        cellClassName: "min-w-[160px]",
+        render: (lead) => (
+          <Badge variant={getStatusBadgeVariant(lead.status)}>
+            {getStatusLabel(lead.status)}
+          </Badge>
+        ),
+      },
+      {
+        key: "source",
+        header: "Origem",
+        render: (lead) => (
+          <span className="text-sm text-primary">
+            {normalizeText(lead.source)}
+          </span>
+        ),
+      },
+      {
+        key: "createdAt",
+        header: "Criado em",
+        cellClassName: "min-w-[150px]",
+        render: (lead) => (
+          <span className="text-sm text-primary">{formatDate(lead.createdAt)}</span>
+        ),
+      },
+      {
+        key: "actions",
+        header: "Ações",
+        cellClassName: "min-w-[340px]",
+        render: (lead) => {
+          const primaryAction = getPrimaryAction(lead.status);
+          const isBusy = actionLoadingId === lead.id;
 
-  const totalLeads = leads.length;
-  const totalNovos = useMemo(
-    () => leads.filter((lead) => lead.status === "NOVO").length,
-    [leads]
-  );
-  const totalEmAtendimento = useMemo(
-    () => leads.filter((lead) => lead.status === "EM_ATENDIMENTO").length,
-    [leads]
-  );
-  const totalConvertidos = useMemo(
-    () => leads.filter((lead) => lead.status === "CONVERTIDO").length,
-    [leads]
-  );
+          return (
+            <div className="flex flex-wrap gap-2">
+              {primaryAction ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => updateLeadStatus(lead.id, primaryAction.nextStatus)}
+                  disabled={isBusy}
+                  isLoading={isBusy}
+                >
+                  {primaryAction.label}
+                </Button>
+              ) : null}
+
+              {lead.status !== "DESCARTADO" && lead.status !== "CONVERTIDO" ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => updateLeadStatus(lead.id, "DESCARTADO")}
+                  disabled={isBusy}
+                >
+                  Descartar
+                </Button>
+              ) : null}
+
+              {lead.status !== "ARQUIVADO" ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => archiveLead(lead.id)}
+                  disabled={isBusy}
+                >
+                  Arquivar
+                </Button>
+              ) : null}
+
+              <Button
+                type="button"
+                size="sm"
+                variant="danger"
+                onClick={() => deleteLead(lead.id)}
+                disabled={isBusy}
+              >
+                Excluir
+              </Button>
+            </div>
+          );
+        },
+      },
+    ];
+  }) as () => DataTableColumn<Lead>[], [actionLoadingId, archiveLead, deleteLead, updateLeadStatus]);
+
+  const pageLabel = useMemo(() => {
+    if (pagination.total === 0) return "Nenhum resultado";
+    const start = (pagination.page - 1) * pagination.pageSize + 1;
+    const end = Math.min(pagination.page * pagination.pageSize, pagination.total);
+    return `${start}-${end} de ${pagination.total}`;
+  }, [pagination]);
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-border bg-surface p-6 shadow-soft">
-        <SectionHeader
-          badge={
-            <Badge variant="info" className="w-fit">
-              Admin • Leads
-            </Badge>
-          }
-          title="Gestão de leads"
-          description="Acompanhe oportunidades comerciais recebidas pelo site, atualize o status do atendimento e mantenha o pipeline organizado."
-        />
-      </section>
+            <AdminHero
+        badge="Admin - Leads"
+        title="Gestão de leads"
+        description="Acompanhe oportunidades comerciais recebidas pelo site, atualize o status do atendimento e mantenha o pipeline organizado."
+        actions={
+          <Button
+            type="button"
+            variant="outline"
+            className="border-white/25 bg-white/10 text-white hover:bg-white/20"
+            onClick={() => void loadLeads()}
+          >
+            Atualizar
+          </Button>
+        }
+      />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Total"
-          value={totalLeads}
-          description="Leads na listagem atual."
-          accent="text-primary"
+          value={counts.ALL}
+          description="Leads encontrados para os filtros atuais."
+          tone="default"
         />
         <StatCard
           label="Novos"
-          value={totalNovos}
+          value={counts.NOVO}
           description="Entradas recentes aguardando ação."
-          accent="text-blue-600"
+          tone="info"
         />
         <StatCard
           label="Em atendimento"
-          value={totalEmAtendimento}
+          value={counts.EM_ATENDIMENTO}
           description="Leads em progresso comercial."
-          accent="text-amber-600"
+          tone="warning"
         />
         <StatCard
           label="Convertidos"
-          value={totalConvertidos}
+          value={counts.CONVERTIDO}
           description="Leads já convertidos."
-          accent="text-emerald-600"
+          tone="success"
         />
       </section>
 
-      <section className="rounded-2xl border border-border bg-surface shadow-soft">
-        <div className="flex flex-col gap-4 border-b border-border p-5 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-primary">Filtro de status</h2>
-            <p className="mt-1 text-sm text-secondary">
-              Filtre os leads por etapa do funil.
-            </p>
-          </div>
+      <section className="overflow-hidden rounded-[28px] border border-white/10 bg-surface shadow-soft">
+        <div className="border-b border-border/80 p-5 sm:p-6">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-primary">Filtros e busca</h2>
+              <p className="mt-1 text-sm text-secondary">
+                Busque por nome, e-mail, telefone, cidade ou bairro e refine o pipeline por etapa.
+              </p>
+            </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as LeadFilterStatus)}
-              className="h-11 rounded-2xl border border-border bg-surface px-4 text-sm text-primary outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            >
-              {statusOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <input
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setPage(1);
+                    setSearch(searchInput.trim());
+                  }
+                }}
+                placeholder="Buscar lead..."
+                className="h-11 min-w-[220px] rounded-2xl border border-border bg-surface px-4 text-sm text-primary outline-none transition placeholder:text-muted focus:border-[color:var(--ring)] focus:ring-2 focus:ring-[color:var(--ring)]/20"
+              />
 
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => void loadLeads()}
-            >
-              Atualizar
-            </Button>
+              <Select
+                value={filterStatus}
+                onChange={(e) => {
+                  setPage(1);
+                  setFilterStatus(e.target.value as LeadFilterStatus);
+                }}
+              >
+                {statusOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </Select>
+
+              <Select
+                value={sort}
+                onChange={(e) => {
+                  setPage(1);
+                  setSort(e.target.value as LeadSortField);
+                }}
+              >
+                {sortOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    Ordenar por: {option.label}
+                  </option>
+                ))}
+              </Select>
+
+              <Select
+                value={order}
+                onChange={(e) => {
+                  setPage(1);
+                  setOrder(e.target.value as LeadSortOrder);
+                }}
+              >
+                <option value="desc">Mais recentes primeiro</option>
+                <option value="asc">Mais antigos primeiro</option>
+              </Select>
+            </div>
           </div>
         </div>
 
-        <div className="p-5">
-          {error && (
+        <div className="flex flex-col gap-3 border-b border-border/80 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                setPage(1);
+                setSearch(searchInput.trim());
+              }}
+            >
+              Aplicar busca
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setSearchInput("");
+                setSearch("");
+                setFilterStatus("ALL");
+                setSort("createdAt");
+                setOrder("desc");
+                setPage(1);
+              }}
+            >
+              Limpar filtros
+            </Button>
+          </div>
+
+          <p className="text-sm text-secondary">{pageLabel}</p>
+        </div>
+
+        <div className="p-5 sm:p-6">
+          {error ? (
             <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {error}
             </div>
-          )}
+          ) : null}
 
-          {loading ? (
-            <div className="space-y-3">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="h-36 animate-pulse rounded-2xl border border-border bg-surface-secondary"
-                />
-              ))}
+          {feedback ? (
+            <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+              {feedback}
             </div>
-          ) : leads.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border bg-surface-secondary px-6 py-12 text-center">
-              <p className="text-sm text-secondary">
-                Nenhum lead encontrado para o filtro atual.
-              </p>
+          ) : null}
+
+          <DataTable
+            data={leads}
+            columns={columns}
+            isLoading={loading}
+            getRowKey={(lead) => lead.id}
+            emptyTitle="Nenhum lead encontrado"
+            emptyDescription="Ajuste os filtros atuais ou aguarde novas entradas do site."
+          />
+
+          <div className="mt-5 flex flex-col gap-3 border-t border-border/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-secondary">
+              Página {pagination.page} de {Math.max(pagination.totalPages, 1)}
+            </p>
+
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setPage((current) => Math.max(current - 1, 1))}
+                disabled={pagination.page <= 1 || loading}
+              >
+                Anterior
+              </Button>
+
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() =>
+                  setPage((current) =>
+                    Math.min(current + 1, Math.max(pagination.totalPages, 1))
+                  )
+                }
+                disabled={
+                  pagination.page >= Math.max(pagination.totalPages, 1) || loading
+                }
+              >
+                Próxima
+              </Button>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {leads.map((lead) => (
-                <article
-                  key={lead.id}
-                  className="rounded-2xl border border-border bg-surface-secondary p-5 transition hover:border-border-strong"
-                >
-                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                    <div className="min-w-0 space-y-3">
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-                        <h3 className="text-base font-semibold text-primary sm:text-lg">
-                          {lead.name}
-                        </h3>
-
-                        <Badge variant={getStatusBadgeVariant(lead.status)}>
-                          {getStatusLabel(lead.status)}
-                        </Badge>
-                      </div>
-
-                      <div className="grid gap-2 text-sm text-secondary sm:grid-cols-2">
-                        <p>
-                          <span className="text-muted">E-mail:</span> {lead.email}
-                        </p>
-                        <p>
-                          <span className="text-muted">Telefone:</span>{" "}
-                          {lead.phone || "Não informado"}
-                        </p>
-                        <p>
-                          <span className="text-muted">Cidade:</span>{" "}
-                          {lead.city || "Não informado"}
-                        </p>
-                        <p>
-                          <span className="text-muted">Bairro:</span>{" "}
-                          {lead.district || "Não informado"}
-                        </p>
-                        <p>
-                          <span className="text-muted">CEP:</span>{" "}
-                          {lead.cep || "Não informado"}
-                        </p>
-                        <p>
-                          <span className="text-muted">Plano:</span>{" "}
-                          {lead.plan?.name || "Não informado"}
-                        </p>
-                        <p>
-                          <span className="text-muted">Origem:</span>{" "}
-                          {lead.source || "Não informado"}
-                        </p>
-                        <p>
-                          <span className="text-muted">Criado em:</span>{" "}
-                          {formatDate(lead.createdAt)}
-                        </p>
-                      </div>
-
-                      {lead.message && (
-                        <div className="rounded-xl border border-border bg-white px-4 py-3">
-                          <p className="mb-1 text-xs uppercase tracking-[0.16em] text-muted">
-                            Mensagem
-                          </p>
-                          <p className="whitespace-pre-line text-sm leading-6 text-secondary">
-                            {lead.message}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex w-full flex-col gap-2 lg:w-[220px]">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={() => updateLeadStatus(lead.id, "EM_ATENDIMENTO")}
-                        disabled={actionLoadingId === lead.id}
-                      >
-                        Em atendimento
-                      </Button>
-
-                      <Button
-                        type="button"
-                        onClick={() => updateLeadStatus(lead.id, "CONVERTIDO")}
-                        disabled={actionLoadingId === lead.id}
-                      >
-                        Converter
-                      </Button>
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => updateLeadStatus(lead.id, "DESCARTADO")}
-                        disabled={actionLoadingId === lead.id}
-                      >
-                        Descartar
-                      </Button>
-
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={() => archiveLead(lead.id)}
-                        disabled={actionLoadingId === lead.id}
-                      >
-                        Arquivar
-                      </Button>
-
-                      <Button
-                        type="button"
-                        variant="danger"
-                        onClick={() => deleteLead(lead.id)}
-                        disabled={actionLoadingId === lead.id}
-                      >
-                        {actionLoadingId === lead.id ? "Processando..." : "Excluir"}
-                      </Button>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </section>
     </div>
   );
 }
+
+

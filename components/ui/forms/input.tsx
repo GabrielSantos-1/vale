@@ -4,18 +4,18 @@ import { cn } from "@/lib/cn";
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type = "text", ...props }: InputProps & { className?: string }, ref) => {
+  ({ className, type = "text", ...props }, ref) => {
     return (
       <input
         ref={ref}
         type={type}
         className={cn(
-          "flex h-11 w-full rounded-2xl border border-border bg-surface px-4 py-3",
-          "text-sm text-primary placeholder:text-muted",
-          "transition-all duration-200 outline-none",
-          "focus:border-blue-500 focus:ring-2 focus:ring-blue-100",
-          "aria-invalid:border-red-400 aria-invalid:ring-2 aria-invalid:ring-red-100",
-          "disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-11 w-full min-w-0 rounded-2xl border border-border bg-surface px-4 py-3",
+          "text-sm text-primary placeholder:text-muted placeholder:opacity-100",
+          "transition-[border-color,box-shadow,background-color] duration-200 outline-none",
+          "focus:border-[color:var(--ring)] focus:ring-2 focus:ring-[color:rgba(147,197,253,0.28)]",
+          "aria-[invalid=true]:border-danger aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-[color:rgba(220,38,38,0.12)]",
+          "disabled:cursor-not-allowed disabled:bg-surface-secondary disabled:text-secondary disabled:placeholder:text-muted disabled:opacity-80",
           className
         )}
         {...props}

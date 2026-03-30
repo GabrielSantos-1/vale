@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
@@ -22,10 +22,25 @@ type FormErrors = {
   password?: string
 }
 
+const DEFAULT_CALLBACK_URL = '/admin/dashboard'
+
+function sanitizeAdminCallbackUrl(value?: string): string {
+  if (!value) return DEFAULT_CALLBACK_URL
+  if (!value.startsWith('/')) return DEFAULT_CALLBACK_URL
+  if (!value.startsWith('/admin')) return DEFAULT_CALLBACK_URL
+  if (value.startsWith('/admin/login')) return DEFAULT_CALLBACK_URL
+  return value
+}
+
 export default function LoginForm({
-  callbackUrl = '/admin/dashboard',
+  callbackUrl = DEFAULT_CALLBACK_URL,
 }: LoginFormProps) {
   const router = useRouter()
+
+  const safeCallbackUrl = useMemo(
+    () => sanitizeAdminCallbackUrl(callbackUrl),
+    [callbackUrl],
+  )
 
   const [form, setForm] = useState<FormState>({
     email: '',
@@ -39,6 +54,10 @@ export default function LoginForm({
   function updateField<K extends keyof FormState>(field: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [field]: value }))
 
+    if (error) {
+      setError(null)
+    }
+
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }))
     }
@@ -48,15 +67,17 @@ export default function LoginForm({
     const nextErrors: FormErrors = {}
 
     const email = form.email.trim()
-    const password = form.password.trim()
+    const password = form.password
 
     if (!email) {
       nextErrors.email = 'E-mail é obrigatório.'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       nextErrors.email = 'Informe um e-mail válido.'
+    } else if (email.length > 160) {
+      nextErrors.email = 'E-mail inválido.'
     }
 
-    if (!password) {
+    if (!password.trim()) {
       nextErrors.password = 'Senha é obrigatória.'
     } else if (password.length > 255) {
       nextErrors.password = 'Senha inválida.'
@@ -85,15 +106,24 @@ export default function LoginForm({
       const result = await signIn('credentials', {
         email: form.email.trim().toLowerCase(),
         password: form.password,
-        callbackUrl,
+        callbackUrl: safeCallbackUrl,
         redirect: false,
       })
 
-      if (!result || result.error) {
+      if (!result) {
+        throw new Error('Não foi possível iniciar a autenticação.')
+      }
+
+      if (result.error) {
         throw new Error('Credenciais inválidas.')
       }
 
-      router.push(result.url || callbackUrl)
+      const nextUrl =
+        result.url && result.url.startsWith('/admin') && !result.url.startsWith('/admin/login')
+          ? result.url
+          : safeCallbackUrl
+
+      router.push(nextUrl)
       router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao realizar login.')
@@ -108,6 +138,7 @@ export default function LoginForm({
         <div
           className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300"
           role="alert"
+          aria-live="polite"
         >
           {error}
         </div>
@@ -126,7 +157,12 @@ export default function LoginForm({
           value={form.email}
           onChange={(e) => updateField('email', e.target.value)}
           autoComplete="email"
+          inputMode="email"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           maxLength={160}
+          disabled={loading}
         />
       </FormField>
 
@@ -143,6 +179,7 @@ export default function LoginForm({
           onChange={(e) => updateField('password', e.target.value)}
           autoComplete="current-password"
           maxLength={255}
+          disabled={loading}
         />
       </FormField>
 

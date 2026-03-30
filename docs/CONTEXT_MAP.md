@@ -2,228 +2,83 @@
 
 ## Objetivo
 
-Este documento funciona como o mapa de contexto do projeto.
-
-Ele ajuda agentes de código e desenvolvedores a entender rapidamente:
-
-- onde está cada informação
-- qual documento governa qual área
-- qual ordem de leitura correta
-
-Este arquivo existe para evitar perda de contexto durante o desenvolvimento.
+Este documento funciona como mapa de contexto do projeto.
+Ele orienta leitura, governanca e rastreabilidade do estado tecnico atual.
 
 ---
 
-# Ordem recomendada de leitura
+## Ordem recomendada de leitura
 
-Antes de implementar qualquer funcionalidade, ler nesta ordem:
-
-1. PROJECT_BRIEF.md
-2. ARCHITECTURE.md
-3. SECURITY_RULES.md
-4. CODING_STANDARDS.md
-5. UI_GUIDELINES.md
-6. API_CONTRACTS.md
-7. BACKLOG.md
-8. TASKS.md
-9. PROMPTING_RULES.md
-10. DECISIONS.md
-
----
-
-# Mapa de responsabilidade dos documentos
-
-## PROJECT_BRIEF.md
-
-Define:
-
-- visão do produto
-- objetivo do sistema
-- identidade do projeto
-- direcionamento estratégico
-
-Este documento explica **o que estamos construindo e por quê**.
+1. `PROJECT_BRIEF.md`
+2. `ARCHITECTURE.md`
+3. `SECURITY_RULES.md`
+4. `CODING_STANDARDS.md`
+5. `UI_GUIDELINES.md`
+6. `API_CONTRACTS.md`
+7. `BACKLOG.md`
+8. `TASKS.md`
+9. `PROJECT_STATE.md`
+10. `PROMPTING_RULES.md`
+11. `DECISIONS.md`
 
 ---
 
-## ARCHITECTURE.md
+## Mapa de modulos com mudancas recentes (snapshot 2026-03-30)
 
-Define:
+### Publico
 
-- estrutura de diretórios
-- organização do código
-- responsabilidades de cada módulo
-- divisão entre frontend, backend e domínio
+- `app/(public)` e `components/marketing`
+- foco recente: copy, legibilidade e consistencia visual
 
-Este documento governa **como o sistema deve ser estruturado**.
+### Admin
 
----
+- `app/admin` e `components/admin`
+- foco recente: ortografia PT-BR, contraste e consistencia textual
 
-## SECURITY_RULES.md
+### UI Base e Layout
 
-Define:
+- `components/ui/*`, `components/layout/public`, `components/ui/layout/admin`, `app/globals.css`
+- foco recente: tokens, foreground/muted e legibilidade em componentes reutilizaveis
 
-- práticas obrigatórias de segurança
-- proteção contra XSS
-- proteção contra SQL Injection
-- proteção contra IDOR
-- tratamento de erros
-- gestão de segredos
+### Seguranca e API
 
-Este documento tem **prioridade máxima**.
+- `lib/security`, `app/api/*`, `lib/auth`, `lib/validations`
+- foco recente: consolidacao de hardening e padronizacao de tratamento
 
----
+### Documentacao de estado
 
-## CODING_STANDARDS.md
-
-Define:
-
-- convenções de código
-- nomenclatura
-- organização de arquivos
-- padrões de commits
-- regras de legibilidade
-
-Este documento governa **qualidade e consistência do código**.
+- `docs/PROJECT_STATE.md`
+- `docs/TASKS.md`
+- `docs/CHECKPOINT_2026-03-30.md`
 
 ---
 
-## UI_GUIDELINES.md
+## Responsabilidade dos documentos
 
-Define:
-
-- identidade visual
-- paleta de cores
-- tipografia
-- layout
-- componentes base
-- responsividade
-
-Este documento governa **interface e experiência visual**.
-
----
-
-## API_CONTRACTS.md
-
-Define:
-
-- endpoints do sistema
-- formato de requisição
-- formato de resposta
-- padrões de erro
-
-Este documento governa **comunicação entre frontend e backend**.
+- `PROJECT_BRIEF.md`: direcao de produto e visao
+- `ARCHITECTURE.md`: estrutura e separacao de camadas
+- `SECURITY_RULES.md`: requisitos obrigatorios de seguranca (prioridade maxima)
+- `CODING_STANDARDS.md`: consistencia tecnica e estilo
+- `UI_GUIDELINES.md`: identidade visual e UX
+- `API_CONTRACTS.md`: contratos de comunicacao
+- `BACKLOG.md`: roadmap macro por sprint
+- `TASKS.md`: execucao atual e progresso real
+- `PROJECT_STATE.md`: snapshot tecnico oficial
+- `PROMPTING_RULES.md`: uso operacional com agentes
+- `DECISIONS.md`: historico de decisoes aprovadas
 
 ---
 
-## BACKLOG.md
+## Regra de conflito
 
-Define:
-
-- roadmap do projeto
-- organização por sprints
-- macro tarefas
-
-Este documento governa **planejamento do desenvolvimento**.
+1. `SECURITY_RULES.md`
+2. `ARCHITECTURE.md`
+3. `CODING_STANDARDS.md`
+4. `UI_GUIDELINES.md`
+5. `BACKLOG.md`/`TASKS.md`
 
 ---
 
-## TASKS.md
+## Diretriz final
 
-Define:
-
-- tarefas ativas
-- progresso atual
-- checklist de execução
-
-Este documento governa **estado atual do projeto**.
-
----
-
-## PROMPTING_RULES.md
-
-Define:
-
-- boas práticas de interação com IA
-- estratégia de prompts
-- forma correta de solicitar tarefas
-
-Este documento governa **interação com agentes de código**.
-
----
-
-## DECISIONS.md
-
-Define:
-
-- decisões arquiteturais
-- mudanças importantes
-- justificativas técnicas
-
-Este documento governa **histórico de decisões do projeto**.
-
----
-
-# Mapa da estrutura do projeto
-
-
-project-root/
-
-AGENTS.md
-README.md
-
-docs/
-CONTEXT_MAP.md
-PROJECT_BRIEF.md
-ARCHITECTURE.md
-SECURITY_RULES.md
-CODING_STANDARDS.md
-BACKLOG.md
-TASKS.md
-API_CONTRACTS.md
-UI_GUIDELINES.md
-PROMPTING_RULES.md
-DECISIONS.md
-
-
----
-
-# Fluxo correto de desenvolvimento
-
-1. ler PROJECT_BRIEF.md
-2. entender arquitetura
-3. verificar regras de segurança
-4. seguir padrões de código
-5. consultar backlog
-6. executar tarefa atual
-
----
-
-# Regra importante
-
-Nenhuma implementação deve:
-
-- ignorar arquitetura
-- ignorar regras de segurança
-- quebrar padrões visuais
-- ignorar backlog atual
-
----
-
-# Regra de conflito
-
-Se dois documentos entrarem em conflito:
-
-1. SECURITY_RULES.md tem prioridade
-2. ARCHITECTURE.md vem em seguida
-3. CODING_STANDARDS.md vem depois
-4. UI_GUIDELINES.md governa aparência
-5. BACKLOG.md governa execução
-
----
-
-# Diretriz final
-
-Este arquivo existe para manter **consistência, previsibilidade e estabilidade do projeto**.
-
-Sempre consultar este mapa antes de implementar mudanças grandes.
+Antes de qualquer mudanca ampla, alinhar escopo com este mapa e atualizar checkpoint datado ao final da rodada.

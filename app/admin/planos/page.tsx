@@ -1,17 +1,14 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/core/badge";
 import { Button } from "@/components/ui/core/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/core/card";
+import { StatCard } from "@/components/ui/core/stat-card";
+import { Card, CardContent } from "@/components/ui/core/card";
 import { Input } from "@/components/ui/forms/input";
 import { Label } from "@/components/ui/forms/label";
 import { Textarea } from "@/components/ui/forms/textarea";
+import { AdminHero } from "@/components/admin/layout/admin-hero";
 
 type Plan = {
   id: string;
@@ -54,6 +51,34 @@ function formatPrice(priceCents: number) {
   });
 }
 
+function normalizeSlug(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+function formatDate(value: string) {
+  try {
+    return new Intl.DateTimeFormat("pt-BR", {
+      dateStyle: "short",
+      timeStyle: "short",
+    }).format(new Date(value));
+  } catch {
+    return value;
+  }
+}
+
+function logClientError(error: unknown) {
+  if (process.env.NODE_ENV === "development") {
+    console.error(error);
+  }
+}
+
 export default function PlanosPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +87,6 @@ export default function PlanosPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
-
   const [form, setForm] = useState(initialForm);
 
   async function loadPlans() {
@@ -84,6 +108,7 @@ export default function PlanosPage() {
 
       setPlans(result.data || []);
     } catch (err) {
+      logClientError(err);
       setError(err instanceof Error ? err.message : "Erro ao carregar planos");
     } finally {
       setLoading(false);
@@ -91,7 +116,7 @@ export default function PlanosPage() {
   }
 
   useEffect(() => {
-    loadPlans();
+    void loadPlans();
   }, []);
 
   const totalPlans = useMemo(() => plans.length, [plans]);
@@ -99,6 +124,12 @@ export default function PlanosPage() {
     () => plans.filter((plan) => plan.featured).length,
     [plans]
   );
+  const averagePrice = useMemo(() => {
+    if (plans.length === 0) return 0;
+    return Math.round(
+      plans.reduce((acc, plan) => acc + plan.priceCents, 0) / plans.length
+    );
+  }, [plans]);
 
   function updateField<K extends keyof typeof form>(
     field: K,
@@ -140,7 +171,7 @@ export default function PlanosPage() {
 
       const payload = {
         name: form.name.trim(),
-        slug: form.slug.trim(),
+        slug: normalizeSlug(form.slug.trim() || form.name.trim()),
         downloadMbps: Number(form.downloadMbps),
         uploadMbps: Number(form.uploadMbps),
         latencyTarget: Number(form.latencyTarget),
@@ -154,9 +185,7 @@ export default function PlanosPage() {
         editingPlan ? `/api/admin/plans/${editingPlan.id}` : "/api/admin/plans",
         {
           method: editingPlan ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify(payload),
         }
@@ -176,9 +205,9 @@ export default function PlanosPage() {
 
       setForm(initialForm);
       setEditingPlan(null);
-
       await loadPlans();
     } catch (err) {
+      logClientError(err);
       setError(err instanceof Error ? err.message : "Erro ao salvar plano");
     } finally {
       setSubmitting(false);
@@ -189,7 +218,6 @@ export default function PlanosPage() {
     const confirmed = window.confirm(
       `Tem certeza que deseja excluir o plano "${planName}"?`
     );
-
     if (!confirmed) return;
 
     try {
@@ -211,6 +239,7 @@ export default function PlanosPage() {
       setSuccess("Plano removido com sucesso.");
       await loadPlans();
     } catch (err) {
+      logClientError(err);
       setError(err instanceof Error ? err.message : "Erro ao excluir plano");
     } finally {
       setDeletingId(null);
@@ -218,317 +247,333 @@ export default function PlanosPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <header className="space-y-3">
-        <Badge variant="info">Admin • Planos</Badge>
+    <div className="space-y-6">
+            <AdminHero
+        badge="Admin - Planos"
+        title="Gestão de planos"
+        description="Cadastre, edite e mantenha a vitrine comercial do sistema com mais clareza, consistência e hierarquia de produto."
+        actions={
+          <Button
+            type="button"
+            variant="outline"
+            className="border-white/25 bg-white/10 text-white hover:bg-white/20"
+            onClick={() => void loadPlans()}
+          >
+            Atualizar
+          </Button>
+        }
+      />
 
-        <div className="max-w-3xl">
-          <h2 className="text-3xl font-bold text-primary md:text-4xl">
-            Gestão de planos
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-secondary md:text-base">
-            Cadastre, edite e remova planos comerciais do sistema.
-          </p>
-        </div>
-      </header>
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <StatCard
+          label="Total de planos"
+          value={totalPlans}
+          description="Quantidade total cadastrada no catálogo."
+          tone="default"
+        />
+        <StatCard
+          label="Em destaque"
+          value={totalFeatured}
+          description="Planos com prioridade comercial na vitrine."
+          tone="success"
+        />
+        <StatCard
+          label="Preço médio"
+          value={formatPrice(averagePrice)}
+          description="Referência média atual do catálogo."
+          tone="info"
+        />
+      </section>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Total de planos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold text-primary">{totalPlans}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Planos em destaque</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold text-emerald-600">{totalFeatured}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Operação</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm leading-6 text-secondary">
-              Use este módulo para manter a vitrine comercial pública atualizada.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      {error ? (
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
         </div>
-      )}
+      ) : null}
 
-      {success && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+      {success ? (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
           {success}
         </div>
-      )}
+      ) : null}
 
-      <div className="grid gap-8 xl:grid-cols-[420px_minmax(0,1fr)]">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {editingPlan ? "Editar plano" : "Novo plano"}
-            </CardTitle>
-          </CardHeader>
+      <div className="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
+        <Card className="rounded-[28px] border-white/10 bg-surface shadow-soft">
+          <CardContent className="p-0">
+            <div className="border-b border-border/80 p-5">
+              <h2 className="text-lg font-semibold text-primary">
+                {editingPlan ? "Editar plano" : "Novo plano"}
+              </h2>
+              <p className="mt-1 text-sm text-secondary">
+                Defina nome, velocidade, preço e benefícios do plano.
+              </p>
+            </div>
 
-          <CardContent>
-            {editingPlan && (
-              <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-                Editando plano: <strong>{editingPlan.name}</strong>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Nome</Label>
-                <Input
-                  id="name"
-                  value={form.name}
-                  onChange={(e) => updateField("name", e.target.value)}
-                  placeholder="Ex.: Fibra 600 Mega"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="slug">Slug</Label>
-                <Input
-                  id="slug"
-                  value={form.slug}
-                  onChange={(e) => updateField("slug", e.target.value)}
-                  placeholder="fibra-600-mega"
-                  required
-                />
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <Label htmlFor="downloadMbps">Download (Mbps)</Label>
-                  <Input
-                    id="downloadMbps"
-                    type="number"
-                    value={form.downloadMbps}
-                    onChange={(e) =>
-                      updateField("downloadMbps", Number(e.target.value))
-                    }
-                    required
-                  />
+            <div className="p-5">
+              {editingPlan ? (
+                <div className="mb-4 rounded-2xl border border-cyan-200 bg-cyan-50 px-4 py-3 text-sm text-cyan-700">
+                  Editando plano: <strong>{editingPlan.name}</strong>
                 </div>
+              ) : null}
 
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="uploadMbps">Upload (Mbps)</Label>
+                  <Label htmlFor="name">Nome</Label>
                   <Input
-                    id="uploadMbps"
-                    type="number"
-                    value={form.uploadMbps}
-                    onChange={(e) =>
-                      updateField("uploadMbps", Number(e.target.value))
-                    }
-                    required
-                  />
-                </div>
-              </div>
+                    id="name"
+                    value={form.name}
+                    onChange={(e) => {
+                      const name = e.target.value;
+                      updateField("name", name);
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <Label htmlFor="latencyTarget">Latência alvo (ms)</Label>
-                  <Input
-                    id="latencyTarget"
-                    type="number"
-                    value={form.latencyTarget}
-                    onChange={(e) =>
-                      updateField("latencyTarget", Number(e.target.value))
-                    }
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="priceCents">Preço (centavos)</Label>
-                  <Input
-                    id="priceCents"
-                    type="number"
-                    value={form.priceCents}
-                    onChange={(e) =>
-                      updateField("priceCents", Number(e.target.value))
-                    }
-                    placeholder="9990"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="badge">Badge comercial</Label>
-                <Input
-                  id="badge"
-                  value={form.badge}
-                  onChange={(e) => updateField("badge", e.target.value)}
-                  placeholder="Ex.: Mais vendido"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="benefitsText">Benefícios (um por linha)</Label>
-                <Textarea
-                  id="benefitsText"
-                  value={form.benefitsText}
-                  onChange={(e) => updateField("benefitsText", e.target.value)}
-                  placeholder={"Wi-Fi grátis\nInstalação facilitada\nSuporte prioritário"}
-                  className="min-h-[140px]"
-                />
-              </div>
-
-              <label className="flex items-center gap-3 rounded-xl border border-border bg-surface-secondary px-4 py-3 text-sm text-primary">
-                <input
-                  type="checkbox"
-                  checked={form.featured}
-                  onChange={(e) => updateField("featured", e.target.checked)}
-                  className="h-4 w-4 accent-[var(--accent)]"
-                />
-                Marcar como plano em destaque
-              </label>
-
-              <div className="flex flex-col gap-3">
-                <Button type="submit" disabled={submitting} isLoading={submitting}>
-                  {editingPlan ? "Atualizar plano" : "Criar plano"}
-                </Button>
-
-                {editingPlan && (
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => {
-                      setEditingPlan(null);
-                      setForm(initialForm);
+                      if (
+                        !editingPlan &&
+                        (!form.slug || normalizeSlug(form.slug) === normalizeSlug(form.name))
+                      ) {
+                        updateField("slug", normalizeSlug(name));
+                      }
                     }}
-                  >
-                    Cancelar edição
+                    placeholder="Ex.: Fibra 600 Mega"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="slug">Slug</Label>
+                  <Input
+                    id="slug"
+                    value={form.slug}
+                    onChange={(e) => updateField("slug", normalizeSlug(e.target.value))}
+                    placeholder="fibra-600-mega"
+                    required
+                  />
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <Label htmlFor="downloadMbps">Download (Mbps)</Label>
+                    <Input
+                      id="downloadMbps"
+                      type="number"
+                      value={form.downloadMbps}
+                      onChange={(e) =>
+                        updateField("downloadMbps", Number(e.target.value))
+                      }
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="uploadMbps">Upload (Mbps)</Label>
+                    <Input
+                      id="uploadMbps"
+                      type="number"
+                      value={form.uploadMbps}
+                      onChange={(e) =>
+                        updateField("uploadMbps", Number(e.target.value))
+                      }
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <Label htmlFor="latencyTarget">Latência alvo (ms)</Label>
+                    <Input
+                      id="latencyTarget"
+                      type="number"
+                      value={form.latencyTarget}
+                      onChange={(e) =>
+                        updateField("latencyTarget", Number(e.target.value))
+                      }
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="priceCents">Preço (centavos)</Label>
+                    <Input
+                      id="priceCents"
+                      type="number"
+                      value={form.priceCents}
+                      onChange={(e) =>
+                        updateField("priceCents", Number(e.target.value))
+                      }
+                      placeholder="9990"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="badge">Badge comercial</Label>
+                  <Input
+                    id="badge"
+                    value={form.badge}
+                    onChange={(e) => updateField("badge", e.target.value)}
+                    placeholder="Ex.: Mais vendido"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="benefitsText">Benefícios (um por linha)</Label>
+                  <Textarea
+                    id="benefitsText"
+                    value={form.benefitsText}
+                    onChange={(e) => updateField("benefitsText", e.target.value)}
+                    placeholder={"Wi-Fi premium\nInstalação facilitada\nSuporte prioritário"}
+                    className="min-h-[140px]"
+                  />
+                </div>
+
+                <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-primary">
+                  <input
+                    type="checkbox"
+                    checked={form.featured}
+                    onChange={(e) => updateField("featured", e.target.checked)}
+                    className="h-4 w-4 accent-[var(--accent)]"
+                  />
+                  Marcar como plano em destaque
+                </label>
+
+                <div className="flex flex-col gap-3 pt-2">
+                  <Button type="submit" isLoading={submitting} disabled={submitting}>
+                    {editingPlan ? "Atualizar plano" : "Criar plano"}
                   </Button>
-                )}
-              </div>
-            </form>
+
+                  {editingPlan ? (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => {
+                        setEditingPlan(null);
+                        setForm(initialForm);
+                      }}
+                    >
+                      Cancelar edição
+                    </Button>
+                  ) : null}
+                </div>
+              </form>
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Planos cadastrados</CardTitle>
-          </CardHeader>
+        <Card className="rounded-[28px] border-white/10 bg-surface shadow-soft">
+          <CardContent className="p-0">
+            <div className="border-b border-border/80 p-5">
+              <h2 className="text-lg font-semibold text-primary">Planos cadastrados</h2>
+              <p className="mt-1 text-sm text-secondary">
+                Catálogo comercial atual do sistema.
+              </p>
+            </div>
 
-          <CardContent>
-            {loading ? (
-              <div className="space-y-3">
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="rounded-xl border border-border bg-surface-secondary p-4"
-                  >
-                    <div className="animate-pulse space-y-3">
-                      <div className="h-5 w-40 rounded bg-slate-200" />
-                      <div className="h-4 w-28 rounded bg-slate-200" />
-                      <div className="h-10 w-full rounded bg-slate-200" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : plans.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border bg-surface-secondary p-8 text-center text-sm text-secondary">
-                Nenhum plano cadastrado ainda.
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {plans.map((plan) => {
-                  const benefits = Array.isArray(plan.benefitsJson)
-                    ? plan.benefitsJson.filter(
-                        (item): item is string => typeof item === "string"
-                      )
-                    : [];
-
-                  return (
-                    <article
-                      key={plan.id}
-                      className="rounded-2xl border border-border bg-surface-secondary p-5"
+            <div className="p-5">
+              {loading ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="rounded-2xl border border-white/10 bg-white/5 p-5"
                     >
-                      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                        <div className="space-y-3">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="text-xl font-semibold text-primary">
-                              {plan.name}
-                            </h3>
-
-                            {plan.featured && (
-                              <Badge variant="default">Destaque</Badge>
-                            )}
-
-                            {plan.badge && (
-                              <Badge variant="info">{plan.badge}</Badge>
-                            )}
-                          </div>
-
-                          <div className="space-y-1 text-sm text-secondary">
-                            <p>Slug: {plan.slug}</p>
-                            <p>Preço: {formatPrice(plan.priceCents)}</p>
-                            <p>
-                              {plan.downloadMbps} Mbps ↓ • {plan.uploadMbps} Mbps ↑
-                            </p>
-                            <p>Latência alvo: {plan.latencyTarget} ms</p>
-                          </div>
-
-                          {benefits.length > 0 && (
-                            <ul className="space-y-2 text-sm text-secondary">
-                              {benefits.map((benefit, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-                                  <span>{benefit}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-
-                        <div className="flex flex-col gap-2 sm:flex-row lg:flex-col">
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={() => {
-                              setEditingPlan(plan);
-                              window.scrollTo({ top: 0, behavior: "smooth" });
-                            }}
-                          >
-                            Editar
-                          </Button>
-
-                          <Button
-                            type="button"
-                            variant="danger"
-                            disabled={deletingId === plan.id}
-                            onClick={() => handleDelete(plan.id, plan.name)}
-                          >
-                            {deletingId === plan.id ? "Excluindo..." : "Excluir"}
-                          </Button>
-                        </div>
+                      <div className="animate-pulse space-y-3">
+                        <div className="h-5 w-40 rounded bg-white/10" />
+                        <div className="h-4 w-32 rounded bg-white/10" />
+                        <div className="h-12 w-full rounded bg-white/10" />
                       </div>
-                    </article>
-                  );
-                })}
-              </div>
-            )}
+                    </div>
+                  ))}
+                </div>
+              ) : plans.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-border bg-white/5 p-10 text-center text-sm text-secondary">
+                  Nenhum plano cadastrado ainda.
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {plans.map((plan) => {
+                    const benefits = Array.isArray(plan.benefitsJson)
+                      ? plan.benefitsJson.filter(
+                          (item): item is string => typeof item === "string"
+                        )
+                      : [];
+
+                    return (
+                      <article
+                        key={plan.id}
+                        className="rounded-[24px] border border-white/10 bg-white/5 p-5 transition hover:border-white/15"
+                      >
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                          <div className="space-y-3">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="text-xl font-semibold text-primary">
+                                {plan.name}
+                              </h3>
+
+                              {plan.featured ? (
+                                <Badge variant="success">Destaque</Badge>
+                              ) : null}
+
+                              {plan.badge ? (
+                                <Badge variant="info">{plan.badge}</Badge>
+                              ) : null}
+                            </div>
+
+                            <div className="grid gap-2 text-sm text-secondary sm:grid-cols-2">
+                              <p>Slug: {plan.slug}</p>
+                              <p>Preço: {formatPrice(plan.priceCents)}</p>
+                              <p>
+                                {plan.downloadMbps} Mbps â†“ â€¢ {plan.uploadMbps} Mbps â†‘
+                              </p>
+                              <p>Latência alvo: {plan.latencyTarget} ms</p>
+                              <p>Atualizado: {formatDate(plan.updatedAt)}</p>
+                            </div>
+
+                            {benefits.length > 0 ? (
+                              <ul className="grid gap-2 pt-1 text-sm text-secondary sm:grid-cols-2">
+                                {benefits.map((benefit, index) => (
+                                  <li key={index} className="flex items-start gap-2">
+                                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+                                    <span>{benefit}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : null}
+                          </div>
+
+                          <div className="flex flex-col gap-2 sm:flex-row lg:flex-col">
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              onClick={() => {
+                                setEditingPlan(plan);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                            >
+                              Editar
+                            </Button>
+
+                            <Button
+                              type="button"
+                              variant="danger"
+                              disabled={deletingId === plan.id}
+                              onClick={() => handleDelete(plan.id, plan.name)}
+                            >
+                              {deletingId === plan.id ? "Excluindo..." : "Excluir"}
+                            </Button>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
     </div>
   );
 }
+
+

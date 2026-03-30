@@ -15,32 +15,35 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 
 const variantClasses: Record<BadgeVariant, string> = {
   default:
-    "border border-emerald-200 bg-emerald-50 text-emerald-700",
+    "border border-[var(--success-border)] bg-[var(--success-bg)] text-[var(--success-text)]",
   success:
-    "border border-emerald-200 bg-emerald-50 text-emerald-700",
+    "border border-[var(--success-border)] bg-[var(--success-bg)] text-[var(--success-text)]",
   warning:
-    "border border-amber-200 bg-amber-50 text-amber-700",
+    "border border-[var(--warning-border)] bg-[var(--warning-bg)] text-[var(--warning-text)]",
   danger:
-    "border border-red-200 bg-red-50 text-red-700",
+    "border border-[var(--danger-border)] bg-[var(--danger-bg)] text-[var(--danger-text)]",
   info:
-    "border border-blue-200 bg-blue-50 text-blue-700",
+    "border border-[var(--info-border)] bg-[var(--info-bg)] text-[var(--info-text)]",
   neutral:
-    "border border-slate-200 bg-slate-100 text-slate-700",
+    "border border-[var(--neutral-border)] bg-[var(--neutral-bg)] text-[var(--neutral-text)]",
 };
 
 export function Badge({
   className,
   variant = "default",
+  children,
   ...props
 }: BadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold tracking-[0.02em] whitespace-nowrap",
+        "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold tracking-[0.02em]",
         variantClasses[variant],
         className
       )}
       {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }

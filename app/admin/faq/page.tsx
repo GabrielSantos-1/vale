@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/core/badge";
@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/forms/input";
 import { Label } from "@/components/ui/forms/label";
 import { Textarea } from "@/components/ui/forms/textarea";
+import { AdminHero } from "@/components/admin/layout/admin-hero";
 
 type FAQItem = {
   id: string;
@@ -245,18 +246,11 @@ export default function FaqAdminPage() {
 
   return (
     <div className="space-y-8">
-      <header className="space-y-3">
-        <Badge variant="info">Admin • FAQ</Badge>
-
-        <div className="max-w-3xl">
-          <h2 className="text-3xl font-bold text-primary md:text-4xl">
-            Gestão de FAQ
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-secondary md:text-base">
-            Gerencie perguntas frequentes exibidas no site público.
-          </p>
-        </div>
-      </header>
+            <AdminHero
+        badge="Admin - FAQ"
+        title="Gestão de FAQ"
+        description="Gerencie perguntas frequentes exibidas no site público."
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <Card>
@@ -484,3 +478,5 @@ export default function FaqAdminPage() {
     </div>
   );
 }
+
+

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import PageShell from "@/components/layout/page-shell";
+import PageShell from "@/components/layout/public/page-shell";
 
 type PublicLayoutProps = {
   children: ReactNode;

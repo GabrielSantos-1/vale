@@ -15,22 +15,22 @@ export interface ButtonProps
 
 const variantClasses: Record<ButtonVariant, string> = {
   default:
-    "border border-transparent bg-accent text-white shadow-soft hover:brightness-95",
+    "border border-transparent bg-accent text-[var(--accent-foreground)] shadow-soft hover:brightness-[1.04] hover:shadow-soft-lg",
   secondary:
-    "border border-border bg-surface text-primary hover:bg-surface-secondary",
+    "border border-border bg-surface-secondary text-primary hover:border-border-strong hover:bg-surface-tertiary",
   outline:
-    "border border-border bg-transparent text-primary hover:bg-surface-secondary",
+    "border border-border bg-transparent text-primary hover:border-border-strong hover:bg-surface-secondary",
   ghost:
-    "bg-transparent text-secondary hover:bg-surface-secondary hover:text-primary",
+    "border border-transparent bg-transparent text-secondary hover:bg-surface-secondary hover:text-primary",
   danger:
-    "border border-red-200 bg-red-50 text-red-700 hover:bg-red-100",
+    "border border-[var(--danger-border)] bg-[var(--danger-bg)] text-[var(--danger-text)] hover:brightness-[1.03]",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: "h-9 rounded-xl px-3 text-sm",
-  md: "h-11 rounded-2xl px-4 text-sm",
-  lg: "h-12 rounded-2xl px-5 text-base",
-  icon: "h-10 w-10 rounded-2xl p-0",
+  sm: "h-9 rounded-[var(--radius-sm)] px-3 text-sm",
+  md: "h-11 rounded-[var(--radius-md)] px-4 text-sm",
+  lg: "h-12 rounded-[var(--radius-md)] px-5 text-base",
+  icon: "h-10 w-10 rounded-[var(--radius-md)] p-0",
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -51,7 +51,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const classes = cn(
       "inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold",
       "transition-all duration-200",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 focus-visible:ring-offset-white",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
       "disabled:pointer-events-none disabled:opacity-50",
       "active:scale-[0.99]",
       variantClasses[variant],
@@ -73,11 +73,15 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         type={type}
         className={classes}
         disabled={disabled || isLoading}
+        aria-busy={isLoading || undefined}
         {...props}
       >
-        {isLoading && (
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-        )}
+        {isLoading ? (
+          <span
+            aria-hidden="true"
+            className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+          />
+        ) : null}
         {children}
       </button>
     );

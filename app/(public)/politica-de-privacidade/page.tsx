@@ -1,5 +1,5 @@
 import React from 'react'
-import PageShell from '../../../components/layout/page-shell'
+import PageShell from '../../../components/layout/public/page-shell'
 
 export const metadata = {
   title: 'Política de Privacidade | Verde Vale',

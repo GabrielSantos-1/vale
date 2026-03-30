@@ -1,11 +1,25 @@
-import { NextResponse } from 'next/server';
 import { ZodError, z } from 'zod';
 
 import { prisma } from '@/lib/db/prisma';
+import { logger } from '@/lib/security/logger';
+import {
+  created,
+  fail,
+  internalError,
+  validationError,
+} from '@/lib/security/response';
 import { buildRateLimitKey, rateLimit } from '@/lib/security/rate-limit';
+import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
+import {
+  normalizeCep,
+  normalizeEmail,
+  normalizePhone,
+  normalizeSlug,
+  sanitizeOptionalString,
+  sanitizeString,
+} from '@/lib/security/sanitize';
 
 const MAX_BODY_SIZE_BYTES = 8 * 1024;
-
 const LEADS_RATE_LIMIT = {
   limit: 5,
   windowMs: 60_000,
@@ -36,27 +50,22 @@ const leadSchema = z
         .min(3, 'Informe seu nome completo.')
         .max(120, 'Nome muito longo.'),
     ),
-
     email: z.preprocess((value) => {
       if (typeof value !== 'string') return undefined;
       const trimmed = value.trim().toLowerCase();
       return trimmed.length > 0 ? trimmed : undefined;
     }, z.string().email('E-mail inválido.').max(160, 'E-mail muito longo.').optional()),
-
     phone: z.preprocess((value) => {
       if (typeof value !== 'string') return value;
       return value.replace(/\D/g, '');
     }, z.string().min(10, 'Telefone inválido.').max(11, 'Telefone inválido.').optional()),
-
     city: optionalTrimmedString(80),
     district: optionalTrimmedString(80),
-
     cep: z.preprocess((value) => {
       if (typeof value !== 'string') return undefined;
       const digits = value.replace(/\D/g, '');
       return digits.length > 0 ? digits : undefined;
     }, z.string().length(8, 'CEP inválido.').optional()),
-
     message: optionalTrimmedString(1000),
     planSlug: optionalTrimmedString(120),
     website: optionalTrimmedString(255),
@@ -80,67 +89,6 @@ function formatValidationErrors(error: ZodError) {
   return normalized;
 }
 
-function getCorrelationId(req: Request) {
-  return req.headers.get('x-correlation-id') || crypto.randomUUID();
-}
-
-function applySecurityHeaders(
-  response: NextResponse,
-  correlationId: string,
-  rateLimitMeta?: {
-    limit: number;
-    remaining: number;
-    resetAt: number;
-  },
-) {
-  response.headers.set('X-Correlation-Id', correlationId);
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set(
-    'Permissions-Policy',
-    'camera=(), microphone=(), geolocation=()',
-  );
-  response.headers.set(
-    'Content-Security-Policy',
-    "default-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
-  );
-
-  if (rateLimitMeta) {
-    response.headers.set('X-RateLimit-Limit', String(rateLimitMeta.limit));
-    response.headers.set(
-      'X-RateLimit-Remaining',
-      String(rateLimitMeta.remaining),
-    );
-    response.headers.set('X-RateLimit-Reset', String(rateLimitMeta.resetAt));
-  }
-
-  return response;
-}
-
-function getRateLimitMeta(rl: ReturnType<typeof rateLimit>) {
-  return {
-    limit: rl.limit,
-    remaining: rl.remaining,
-    resetAt: rl.resetAt,
-  };
-}
-
-function jsonResponse(
-  body: Record<string, unknown>,
-  status: number,
-  correlationId: string,
-  rl?: ReturnType<typeof rateLimit>,
-) {
-  const response = NextResponse.json(body, { status });
-
-  return applySecurityHeaders(
-    response,
-    correlationId,
-    rl ? getRateLimitMeta(rl) : undefined,
-  );
-}
-
 export async function POST(req: Request) {
   const correlationId = getCorrelationId(req);
 
@@ -151,32 +99,39 @@ export async function POST(req: Request) {
   });
 
   if (!rl.ok) {
-    const response = jsonResponse(
-      {
-        success: false,
-        error: 'Muitas tentativas. Tente novamente em instantes.',
-        correlationId,
-      },
-      429,
+    logger.warn('Rate limit hit on leads route', {
       correlationId,
-      rl,
-    );
+      route: '/api/leads',
+      limit: rl.limit,
+      remaining: rl.remaining,
+      resetAt: rl.resetAt,
+    });
 
-    response.headers.set('Retry-After', String(rl.retryAfter));
-    return response;
+    return withRequestMeta(
+      fail('Muitas tentativas. Tente novamente em instantes.', {
+        status: 429,
+        code: 'RATE_LIMITED',
+        correlationId,
+      }),
+      { correlationId, rl },
+    );
   }
 
   const contentType = req.headers.get('content-type') ?? '';
   if (!contentType.toLowerCase().includes('application/json')) {
-    return jsonResponse(
-      {
-        success: false,
-        error: 'Content-Type inválido.',
-        correlationId,
-      },
-      415,
+    logger.warn('Invalid content-type on leads route', {
       correlationId,
-      rl,
+      route: '/api/leads',
+      contentType,
+    });
+
+    return withRequestMeta(
+      fail('Content-Type inválido.', {
+        status: 415,
+        code: 'UNSUPPORTED_MEDIA_TYPE',
+        correlationId,
+      }),
+      { correlationId, rl },
     );
   }
 
@@ -188,15 +143,19 @@ export async function POST(req: Request) {
       !Number.isFinite(contentLength) ||
       contentLength > MAX_BODY_SIZE_BYTES
     ) {
-      return jsonResponse(
-        {
-          success: false,
-          error: 'Payload muito grande.',
-          correlationId,
-        },
-        413,
+      logger.warn('Payload too large on leads route', {
         correlationId,
-        rl,
+        route: '/api/leads',
+        contentLengthHeader,
+      });
+
+      return withRequestMeta(
+        fail('Payload muito grande.', {
+          status: 413,
+          code: 'PAYLOAD_TOO_LARGE',
+          correlationId,
+        }),
+        { correlationId, rl },
       );
     }
   }
@@ -206,15 +165,18 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch {
-    return jsonResponse(
-      {
-        success: false,
-        error: 'JSON inválido.',
-        correlationId,
-      },
-      400,
+    logger.warn('Invalid JSON on leads route', {
       correlationId,
-      rl,
+      route: '/api/leads',
+    });
+
+    return withRequestMeta(
+      fail('JSON inválido.', {
+        status: 400,
+        code: 'INVALID_JSON',
+        correlationId,
+      }),
+      { correlationId, rl },
     );
   }
 
@@ -222,24 +184,38 @@ export async function POST(req: Request) {
     const parsed = leadSchema.parse(body);
 
     if (parsed.website) {
-      return jsonResponse(
-        {
+      logger.info('Honeypot triggered on leads route', {
+        correlationId,
+        route: '/api/leads',
+      });
+
+      return withRequestMeta(
+        created({
           success: true,
           message: 'Solicitação recebida com sucesso.',
           correlationId,
-        },
-        201,
-        correlationId,
-        rl,
+        }),
+        { correlationId, rl },
       );
     }
 
+    const sanitized = {
+      name: sanitizeString(parsed.name, { maxLength: 120 }),
+      email: parsed.email ? normalizeEmail(parsed.email) : null,
+      phone: parsed.phone ? normalizePhone(parsed.phone) : null,
+      city: sanitizeOptionalString(parsed.city, { maxLength: 80 }),
+      district: sanitizeOptionalString(parsed.district, { maxLength: 80 }),
+      cep: parsed.cep ? normalizeCep(parsed.cep) : null,
+      message: sanitizeOptionalString(parsed.message, { maxLength: 1000 }),
+      planSlug: parsed.planSlug ? normalizeSlug(parsed.planSlug) : null,
+    };
+
     let planId: string | undefined;
 
-    if (parsed.planSlug) {
+    if (sanitized.planSlug) {
       const plan = await prisma.plan.findFirst({
         where: {
-          slug: parsed.planSlug,
+          slug: sanitized.planSlug,
           isActive: true,
         },
         select: {
@@ -248,18 +224,24 @@ export async function POST(req: Request) {
       });
 
       if (!plan) {
-        return jsonResponse(
-          {
-            success: false,
-            error: 'Plano inválido.',
-            fieldErrors: {
-              planSlug: 'Selecione um plano válido.',
+        logger.warn('Invalid plan slug on leads route', {
+          correlationId,
+          route: '/api/leads',
+          planSlug: sanitized.planSlug,
+        });
+
+        return withRequestMeta(
+          fail('Plano inválido.', {
+            status: 400,
+            code: 'INVALID_PLAN',
+            details: {
+              fieldErrors: {
+                planSlug: 'Selecione um plano válido.',
+              },
             },
             correlationId,
-          },
-          400,
-          correlationId,
-          rl,
+          }),
+          { correlationId, rl },
         );
       }
 
@@ -268,13 +250,13 @@ export async function POST(req: Request) {
 
     const lead = await prisma.lead.create({
       data: {
-        name: parsed.name,
-        email: parsed.email ?? null,
-        phone: parsed.phone,
-        city: parsed.city,
-        district: parsed.district,
-        cep: parsed.cep,
-        message: parsed.message,
+        name: sanitized.name,
+        email: sanitized.email,
+        phone: sanitized.phone ?? undefined,
+        city: sanitized.city ?? undefined,
+        district: sanitized.district ?? undefined,
+        cep: sanitized.cep ?? undefined,
+        message: sanitized.message ?? undefined,
         planId,
         source: 'public_site',
       },
@@ -284,8 +266,15 @@ export async function POST(req: Request) {
       },
     });
 
-    return jsonResponse(
-      {
+    logger.info('Lead created successfully', {
+      correlationId,
+      route: '/api/leads',
+      leadId: lead.id,
+      hasPlan: Boolean(planId),
+    });
+
+    return withRequestMeta(
+      created({
         success: true,
         data: {
           id: lead.id,
@@ -293,40 +282,37 @@ export async function POST(req: Request) {
         },
         message: 'Lead enviado com sucesso.',
         correlationId,
-      },
-      201,
-      correlationId,
-      rl,
+      }),
+      { correlationId, rl },
     );
   } catch (error) {
     if (error instanceof ZodError) {
-      return jsonResponse(
-        {
-          success: false,
-          error: 'Dados inválidos.',
-          fieldErrors: formatValidationErrors(error),
-          correlationId,
-        },
-        400,
+      logger.warn('Validation failed on leads route', {
         correlationId,
-        rl,
+        route: '/api/leads',
+        issues: error.flatten(),
+      });
+
+      return withRequestMeta(
+        validationError(
+          {
+            fieldErrors: formatValidationErrors(error),
+          },
+          correlationId,
+        ),
+        { correlationId, rl },
       );
     }
 
-    console.error('[api/leads][POST]', {
+    logger.error('Unhandled error on leads route', {
       correlationId,
-      message: error instanceof Error ? error.message : 'unknown_error',
+      route: '/api/leads',
+      error,
     });
 
-    return jsonResponse(
-      {
-        success: false,
-        error: 'Não foi possível enviar sua solicitação.',
-        correlationId,
-      },
-      500,
+    return withRequestMeta(internalError(correlationId), {
       correlationId,
       rl,
-    );
+    });
   }
 }
