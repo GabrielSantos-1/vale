@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -95,8 +93,8 @@ export function Hero({
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.10),transparent_32%,rgba(9,27,54,0.08))]" />
       </div>
 
-      <div className="relative grid gap-6 px-5 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:grid-cols-[1.08fr_0.82fr] lg:gap-8 lg:px-8 lg:py-10">
-        <div className="max-w-3xl">
+      <div className="relative grid gap-6 px-5 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 xl:grid-cols-[1.08fr_0.82fr] xl:gap-8 xl:px-8 xl:py-10">
+        <div className="min-w-0 max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/90 backdrop-blur-md">
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
             {badge}
@@ -134,10 +132,10 @@ export function Hero({
           {children}
         </div>
 
-        <div className="lg:flex lg:justify-end">
+        <div className="min-w-0 xl:flex xl:justify-end">
           <Card
             className={cn(
-              "relative isolate w-full max-w-[360px] overflow-hidden rounded-[28px] border p-5 text-white shadow-[0_18px_42px_rgba(2,6,23,0.18)] backdrop-blur-2xl",
+              "relative isolate w-full max-w-[360px] overflow-hidden rounded-[28px] border p-5 text-white shadow-[0_18px_42px_rgba(2,6,23,0.18)] backdrop-blur-2xl xl:ml-auto",
               visual.cardClassName
             )}
           >
