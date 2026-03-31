@@ -33,7 +33,10 @@ export async function proxy(req: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  const role = (token as { role?: string } | null)?.role;
+  const role =
+    (token as { role?: unknown; user?: { role?: unknown } } | null)?.role ??
+    (token as { role?: unknown; user?: { role?: unknown } } | null)?.user
+      ?.role;
 
   if (!token || !isAdminRole(role)) {
     const loginUrl = new URL('/admin/login', req.url);

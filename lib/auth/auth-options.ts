@@ -106,7 +106,10 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        (token as typeof token & { id?: string }).id = user.id;
         token.sub = user.id;
+        token.email = user.email;
+        token.name = user.name;
         (token as typeof token & { role?: string }).role = (
           user as { role?: string }
         ).role;
@@ -116,15 +119,26 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      if (session.user) {
-        (
-          session.user as typeof session.user & { id?: string; role?: string }
-        ).id = token.sub;
+      session.user ??= {
+        name: null,
+        email: null,
+        image: null,
+      };
 
-        (
-          session.user as typeof session.user & { id?: string; role?: string }
-        ).role = (token as typeof token & { role?: string }).role;
-      }
+      (
+        session.user as typeof session.user & {
+          id?: string;
+          role?: string;
+        }
+      ).id = (token as typeof token & { id?: string }).id ?? token.sub;
+      session.user.email = token.email ?? null;
+      session.user.name = token.name ?? null;
+      (
+        session.user as typeof session.user & {
+          id?: string;
+          role?: string;
+        }
+      ).role = (token as typeof token & { role?: string }).role;
 
       return session;
     },
@@ -151,20 +165,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
-  cookies: {
-    sessionToken: {
-      name:
-        process.env.NODE_ENV === 'production'
-          ? '__Secure-next-auth.session-token'
-          : 'next-auth.session-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-      },
-    },
-  },
 };
 
 export default authOptions;
