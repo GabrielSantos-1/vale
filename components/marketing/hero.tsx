@@ -47,14 +47,14 @@ export type HeroProps = {
 
 const DEFAULT_PANEL_VISUAL: Required<HeroPanelVisual> = {
   cardClassName:
-    "border-sky-200/30 bg-[linear-gradient(180deg,rgba(13,26,53,0.62)_0%,rgba(21,57,102,0.54)_42%,rgba(40,126,193,0.42)_100%)]",
+    "border-white/20 bg-[linear-gradient(180deg,rgba(10,20,36,0.72)_0%,rgba(15,42,74,0.62)_46%,rgba(24,84,140,0.48)_100%)]",
   imageSrc: "/images/public/fiber-hero-panel-wave.png",
   imageClassName:
-    "object-cover object-center opacity-82 saturate-125 contrast-105 brightness-110",
+    "object-cover object-center opacity-42 saturate-110 contrast-105 brightness-105",
   overlayClassName:
-    "bg-[linear-gradient(180deg,rgba(8,18,36,0.34)_0%,rgba(13,39,74,0.24)_38%,rgba(21,67,126,0.18)_100%)]",
+    "bg-[linear-gradient(180deg,rgba(8,18,36,0.48)_0%,rgba(10,28,54,0.30)_42%,rgba(15,55,102,0.18)_100%)]",
   glowClassName:
-    "bg-[radial-gradient(circle_at_18%_12%,rgba(125,211,252,0.18),transparent_18%),radial-gradient(circle_at_78%_10%,rgba(96,165,250,0.14),transparent_22%),radial-gradient(circle_at_60%_58%,rgba(45,212,191,0.08),transparent_28%)]",
+    "bg-[radial-gradient(circle_at_18%_12%,rgba(125,211,252,0.12),transparent_18%),radial-gradient(circle_at_78%_10%,rgba(96,165,250,0.10),transparent_22%),radial-gradient(circle_at_60%_58%,rgba(45,212,191,0.06),transparent_28%)]",
 };
 
 export function Hero({
@@ -76,22 +76,23 @@ export function Hero({
   };
 
   return (
-      <section
-        className={cn(
-          "relative overflow-hidden rounded-[36px] border border-white/20 bg-[linear-gradient(180deg,#0b1a2f_0%,#123059_52%,#19487f_100%)] shadow-[0_28px_80px_rgba(2,6,23,0.24)]",
-          className
-        )}
-      >
+    <section
+      className={cn(
+        "relative isolate overflow-hidden rounded-[36px] border border-white/18 bg-[linear-gradient(180deg,#0b1a2f_0%,#123059_52%,#19487f_100%)] shadow-[0_28px_80px_rgba(2,6,23,0.24)]",
+        className
+      )}
+    >
       <div aria-hidden="true" className="absolute inset-0">
         <Image
           src={imageSrc}
           alt=""
           fill
           priority
-          className="object-cover opacity-52 saturate-130 brightness-110 scale-105"
+          sizes="(min-width: 1280px) 1200px, 100vw"
+          className="object-cover object-center opacity-46 saturate-120 brightness-105"
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_18%,rgba(47,158,68,0.16),transparent_24%),radial-gradient(circle_at_84%_12%,rgba(14,165,233,0.22),transparent_24%),linear-gradient(90deg,rgba(8,22,44,0.74)_0%,rgba(10,30,60,0.56)_48%,rgba(10,36,72,0.32)_76%,rgba(10,42,82,0.16)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.12),transparent_32%,rgba(9,27,54,0.12))]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_18%,rgba(47,158,68,0.14),transparent_24%),radial-gradient(circle_at_84%_12%,rgba(14,165,233,0.18),transparent_24%),linear-gradient(90deg,rgba(8,22,44,0.76)_0%,rgba(10,30,60,0.58)_48%,rgba(10,36,72,0.34)_76%,rgba(10,42,82,0.18)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.10),transparent_32%,rgba(9,27,54,0.08))]" />
       </div>
 
       <div className="relative grid gap-6 px-5 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:grid-cols-[1.08fr_0.82fr] lg:gap-8 lg:px-8 lg:py-10">
@@ -136,38 +137,41 @@ export function Hero({
         <div className="lg:flex lg:justify-end">
           <Card
             className={cn(
-              "relative w-full max-w-[360px] overflow-hidden p-5 text-white shadow-[0_18px_42px_rgba(2,6,23,0.18)] backdrop-blur-2xl",
+              "relative isolate w-full max-w-[360px] overflow-hidden rounded-[28px] border p-5 text-white shadow-[0_18px_42px_rgba(2,6,23,0.18)] backdrop-blur-2xl",
               visual.cardClassName
             )}
           >
-            {(visual.imageSrc || visual.overlayClassName || visual.glowClassName) && (
-              <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-                {visual.imageSrc ? (
-                  <Image
-                    src={visual.imageSrc}
-                    alt=""
-                    fill
-                    sizes="360px"
-                    className={visual.imageClassName}
-                  />
-                ) : null}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 overflow-hidden rounded-[28px]"
+            >
+              {visual.imageSrc ? (
+                <Image
+                  src={visual.imageSrc}
+                  alt=""
+                  fill
+                  sizes="360px"
+                  className={visual.imageClassName}
+                />
+              ) : null}
 
-                {visual.overlayClassName ? (
-                  <div className={cn("absolute inset-0", visual.overlayClassName)} />
-                ) : null}
+              {visual.overlayClassName ? (
+                <div className={cn("absolute inset-0", visual.overlayClassName)} />
+              ) : null}
 
-                {visual.glowClassName ? (
-                  <div className={cn("absolute inset-0", visual.glowClassName)} />
-                ) : null}
-              </div>
-            )}
+              {visual.glowClassName ? (
+                <div className={cn("absolute inset-0", visual.glowClassName)} />
+              ) : null}
+            </div>
 
-            <HeroQuickActions
-              supportText={
-                note ??
-                "Acesse cobertura, status, suporte e teste de velocidade em um único painel."
-              }
-            />
+            <div className="relative z-10">
+              <HeroQuickActions
+                supportText={
+                  note ??
+                  "Acesse cobertura, status, suporte e teste de velocidade em um único painel."
+                }
+              />
+            </div>
           </Card>
         </div>
       </div>

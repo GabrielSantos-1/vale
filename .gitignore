@@ -8,6 +8,10 @@ dist/
 build/
 coverage/
 *.log
+*.dump
+*.bak
+*.tmp
+*.temp
 .prisma
 *.tsbuildinfo
 scripts/hash-password.js

@@ -19,6 +19,7 @@ export function securityHeaders() {
           "img-src 'self' data: blob:",
           "font-src 'self' data:",
           "connect-src 'self' ws: wss: http: https:",
+          "object-src 'none'",
         ].join('; ')
       : [
           "default-src 'self'",
@@ -27,6 +28,7 @@ export function securityHeaders() {
           "img-src 'self' data:",
           "font-src 'self' data:",
           "connect-src 'self'",
+          "object-src 'none'",
           "frame-ancestors 'none'",
           "base-uri 'self'",
           "form-action 'self'",

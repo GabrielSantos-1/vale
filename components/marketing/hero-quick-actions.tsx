@@ -44,7 +44,7 @@ const QUICK_ACTIONS: HeroQuickActionItem[] = [
 function QuickActionLink({ item }: { item: HeroQuickActionItem }) {
   const Icon = item.icon;
   const baseClassName =
-    "group flex min-h-[92px] flex-col justify-between rounded-2xl border border-white/16 bg-white/12 p-3 shadow-[0_8px_20px_rgba(2,6,23,0.12)] backdrop-blur-md transition-all duration-200 hover:border-white/24 hover:bg-white/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/80";
+    "group flex min-h-[92px] flex-col justify-between rounded-2xl border border-white/14 bg-white/10 p-3 shadow-[0_8px_20px_rgba(2,6,23,0.12)] backdrop-blur-md transition-all duration-200 hover:border-white/22 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/80";
 
   if (item.external) {
     return (
@@ -54,7 +54,7 @@ function QuickActionLink({ item }: { item: HeroQuickActionItem }) {
         rel="noopener noreferrer"
         className={baseClassName}
       >
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/24 bg-white/18 text-white/95">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/14 text-white/95">
           <Icon className="h-4 w-4" aria-hidden="true" />
         </span>
         <span className="text-sm font-semibold leading-5 text-white">{item.label}</span>
@@ -64,7 +64,7 @@ function QuickActionLink({ item }: { item: HeroQuickActionItem }) {
 
   return (
     <Link href={item.href} className={baseClassName}>
-      <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/24 bg-white/18 text-white/95">
+      <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/14 text-white/95">
         <Icon className="h-4 w-4" aria-hidden="true" />
       </span>
       <span className="text-sm font-semibold leading-5 text-white">{item.label}</span>
@@ -77,7 +77,7 @@ export function HeroQuickActions({
   className,
 }: HeroQuickActionsProps) {
   return (
-    <div className={cn("relative space-y-4", className)}>
+    <div className={cn("relative z-10 space-y-4", className)}>
       <div className="space-y-1.5">
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/82">
           Acesso rápido
@@ -93,7 +93,7 @@ export function HeroQuickActions({
         ))}
       </div>
 
-      <div className="rounded-2xl border border-cyan-300/20 bg-white/12 p-3 text-xs leading-5 text-white/88 shadow-[0_6px_14px_rgba(2,6,23,0.12)] backdrop-blur-md">
+      <div className="rounded-2xl border border-white/14 bg-white/10 p-3 text-xs leading-5 text-white/88 shadow-[0_6px_14px_rgba(2,6,23,0.12)] backdrop-blur-md">
         {supportText}
       </div>
     </div>

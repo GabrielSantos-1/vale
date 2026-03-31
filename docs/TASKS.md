@@ -2,27 +2,25 @@
 
 ## Objetivo
 
-Este documento registra o estado atual de execucao por sprint.
-Ele deve refletir progresso real, sem substituir o roadmap macro de `BACKLOG.md`.
+Este documento registra o estado atual de execução por sprint e as próximas tarefas reais do projeto.
 
 ---
 
-## Data de referencia
+## Data de referência
 
-2026-03-30
+2026-03-31
 
 ---
 
 ## Sprint atual
 
-Sprint 7 - Hardening e testes
+Sprint 7 — Hardening, estabilização pós-deploy e higiene de segurança
 
 ---
 
 ## Status por sprint
 
-## Sprint 0 - Fundacao do projeto
-
+## Sprint 0 — Fundação do projeto
 - [x] projeto Next.js criado
 - [x] TypeScript habilitado
 - [x] Tailwind configurado
@@ -30,80 +28,85 @@ Sprint 7 - Hardening e testes
 - [x] Prettier configurado
 - [x] Prisma configurado com PostgreSQL
 - [x] estrutura inicial de pastas consolidada
-- [x] docs de governanca criadas
+- [x] docs de governança criadas
 - [x] Vitest e Playwright configurados
 
-## Sprint 1 - Design System
+## Sprint 1 — Design System
+- [x] layout base público e admin estruturado
+- [x] Navbar e Footer públicos implementados
+- [x] Mobile Tab Bar implementada
+- [x] componentes base em uso
+- [x] tokens visuais aplicados
 
-- [x] layout base publico e admin estruturado
-- [x] Navbar e Footer publicos implementados
-- [x] Mobile Tab Bar em contexto mobile implementada
-- [x] componentes base (`Button`, `Card`, `Badge`, `Input`, `Textarea`) em uso
-- [x] tokens visuais e base de tema aplicados
-
-## Sprint 2 - Home Page
-
-- [x] Hero section premium implementada
-- [x] secoes de valor e conversao na home implementadas
+## Sprint 2 — Home Page
+- [x] Hero premium implementada
+- [x] seções de valor e conversão presentes
 - [x] CTA de cobertura e previews de status/faq presentes
 - [x] metadata SEO base aplicada
-- [x] refinamento visual premium consolidado
 
-## Sprint 3 - Paginas publicas
+## Sprint 3 — Páginas públicas
+- [x] páginas públicas principais implementadas
+- [x] shell público consolidado
+- [x] módulo de atalhos no hero implementado
+- [x] botão flutuante de WhatsApp integrado
 
-- [x] paginas publicas principais implementadas
-- [x] padrao visual premium unificado entre paginas
-- [x] shell publico consolidado (navbar, footer, fundo, tabbar)
-- [x] modulo de atalhos no hero publico implementado
-- [x] botao flutuante de WhatsApp integrado ao shell publico
+## Sprint 4 — Formulários e persistência
+- [x] endpoints públicos principais implementados
+- [x] validação server-side com Zod em uso
+- [x] persistência com Prisma em operação
+- [~] hardening final de rate limit pendente
+- [~] revisão final de contratos/erros padronizados pendente
 
-## Sprint 4 - Formularios e persistencia
-
-- [x] endpoints publicos principais implementados (`contact`, `lead`, `coverage-check`)
-- [x] validacao server-side com Zod em uso
-- [x] persistencia com Prisma em operacao
-- [~] rate limit basico implementado e em revisao de hardening
-- [~] revisao final de contratos/erros padronizados pendente
-
-## Sprint 5 - Autenticacao admin
-
+## Sprint 5 — Autenticação admin
 - [x] login admin implementado
-- [x] sessao por cookie HttpOnly implementada
-- [x] middleware/regras de autenticacao em uso
-- [x] controle de autorizacao por role em rotas admin
-- [~] revisao final de seguranca e auditoria de sessoes pendente
+- [x] sessão por cookie HttpOnly implementada
+- [x] controle de autorização por role em rotas admin
+- [x] acesso admin recuperado em produção
+- [x] produção validada com domínio final correto
+- [~] revisão final de segurança da sessão pendente
+- [ ] recuperação de senha/admin ainda não implementada
 
-## Sprint 6 - Painel administrativo
-
+## Sprint 6 — Painel administrativo
 - [x] base do painel admin implementada
-- [x] dashboard e layout admin premium consolidados
-- [x] modulos de gestao (leads, planos, cobertura, faq, status) ativos
-- [x] Lote 1 concluido (tokens/componentes base de contraste)
-- [x] Lote 2 concluido (paginas publicas: ortografia/microcopy/legibilidade)
-- [x] Lote 3 concluido (admin: ortografia/consistencia/contraste)
-- [ ] Lote 4 pendente (formularios, placeholders, labels, erros e estados vazios)
+- [x] dashboard e layout admin ativos
+- [x] gestão de planos/cobertura/faq/status/leads ativa
+- [x] cards de planos refinados
+- [x] bug do badge comercial corrigido no admin
+- [ ] revisão final de estados vazios/form feedback ainda pode ser aprofundada
 
-## Sprint 7 - Hardening e testes
-
-- [~] revisao de seguranca aplicada por modulos (`lib/security`) e em consolidacao
-- [x] baseline de lint e typecheck estabilizada no estado atual
-- [ ] consolidar testes unitarios/integracao/e2e no baseline final
-- [ ] revisar performance de imagens publicas e `next/image` (`sizes`, preload/prioridade)
-- [ ] tratar estrategia de fonte para build em ambiente sem rede externa
-- [ ] fechar revisao de responsividade final (publico e admin)
+## Sprint 7 — Hardening e pós-deploy
+- [x] novo banco Supabase conectado
+- [x] migrations aplicadas com sucesso
+- [x] produção validada com `/api/plans`
+- [x] env principal da Vercel validada
+- [x] CSP corrigida o suficiente para destravar login/admin
+- [~] revisão fina da CSP pendente
+- [ ] limpeza de arquivos temporários/sensíveis pendente
+- [ ] revisão de `.gitignore` pendente
+- [ ] revisão de scripts auxiliares pendente
+- [ ] implementação de recuperação de senha/admin pendente
+- [ ] rodada final de hardening de auth/headers/rate-limit pendente
+- [ ] consolidar testes mínimos pós-estabilização
 
 ---
 
-## Proximas tarefas objetivas (execucao imediata)
+## Próximas tarefas objetivas (execução imediata)
 
-1. Fechar Lote 4 com auditoria de formularios e estados de feedback.
-2. Executar validacao final por dominio (publico/admin, desktop/mobile).
-3. Consolidar rodada de testes minima para regressao (unit/integration/e2e prioritarios).
-4. Tratar resiliencia de build em ambiente com restricao de rede para fontes.
-5. Congelar checkpoint tecnico com status de riscos e evidencias de validacao.
+1. Limpar arquivos temporários, artefatos e scripts auxiliares sem quebrar o projeto.
+2. Revisar `.gitignore` e garantir que dumps, hashes temporários e resíduos operacionais não entrem no Git.
+3. Revisar `lib/security/headers.ts` para endurecimento progressivo da CSP sem quebrar login/admin.
+4. Revisar fluxo de autenticação/sessão e proteção admin com foco em estabilidade pós-deploy.
+5. Implementar fluxo seguro de recuperação de senha/admin.
+6. Revisar secrets, arquivos sensíveis e higiene operacional do repositório.
+7. Consolidar checkpoint final pós-hardening.
 
 ---
 
 ## Regra
 
-Atualizar este documento ao final de cada checkpoint relevante.
+Nenhuma etapa nova deve:
+- quebrar o banco novo;
+- quebrar o deploy da Vercel;
+- quebrar o login admin;
+- misturar limpeza com refatoração ampla;
+- alterar múltiplas camadas sensíveis ao mesmo tempo.

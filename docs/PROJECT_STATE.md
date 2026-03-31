@@ -2,99 +2,113 @@
 
 ## Objetivo
 
-Este documento registra o estado tecnico atual do projeto Verde Vale 2.0.
-Ele funciona como snapshot oficial para retomada segura e continuidade por sprint/lote.
+Este documento registra o estado técnico atual do projeto **Verde Vale 2**.
+Ele funciona como snapshot oficial para retomada segura, continuidade controlada e execução por etapas sem quebrar o ambiente atual.
 
 ---
 
-## Data de referencia
+## Data de referência
 
-2026-03-30
+2026-03-31
 
 ---
 
 ## Resumo executivo
 
-Estado atual confirmado no branch `main`, com grande volume de alteracoes locais em andamento e sem baseline de commit consolidada.
+O projeto saiu do estado de recuperação emergencial e entrou em estado **funcional em produção**, com o novo banco Supabase conectado, migrations aplicadas, API principal validada, acesso administrativo restaurado e deploy operacional na Vercel.
 
-Panorama tecnico validado nesta data:
+Estado validado nesta data:
 
-- `npm run lint`: OK
-- `npm run typecheck`: OK
-
-O sistema segue funcional em alto nivel, com evolucoes recentes em:
-
-- camada publica (layout/marketing/microcopy);
-- camada administrativa (copy/legibilidade/contraste);
-- componentes base de UI e tokens;
-- camada de seguranca e APIs em continuidade de hardening.
+- banco novo Supabase ativo e coerente com produção;
+- `DATABASE_URL` e `DIRECT_URL` configuradas para o novo ambiente;
+- `NEXTAUTH_URL` e `NEXTAUTH_SECRET` existentes na Vercel;
+- `/api/plans` em produção retornando corretamente os 5 planos;
+- login admin funcionando em produção;
+- acesso ao admin validado;
+- cards de planos melhorados;
+- bug de atualização/remoção do badge comercial corrigido no admin;
+- CSP ajustada para não bloquear o runtime necessário do login/admin.
 
 ---
 
-## Estado funcional por dominio
+## Estado funcional por domínio
 
-### Publico
+### Público
 
-- paginas principais ativas e padrao visual premium consolidado;
-- shell publico separado em `components/layout/public`;
-- ajustes de copy e legibilidade aplicados nos principais blocos de marketing.
+- home, planos, cobertura, suporte, contato, status, sobre, política e termos ativos;
+- visual premium consolidado;
+- cards de planos refinados;
+- fluxo público principal operacional;
+- API de planos validada em produção.
 
 ### Administrativo
 
-- dashboard, modulos de gestao e shell admin ativos;
-- revisao textual e de contraste avancada nos componentes reutilizaveis do admin;
-- lote 3 (admin: ortografia, consistencia e contraste) finalizado no estado atual.
+- login admin funcional em produção;
+- dashboard/admin acessível;
+- gestão de planos funcional;
+- correção aplicada no fluxo de badge comercial ao editar plano;
+- autenticação baseada em cookie HttpOnly em operação.
 
-### API e persistencia
+### API e persistência
 
-- rotas publicas e admin permanecem segregadas;
-- validacao server-side e auth/role-check permanecem ativos;
-- sem mudancas de contrato exigidas para este snapshot documental.
+- rotas públicas e administrativas segregadas;
+- banco novo Supabase em uso na produção;
+- Prisma alinhado com schema e migrations;
+- `/api/plans` validada em produção com dados corretos;
+- backend principal operacional.
 
 ---
 
-## Qualidade tecnica e riscos atuais
+## Incidentes recentes consolidados
 
-### Qualidade
+1. banco anterior inconsistente e abandonado;
+2. ausência de `DIRECT_URL` no ambiente local durante parte da recuperação;
+3. divergência entre login local e produção;
+4. role do admin incorreta em parte da investigação;
+5. hash/senha do admin precisando redefinição controlada;
+6. `/api/auth/session` retornando `{}` em produção;
+7. CSP excessivamente restritiva bloqueando runtime/login;
+8. tentativas de validação em domínio preview em vez do domínio final;
+9. mudanças locais não commitadas em alguns momentos do processo.
 
-- baseline de `lint` e `typecheck` estavel no estado local atual.
+Todos esses pontos foram rastreados durante a recuperação até o estado atual funcional.
+
+---
+
+## Qualidade técnica e riscos atuais
+
+### Estado atual
+- aplicação operacional em produção;
+- admin funcional;
+- deploy funcional;
+- ambiente principal estabilizado.
 
 ### Riscos ativos
-
-1. volume alto de alteracoes nao commitadas no workspace, elevando risco de regressao por escopo amplo;
-2. necessidade de consolidar baseline em checkpoints curtos para rastreabilidade;
-3. build pode continuar sensivel a dependencia externa de fontes em ambiente sem rede.
+1. necessidade de hardening pós-recuperação, especialmente em headers/CSP, auth e higiene de repositório;
+2. possibilidade de arquivos temporários, scripts auxiliares ou resíduos operacionais permanecerem localmente;
+3. necessidade de revisar a política CSP atual para endurecimento progressivo sem quebrar o runtime;
+4. ausência, neste momento, de um fluxo formal de recuperação de senha/admin;
+5. necessidade de revisão final de segredos, artefatos e arquivos sensíveis.
 
 ---
 
 ## Ordem recomendada de continuidade
 
-1. consolidar checkpoint e estado documental (30/03/2026) como referencia unica;
-2. fechar lotes pendentes de revisao de UX textual/legibilidade (incluindo formularios e estados vazios);
-3. validar visual final por dominio (publico e admin, desktop/mobile);
-4. consolidar baseline tecnico por rodada (`lint`, `typecheck`, testes essenciais);
-5. reduzir risco de deploy em ambiente restrito (estrategia de fontes e resiliencia de build).
+1. congelar este checkpoint como base oficial pós-recovery;
+2. executar limpeza controlada de arquivos temporários e resíduos operacionais;
+3. revisar segurança do runtime sem quebrar o deploy atual;
+4. implementar recuperação segura de acesso admin;
+5. revisar repositório, `.gitignore`, scripts e superfície sensível;
+6. só depois seguir para melhorias adicionais.
 
 ---
 
-## Consistencia com documentos de governanca
+## Regra de manutenção
 
-Em caso de conflito documental, manter prioridade:
-
-1. `SECURITY_RULES.md`
-2. `ARCHITECTURE.md`
-3. `CODING_STANDARDS.md`
-
-`BACKLOG.md` e `TASKS.md` seguem como trilha de execucao; `DECISIONS.md` registra excecoes e decisoes de processo.
-
----
-
-## Regra de manutencao
-
-Atualizar este arquivo em toda mudanca relevante de:
-
-- estado de sprint/lote;
-- baseline de qualidade tecnica;
-- riscos estruturais de build/deploy;
-- seguranca, autenticacao ou arquitetura;
-- padrao visual global.
+Atualizar este arquivo sempre que houver mudança relevante em:
+- deploy/produção;
+- banco, auth, sessão ou CSP;
+- segurança/hardening;
+- fluxo administrativo;
+- recuperação de acesso;
+- risco estrutural do projeto.

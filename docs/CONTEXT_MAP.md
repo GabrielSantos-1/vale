@@ -2,8 +2,7 @@
 
 ## Objetivo
 
-Este documento funciona como mapa de contexto do projeto.
-Ele orienta leitura, governanca e rastreabilidade do estado tecnico atual.
+Este documento funciona como mapa de contexto do projeto e orienta leitura, governança e rastreabilidade do estado técnico atual.
 
 ---
 
@@ -20,65 +19,47 @@ Ele orienta leitura, governanca e rastreabilidade do estado tecnico atual.
 9. `PROJECT_STATE.md`
 10. `PROMPTING_RULES.md`
 11. `DECISIONS.md`
+12. `checkpoints/2026-03-31-deploy-recovery/00-README.md`
 
 ---
 
-## Mapa de modulos com mudancas recentes (snapshot 2026-03-30)
+## Mapa de módulos com mudanças recentes (snapshot 2026-03-31)
 
-### Publico
-
+### Público
 - `app/(public)` e `components/marketing`
-- foco recente: copy, legibilidade e consistencia visual
+- foco recente: ajustes visuais, cards de planos e consistência pública
 
 ### Admin
+- `app/admin` e componentes ligados ao painel
+- foco recente: recuperação do acesso administrativo, correção de badge em planos e validação do CRUD
 
-- `app/admin` e `components/admin`
-- foco recente: ortografia PT-BR, contraste e consistencia textual
+### Auth / Sessão / Proteção
+- `lib/auth`, `app/api/auth`, `proxy.ts`
+- foco recente: estabilização do acesso admin em produção
 
-### UI Base e Layout
+### Segurança e headers
+- `lib/security`
+- foco recente: CSP/headers para não quebrar o runtime do login e do admin
 
-- `components/ui/*`, `components/layout/public`, `components/ui/layout/admin`, `app/globals.css`
-- foco recente: tokens, foreground/muted e legibilidade em componentes reutilizaveis
+### Persistência / banco
+- `prisma`, `lib/db`
+- foco recente: troca de banco, migrations e validação do ambiente produtivo
 
-### Seguranca e API
-
-- `lib/security`, `app/api/*`, `lib/auth`, `lib/validations`
-- foco recente: consolidacao de hardening e padronizacao de tratamento
-
-### Documentacao de estado
-
-- `docs/PROJECT_STATE.md`
-- `docs/TASKS.md`
-- `docs/CHECKPOINT_2026-03-30.md`
-
----
-
-## Responsabilidade dos documentos
-
-- `PROJECT_BRIEF.md`: direcao de produto e visao
-- `ARCHITECTURE.md`: estrutura e separacao de camadas
-- `SECURITY_RULES.md`: requisitos obrigatorios de seguranca (prioridade maxima)
-- `CODING_STANDARDS.md`: consistencia tecnica e estilo
-- `UI_GUIDELINES.md`: identidade visual e UX
-- `API_CONTRACTS.md`: contratos de comunicacao
-- `BACKLOG.md`: roadmap macro por sprint
-- `TASKS.md`: execucao atual e progresso real
-- `PROJECT_STATE.md`: snapshot tecnico oficial
-- `PROMPTING_RULES.md`: uso operacional com agentes
-- `DECISIONS.md`: historico de decisoes aprovadas
+### Documentação de estado
+- `PROJECT_STATE.md`
+- `TASKS.md`
+- `DECISIONS.md`
+- `checkpoints/2026-03-31-deploy-recovery/*`
 
 ---
 
-## Regra de conflito
+## Diretriz de continuidade
 
-1. `SECURITY_RULES.md`
-2. `ARCHITECTURE.md`
-3. `CODING_STANDARDS.md`
-4. `UI_GUIDELINES.md`
-5. `BACKLOG.md`/`TASKS.md`
+O sistema já está funcional em produção.
+As próximas mudanças devem priorizar:
+1. limpeza/higiene;
+2. hardening;
+3. recuperação de senha/admin;
+4. revisão de segurança e resíduos operacionais.
 
----
-
-## Diretriz final
-
-Antes de qualquer mudanca ampla, alinhar escopo com este mapa e atualizar checkpoint datado ao final da rodada.
+Mudanças fora dessa ordem precisam justificativa explícita.

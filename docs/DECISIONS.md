@@ -2,72 +2,82 @@
 
 ## Objetivo
 
-Registrar decisoes arquiteturais e de processo relevantes, mantendo historico auditavel.
+Registrar decisões arquiteturais e operacionais relevantes, mantendo histórico auditável.
 
 ---
 
-## Decisao 001 - Stack oficial
+## Decisão 001 — Stack oficial
 
 Next.js + TypeScript + Tailwind + PostgreSQL + Prisma.
 
-**Motivo:** equilibrio entre produtividade, seguranca e escalabilidade.
+**Motivo:** equilíbrio entre produtividade, segurança e escalabilidade.
 
 ---
 
-## Decisao 002 - Autenticacao por cookie HttpOnly
+## Decisão 002 — Autenticação por cookie HttpOnly
 
-Sessao baseada em cookie HttpOnly para area administrativa.
+Sessão baseada em cookie HttpOnly para área administrativa.
 
-**Motivo:** reduzir superficie de ataque de XSS sobre credenciais.
+**Motivo:** reduzir superfície de ataque de XSS sobre credenciais.
 
 ---
 
-## Decisao 003 - Validacao com Zod
+## Decisão 003 — Validação com Zod
 
-Validacao de entrada padronizada no servidor com schemas Zod.
+Validação de entrada padronizada no servidor com schemas Zod.
 
 **Motivo:** tipagem forte e contratos consistentes.
 
 ---
 
-## Decisao 004 - Arquitetura modular
+## Decisão 004 — Arquitetura modular
 
-Separacao clara entre UI, aplicacao, seguranca e persistencia.
+Separação clara entre UI, aplicação, segurança e persistência.
 
-**Motivo:** manutencao e evolucao incremental sem reescrita ampla.
-
----
-
-## Decisao 005 - Direcao visual premium publica
-
-Hero premium reutilizavel com fundo de fibra, superficies profundas e contraste controlado.
-
-**Motivo:** alinhar percepcao de qualidade entre publico e admin.
+**Motivo:** manutenção e evolução incremental sem reescrita ampla.
 
 ---
 
-## Decisao 006 - Sistema visual publico com ativos curados
+## Decisão 005 — Direção visual premium pública
 
-Padronizacao de hero e blocos visuais reutilizaveis para planos, cobertura, status, suporte e contato.
+Hero premium reutilizável com fundo de fibra, superfícies profundas e contraste controlado.
 
-**Motivo:** consistencia visual e melhor conversao sem perder responsividade.
+**Motivo:** alinhar percepção de qualidade entre público e admin.
 
 ---
 
-## Decisao 007 - Politica de checkpoint datado de estado
+## Decisão 006 — Política de checkpoint datado
 
-Sempre registrar checkpoint tecnico datado em `docs/CHECKPOINT_YYYY-MM-DD.md` ao consolidar rodada relevante.
+Registrar checkpoints técnicos datados para continuidade e rastreabilidade.
 
-Regras da politica:
+**Motivo:** reduzir regressão e melhorar governança do workspace.
 
-- manter checkpoints anteriores como historico imutavel;
-- refletir data igual em `PROJECT_STATE.md` e `TASKS.md`;
-- registrar evidencias minimas de validacao (`lint` e `typecheck`) no checkpoint.
+---
 
-**Motivo:** melhorar rastreabilidade, continuidade e reducao de regressao em workspace com alto volume de alteracoes.
+## Decisão 007 — Abandono do banco anterior inconsistente
+
+O banco anterior foi considerado inconsistente e substituído por um novo projeto Supabase.
+
+**Motivo:** recuperar previsibilidade operacional, alinhar produção com uma base limpa e evitar continuar sobre fundação comprometida.
+
+---
+
+## Decisão 008 — Produção deve usar somente o domínio canônico para validação final de auth
+
+A validação final de autenticação deve ser feita no domínio principal configurado em `NEXTAUTH_URL`, e não em previews.
+
+**Motivo:** evitar falso diagnóstico por divergência de domínio/cookie/sessão.
+
+---
+
+## Decisão 009 — Fase atual é hardening pós-recovery, não expansão funcional ampla
+
+Após o recovery do deploy e do admin, o projeto entra primeiro em limpeza, endurecimento e recuperação de acesso, antes de novas expansões maiores.
+
+**Motivo:** reduzir risco de regressão e consolidar base segura.
 
 ---
 
 ## Regra
 
-Toda decisao arquitetural ou de processo que altere a forma de evolucao do projeto deve ser registrada aqui.
+Toda decisão que altere segurança, deploy, banco, auth ou fluxo administrativo deve ser registrada aqui.
