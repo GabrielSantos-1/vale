@@ -10,3 +10,5 @@ coverage/
 *.log
 .prisma
 *.tsbuildinfo
+scripts/hash-password.js
+scripts/test-password.js

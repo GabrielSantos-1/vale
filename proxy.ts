@@ -5,6 +5,12 @@ import { getToken } from 'next-auth/jwt';
 import { isAdminRole } from '@/lib/auth/roles';
 import { securityHeaders } from './lib/security/headers';
 
+const authSecret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET;
+
+if (!authSecret) {
+  throw new Error('Missing NEXTAUTH_SECRET/AUTH_SECRET for proxy');
+}
+
 function applyGlobalSecurityHeaders(res: NextResponse) {
   if (process.env.NODE_ENV !== 'development') {
     const headers = securityHeaders();
@@ -30,13 +36,11 @@ export async function proxy(req: NextRequest) {
 
   const token = await getToken({
     req,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: authSecret,
+    secureCookie: process.env.NODE_ENV === 'production',
   });
 
-  const role =
-    (token as { role?: unknown; user?: { role?: unknown } } | null)?.role ??
-    (token as { role?: unknown; user?: { role?: unknown } } | null)?.user
-      ?.role;
+  const role = (token as { role?: string } | null)?.role;
 
   if (!token || !isAdminRole(role)) {
     const loginUrl = new URL('/admin/login', req.url);

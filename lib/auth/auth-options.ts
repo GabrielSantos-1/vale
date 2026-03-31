@@ -7,13 +7,27 @@ import { logger } from '@/lib/security/logger';
 import { normalizeEmail, sanitizeString } from '@/lib/security/sanitize';
 import { isAdminRole } from '@/lib/auth/roles';
 
+const authSecret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET;
+
+if (!authSecret) {
+  throw new Error('Missing NEXTAUTH_SECRET/AUTH_SECRET for NextAuth');
+}
+
+type AuthToken = {
+  sub?: string;
+  id?: string;
+  email?: string | null;
+  name?: string | null;
+  role?: string;
+};
+
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: authSecret,
 
   session: {
     strategy: 'jwt',
-    maxAge: 60 * 60 * 8, // 8 horas
-    updateAge: 60 * 60, // 1 hora
+    maxAge: 60 * 60 * 8,
+    updateAge: 60 * 60,
   },
 
   pages: {
@@ -87,15 +101,20 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        const safeName = user.name
+          ? sanitizeString(user.name, { maxLength: 120 })
+          : 'Administrador';
+
         logger.info('Admin login successful', {
           route: '/api/auth/[...nextauth]',
           userId: user.id,
           email: user.email,
+          role: user.role,
         });
 
         return {
           id: user.id,
-          name: sanitizeString(user.name, { maxLength: 120 }),
+          name: safeName,
           email: user.email,
           role: user.role,
         };
@@ -105,40 +124,46 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
+      const nextToken = token as AuthToken;
+
       if (user) {
-        (token as typeof token & { id?: string }).id = user.id;
-        token.sub = user.id;
-        token.email = user.email;
-        token.name = user.name;
-        (token as typeof token & { role?: string }).role = (
-          user as { role?: string }
-        ).role;
+        nextToken.id = user.id;
+        nextToken.sub = user.id;
+        nextToken.email = user.email;
+        nextToken.name = user.name;
+        nextToken.role = (user as { role?: string }).role;
       }
 
-      return token;
+      return nextToken;
     },
 
     async session({ session, token }) {
-      session.user ??= {
-        name: null,
-        email: null,
-        image: null,
-      };
+      const authToken = token as AuthToken;
+
+      if (!session.user) {
+        session.user = {
+          name: null,
+          email: null,
+          image: null,
+        };
+      }
+
+      session.user.name = authToken.name ?? null;
+      session.user.email = authToken.email ?? null;
 
       (
         session.user as typeof session.user & {
           id?: string;
           role?: string;
         }
-      ).id = (token as typeof token & { id?: string }).id ?? token.sub;
-      session.user.email = token.email ?? null;
-      session.user.name = token.name ?? null;
+      ).id = authToken.id ?? authToken.sub;
+
       (
         session.user as typeof session.user & {
           id?: string;
           role?: string;
         }
-      ).role = (token as typeof token & { role?: string }).role;
+      ).role = authToken.role;
 
       return session;
     },
@@ -164,7 +189,6 @@ export const authOptions: NextAuthOptions = {
       return `${baseUrl}/admin/dashboard`;
     },
   },
-
 };
 
 export default authOptions;
