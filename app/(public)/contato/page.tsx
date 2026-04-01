@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type { FormEvent } from "react";
 import Link from "next/link";
@@ -102,25 +102,25 @@ export default function ContatoPage() {
     <Container as="main" className="py-8 md:py-12">
       <div className="space-y-8 md:space-y-10">
         <Hero
-          eyebrow="Contato • suporte • contratação guiada"
-          badge="Fale com a Verde Vale"
-          title="Contato com mais clareza, contraste e acabamento premium"
-          description="Envie sua solicitação para atendimento comercial, dúvidas gerais ou suporte inicial. Preencha os dados corretamente para facilitar o retorno da equipe."
-          primaryCta={{ label: "Ver planos", href: "/planos#comparacao-planos" }}
+          eyebrow="Contato | atendimento | suporte comercial"
+          badge="Atendimento Verde Vale Connect"
+          title="Fale com nosso atendimento para contratar internet fibra ou tirar dúvidas"
+          description="Use este canal para atendimento comercial, suporte inicial e orientação sobre cobertura. Nossa equipe analisa sua solicitação com retorno claro."
+          primaryCta={{ label: "Ver planos de internet", href: "/planos#comparacao-planos" }}
           secondaryCta={{ label: "Consultar cobertura", href: "/cobertura#consulta-cobertura" }}
-          note="Canais organizados para reduzir atrito e acelerar retorno."
+          note="Canal direto para atendimento regional com comunicação objetiva do primeiro contato ao próximo passo."
           stats={[
-            { label: "Retorno", value: "Mais claro" },
+            { label: "Retorno", value: "Com orientação clara" },
             { label: "Canais", value: "Organizados" },
-            { label: "Jornada", value: "Sem atrito" },
-            { label: "Atendimento", value: "Mais rápido" },
+            { label: "Suporte", value: "Humano e próximo" },
+            { label: "Atendimento", value: "Regional" },
           ]}
         />
 
         <StatusBanner
           status="Atendimento"
-          title="Canais organizados para contato comercial e suporte"
-          description="Use dados válidos para facilitar o retorno e reduzir atrito no atendimento."
+          title="Atendimento comercial e suporte em um único canal"
+          description="Informe seus dados corretamente para facilitar o retorno da equipe e agilizar o encaminhamento da sua solicitação."
         />
 
         <Card
@@ -130,8 +130,8 @@ export default function ContatoPage() {
           <CardHeader className="space-y-3">
             <CardTitle className="text-xl">Formulário de contato</CardTitle>
             <p className="text-sm leading-6 text-secondary">
-              Os campos obrigatórios precisam ser preenchidos corretamente para
-              agilizar o retorno.
+              Preencha os campos obrigatórios com informações corretas para
+              receber um retorno mais rápido e objetivo.
             </p>
           </CardHeader>
 
@@ -153,7 +153,7 @@ export default function ContatoPage() {
                   <Label htmlFor="name">Nome *</Label>
                   <Input
                     id="name"
-                    placeholder="Seu nome completo"
+                    placeholder="Nome completo"
                     value={form.name}
                     onChange={(e) => updateField("name", e.target.value)}
                     autoComplete="name"
@@ -195,7 +195,7 @@ export default function ContatoPage() {
                   <Label htmlFor="subject">Assunto</Label>
                   <Input
                     id="subject"
-                    placeholder="Ex.: Contratação, suporte, dúvidas"
+                    placeholder="Ex.: Contratação, suporte, cobertura"
                     value={form.subject}
                     onChange={(e) => updateField("subject", e.target.value)}
                     maxLength={120}
@@ -208,7 +208,7 @@ export default function ContatoPage() {
                 <Textarea
                   id="message"
                   className="min-h-[180px]"
-                  placeholder="Descreva sua solicitação com clareza para facilitar o retorno."
+                  placeholder="Descreva sua necessidade para ajudarmos com mais precisão."
                   value={form.message}
                   onChange={(e) => updateField("message", e.target.value)}
                   maxLength={1000}
@@ -221,8 +221,9 @@ export default function ContatoPage() {
                   Antes de enviar
                 </p>
                 <p className="mt-2 text-sm leading-6 text-secondary">
-                  Prefira informar nome completo, e-mail válido e uma mensagem
-                  objetiva. Isso reduz retrabalho e acelera o retorno da equipe.
+                  Informe nome completo, e-mail válido e detalhes da sua
+                  solicitação. Isso ajuda nossa equipe a direcionar o atendimento
+                  comercial ou suporte com mais agilidade.
                 </p>
               </div>
 
@@ -252,12 +253,12 @@ export default function ContatoPage() {
                   size="lg"
                   className="w-full sm:w-auto"
                 >
-                  {submitting ? "Enviando mensagem..." : "Enviar contato"}
+                  {submitting ? "Enviando solicitação..." : "Enviar solicitação"}
                 </Button>
 
                 <p className="text-xs leading-5 text-secondary">
-                  Ao enviar, seus dados serão usados apenas para retorno sobre a
-                  solicitação.
+                  Ao enviar, seus dados serão usados apenas para contato sobre
+                  esta solicitação.
                 </p>
               </div>
             </form>
@@ -265,15 +266,15 @@ export default function ContatoPage() {
         </Card>
 
         <p className="text-sm leading-6 text-secondary">
-          Para contratação direta, use{" "}
+          Para contratar internet fibra, acesse{" "}
           <Link className="text-primary underline" href="/contratar#formulario-solicitacao">
             /contratar
           </Link>
-          . Para cobertura, consulte{" "}
+          . Para consultar disponibilidade de cobertura, use{" "}
           <Link className="text-primary underline" href="/cobertura#consulta-cobertura">
             /cobertura
           </Link>
-          . Para incidentes públicos, confira{" "}
+          . Para acompanhar status da rede e manutenções, confira{" "}
           <Link className="text-primary underline" href="/status#status-lista">
             /status
           </Link>
@@ -283,3 +284,6 @@ export default function ContatoPage() {
     </Container>
   );
 }
+
+
+

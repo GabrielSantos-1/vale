@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Button } from "@/components/ui/core/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/card";
 import { PUBLIC_CONTACT_ACTIONS } from "@/lib/constants/contact";
@@ -11,14 +11,14 @@ export function AboutCta() {
           Próximos passos
         </p>
         <CardTitle className="text-2xl tracking-tight text-primary md:text-3xl">
-          Consulte cobertura ou fale com a equipe
+          Consulte cobertura e fale com nosso atendimento
         </CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-6">
         <p className="max-w-3xl text-sm leading-6 text-secondary md:text-base">
-          Se você está avaliando contratação, comece pela cobertura. Para suporte ou
-          orientação comercial, use os canais de contato da página pública.
+          Se você está avaliando contratação de internet fibra, comece pela cobertura.
+          Para suporte ou orientação comercial, use os canais oficiais de atendimento.
         </p>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -40,3 +40,4 @@ export function AboutCta() {
 }
 
 export default AboutCta;
+

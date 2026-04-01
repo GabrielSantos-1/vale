@@ -60,7 +60,7 @@ export function FeaturesGrid({
           >
             <CardHeader className="space-y-3">
               <div className="inline-flex w-fit rounded-full border border-emerald-200 bg-emerald-50/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700">
-                Destaque
+                Diferencial
               </div>
 
               <CardTitle className="text-xl leading-7">{item.title}</CardTitle>

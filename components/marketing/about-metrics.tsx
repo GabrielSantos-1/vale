@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/core/card";
+﻿import { Card, CardContent } from "@/components/ui/core/card";
 import { COMPANY_PROFILE } from "@/lib/constants/company";
 
 export function AboutMetrics() {
@@ -6,10 +6,10 @@ export function AboutMetrics() {
     <section aria-label="Métricas institucionais" className="space-y-4">
       <div className="max-w-3xl space-y-2">
         <h2 className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">
-          Dados institucionais em leitura direta
+          Informações institucionais com foco em confiança
         </h2>
         <p className="text-sm leading-6 text-secondary md:text-base">
-          Informações objetivas para apoiar decisão de clientes e parceiros.
+          Dados públicos para ajudar clientes e parceiros a entender como operamos.
         </p>
       </div>
 
@@ -33,3 +33,4 @@ export function AboutMetrics() {
 }
 
 export default AboutMetrics;
+

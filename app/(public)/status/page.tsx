@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 import { prisma } from "@/lib/db/prisma";
 import { Container } from "@/components/ui/core/container";
@@ -43,13 +43,13 @@ export default async function StatusPage() {
     <Container as="main" className="py-8 md:py-12">
       <div className="space-y-8 md:space-y-10">
         <Hero
-          eyebrow="Operação • status da rede • comunicação clara"
-          badge="Status em tempo real"
-          title="Status da rede com narrativa visual mais clara e premium"
-          description="Acompanhe incidentes, manutenções e avisos operacionais com atualização pública para reduzir dúvidas e melhorar a comunicação com o cliente."
+          eyebrow="Status da rede | manutenção | atualizações públicas"
+          badge="Acompanhamento operacional"
+          title="Acompanhe o status da rede com transparência e informação clara"
+          description="Consulte incidentes, manutenções e normalizações em andamento para acompanhar o serviço com mais segurança."
           primaryCta={{ label: "Consultar cobertura", href: "/cobertura" }}
           secondaryCta={{ label: "Falar com atendimento", href: "/contato" }}
-          note="Visibilidade operacional com leitura imediata para clientes e equipe."
+          note="Comunicados públicos para manter clientes informados sobre ocorrências e atualizações da rede."
           stats={[
             { label: "Ativos", value: `${summary.activeCount}` },
             { label: "Resolvidos", value: `${summary.resolvedCount}` },
@@ -59,7 +59,7 @@ export default async function StatusPage() {
                 ? summary.latestUpdate.toLocaleString("pt-BR")
                 : "Sem registros",
             },
-            { label: "Vitrine", value: "Pública" },
+            { label: "Transparência", value: "Atualização pública" },
           ]}
         />
 
@@ -72,7 +72,7 @@ export default async function StatusPage() {
                   {summary.activeCount}
                 </p>
                 <p className="text-sm leading-6 text-secondary">
-                  Avisos em andamento com impacto operacional ou monitoramento.
+                  Ocorrências em acompanhamento com atualização operacional pública.
                 </p>
               </div>
             </CardContent>
@@ -86,7 +86,7 @@ export default async function StatusPage() {
                   {summary.resolvedCount}
                 </p>
                 <p className="text-sm leading-6 text-secondary">
-                  Eventos com atualização pública concluída e histórico recente.
+                  Ocorrências finalizadas com histórico recente de normalização.
                 </p>
               </div>
             </CardContent>
@@ -102,7 +102,7 @@ export default async function StatusPage() {
                     : "Sem registros públicos recentes"}
                 </p>
                 <p className="text-sm leading-6 text-secondary">
-                  Os avisos publicados aparecem nesta página conforme visibilidade definida.
+                  Esta página exibe as publicações operacionais conforme visibilidade ativa.
                 </p>
               </div>
             </CardContent>
@@ -111,8 +111,8 @@ export default async function StatusPage() {
 
         <StatusBanner
           status={bannerStatus}
-          title="Visibilidade operacional da rede"
-          description="Atualizações públicas ajudam a reduzir dúvidas e melhorar a comunicação com clientes."
+          title="Acompanhamento publico do status da rede"
+          description="Atualizações operacionais ajudam você a acompanhar manutenção, incidentes e normalização com clareza."
         />
 
         {incidents.length === 0 ? (
@@ -120,11 +120,11 @@ export default async function StatusPage() {
             <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl space-y-2">
                 <h2 className="text-lg font-semibold text-primary md:text-xl">
-                  Nenhum incidente ou manutenção pública no momento
+                  Sem incidentes ou manutenções públicas no momento
                 </h2>
                 <p className="text-sm leading-6 text-secondary">
-                  Quando houver manutenção programada, atualização operacional ou
-                  incidente visível, esta área será atualizada para consulta rápida.
+                  Quando houver manutenção programada, incidente ou nova atualização
+                  operacional, esta área será atualizada para consulta.
                 </p>
               </div>
 
@@ -172,7 +172,7 @@ export default async function StatusPage() {
                   <CardContent className="space-y-4">
                     <div className={`rounded-2xl border p-4 ${tone.cardClassName}`}>
                       <p className="text-sm leading-6 text-secondary">
-                        {item.description || "Sem descrição adicional no momento."}
+                        {item.description || "Sem detalhes adicionais no momento."}
                       </p>
                     </div>
 
@@ -209,3 +209,4 @@ export default async function StatusPage() {
     </Container>
   );
 }
+

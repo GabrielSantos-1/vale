@@ -74,22 +74,22 @@ const metrics = [
   {
     label: "Clientes atendidos",
     value: "+1.200",
-    description: "Atendimento mais direto e suporte mais claro.",
+    description: "Base regional atendida com suporte próximo e resposta clara.",
   },
   {
     label: "Instalação",
     value: "Até 24h",
-    description: "Processo comercial mais rápido e objetivo.",
+    description: "Agendamento ágil para ativar sua fibra sem burocracia.",
   },
   {
     label: "Disponibilidade",
     value: "99.9%",
-    description: "Transparência para manutenção e status.",
+    description: "Rede monitorada com comunicação transparente de status.",
   },
   {
     label: "Velocidade",
-    value: "Fibra pura",
-    description: "Experiência com menos ruído visual.",
+    value: "Máxima",
+    description: "Planos com desempenho estável para rotina, trabalho e streaming.",
   },
 ] as const;
 
@@ -112,18 +112,18 @@ export default async function Home() {
     <Container as="main" className="py-6 md:py-10">
       <div className="space-y-10 md:space-y-14">
         <Hero
-          eyebrow="Fibra óptica • cobertura • status em tempo real"
-          badge="Rede premium"
-          title="Internet fibra com mais profundidade, clareza e percepção de alto padrão"
-          description="Consulte planos, verifique cobertura, acompanhe o status da rede e entre em contato em uma experiência mais cinematográfica, legível e confiável."
-          primaryCta={{ label: "Ver planos", href: "/planos#comparacao-planos" }}
-          secondaryCta={{ label: "Consultar cobertura", href: "/cobertura#consulta-cobertura" }}
-          note="Fibra óptica, transparência operacional e conversão comercial em uma única experiência."
+          eyebrow="Internet fibra para residências e empresas da região"
+          badge="Provedor regional de fibra"
+          title="Fibra óptica estável para sua casa, com atendimento próximo e operação transparente"
+          description="Veja se atendemos seu endereço, escolha o plano ideal e acompanhe o status da rede em tempo real."
+          primaryCta={{ label: "Consultar cobertura", href: "/planos#comparacao-planos" }}
+          secondaryCta={{ label: "Ver planos", href: "/cobertura#consulta-cobertura" }}
+          note="Contratação simples, suporte humano e comunicação clara do início ao pós-instalação."
           stats={[
-            { label: "Cobertura", value: "Consulta rápida" },
-            { label: "Jornada", value: "Sem atrito" },
-            { label: "Status", value: "Em destaque" },
-            { label: "Suporte", value: "Mais claro" },
+            { label: "Cobertura", value: "Consulta por endereço" },
+            { label: "Instalação", value: "Agendamento rápido" },
+            { label: "Status", value: "Atualizações em tempo real" },
+            { label: "Suporte", value: "Atendimento próximo" },
           ]}
         />
 
@@ -152,23 +152,23 @@ export default async function Home() {
 
         <FeaturesGrid
           eyebrow="Diferenciais"
-          title="Uma vitrine comercial com mais consistência e autoridade"
-          description="Menos ruído, mais foco visual e uma leitura que ajuda o cliente a entender valor, cobertura e confiança rapidamente."
+          title="Confiança para contratar e permanecer conectado"
+          description="Cobertura consultável, instalação acompanhada e comunicação transparente para você saber exatamente o que esperar do serviço."
           items={[
             {
-              title: "Hierarquia mais forte",
+              title: "Cobertura com consulta por endereço",
               description:
-                "Título, CTA e blocos de apoio trabalham em camadas visuais mais claras e premium.",
+                "Confira se atendemos sua região antes de contratar, com resposta clara e objetiva.",
             },
             {
-              title: "Contraste controlado",
+              title: "Instalação com acompanhamento próximo",
               description:
-                "Sombras, bordas e superfícies passam a ter ritmo visual consistente entre desktop e mobile.",
+                "Do agendamento ao pós-instalação, você conta com equipe local para orientar cada etapa.",
             },
             {
-              title: "Identidade unificada",
+              title: "Status da rede com transparência",
               description:
-                "A mesma imagem e a mesma linguagem visual aparecem em toda a jornada pública.",
+                "Comunicados públicos de manutenção e normalização para reduzir dúvidas no dia a dia.",
             },
           ]}
         />
@@ -177,18 +177,18 @@ export default async function Home() {
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div className="space-y-2">
               <p className="text-sm font-medium uppercase tracking-[0.18em] text-accent">
-                Planos
+                Planos de fibra
               </p>
               <h2 className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">
-                Planos em destaque
+                Escolha o plano ideal para sua rotina
               </h2>
               <p className="max-w-2xl text-sm leading-6 text-secondary md:text-base">
-                Compare velocidades, escolha a melhor opção e avance para contratação sem atrito.
+                Compare velocidade, latência e valor mensal com clareza para contratar com segurança.
               </p>
             </div>
 
             <Button asChild variant="ghost">
-              <Link href="/planos#comparacao-planos">Ver todos os planos</Link>
+              <Link href="/planos#comparacao-planos">Comparar todos os planos</Link>
             </Button>
           </div>
 
@@ -199,7 +199,7 @@ export default async function Home() {
                   key={plan.id}
                   plan={plan}
                   compact
-                  ctaLabel="Contratar plano"
+                  ctaLabel="Quero este plano"
                 />
               ))}
             </div>

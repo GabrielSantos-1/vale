@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useState } from 'react'
 import { signIn } from 'next-auth/react'
@@ -70,17 +70,17 @@ export default function LoginForm({
     const password = form.password
 
     if (!email) {
-      nextErrors.email = 'E-mail é obrigatório.'
+      nextErrors.email = 'E-mail Ã© obrigatÃ³rio.'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      nextErrors.email = 'Informe um e-mail válido.'
+      nextErrors.email = 'Informe um e-mail vÃ¡lido.'
     } else if (email.length > 160) {
-      nextErrors.email = 'E-mail inválido.'
+      nextErrors.email = 'E-mail invÃ¡lido.'
     }
 
     if (!password.trim()) {
-      nextErrors.password = 'Senha é obrigatória.'
+      nextErrors.password = 'Senha Ã© obrigatÃ³ria.'
     } else if (password.length > 255) {
-      nextErrors.password = 'Senha inválida.'
+      nextErrors.password = 'Senha invÃ¡lida.'
     }
 
     return nextErrors
@@ -111,11 +111,11 @@ export default function LoginForm({
       })
 
       if (!result) {
-        throw new Error('Não foi possível iniciar a autenticação.')
+        throw new Error('NÃ£o foi possÃ­vel iniciar a autenticaÃ§Ã£o.')
       }
 
       if (result.error) {
-        throw new Error('Credenciais inválidas.')
+        throw new Error('Credenciais invÃ¡lidas.')
       }
 
       const nextUrl =
@@ -153,7 +153,7 @@ export default function LoginForm({
       >
         <Input
           type="email"
-          placeholder="admin@verdevale.com"
+          placeholder="admin@verdevaleconnect.com"
           value={form.email}
           onChange={(e) => updateField('email', e.target.value)}
           autoComplete="email"
@@ -174,7 +174,7 @@ export default function LoginForm({
       >
         <Input
           type="password"
-          placeholder="••••••••"
+          placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
           value={form.password}
           onChange={(e) => updateField('password', e.target.value)}
           autoComplete="current-password"

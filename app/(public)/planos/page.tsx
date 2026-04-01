@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 import { prisma } from "@/lib/db/prisma";
 import { Container } from "@/components/ui/core/container";
@@ -8,7 +8,7 @@ import { Hero } from "@/components/marketing/hero";
 import { PlanCard } from "@/components/marketing/plan-card";
 
 export const metadata = {
-  title: "Planos | Verde Vale",
+  title: "Planos | Verde Vale Connect",
 };
 
 export const dynamic = "force-dynamic";
@@ -58,18 +58,18 @@ export default async function PlanosPage() {
     <Container as="main" className="py-8 md:py-12">
       <div className="space-y-8 md:space-y-10">
         <Hero
-          eyebrow="Comercial • planos premium • contratação clara"
-          badge="Planos em destaque"
-          title="Planos de internet com linguagem mais premium e decisão mais rápida"
-          description="Escolha a melhor opção para sua rotina com velocidade, estabilidade e uma jornada de contratação mais clara."
+          eyebrow="Internet fibra | planos para casa e empresa | cobertura regional"
+          badge="Planos de internet fibra"
+          title="Planos de internet fibra para casa e empresa, com velocidade estavel e contratacao simples"
+          description="Compare opcoes com clareza, escolha o plano ideal para seu perfil e avance com atendimento proximo desde a contratacao."
           primaryCta={{ label: "Quero contratar", href: "/contratar#formulario-solicitacao" }}
           secondaryCta={{ label: "Consultar cobertura", href: "/cobertura#consulta-cobertura" }}
-          note="Velocidade, latência e contratação em uma vitrine mais sofisticada."
+          note="Consulte cobertura, compare velocidade e finalize sua contratacao com informacao clara e suporte comercial."
           stats={[
-            { label: "Instalação", value: "Até 24h" },
-            { label: "Atendimento", value: "Suporte rápido" },
-            { label: "Cobertura", value: "Consulta simples" },
-            { label: "Produto", value: "Fibra premium" },
+            { label: "Instalacao", value: "Ate 24h" },
+            { label: "Atendimento", value: "Equipe proxima" },
+            { label: "Cobertura", value: "Consulte disponibilidade" },
+            { label: "Servico", value: "Fibra para casa e empresa" },
           ]}
         />
 
@@ -78,11 +78,11 @@ export default async function PlanosPage() {
             <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl space-y-2">
                 <h2 className="text-lg font-semibold text-primary md:text-xl">
-                  Nenhum plano público disponível no momento
+                  Nenhum plano disponivel no momento
                 </h2>
                 <p className="text-sm leading-6 text-secondary">
-                  Estamos atualizando a vitrine comercial para exibir velocidade,
-                  benefícios e contratação de forma mais clara.
+                  Estamos atualizando nossa grade comercial de planos de internet.
+                  Enquanto isso, consulte cobertura ou fale com nosso atendimento.
                 </p>
               </div>
 
@@ -102,16 +102,16 @@ export default async function PlanosPage() {
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">
-                  Compare os planos disponíveis
+                  Compare os planos de internet disponiveis na sua regiao
                 </h2>
                 <p className="max-w-2xl text-sm leading-6 text-secondary md:text-base">
-                  Veja velocidade, latência, benefícios e escolha a opção mais adequada
-                  antes de avançar para contratação.
+                  Analise velocidade, latencia e beneficios para escolher com
+                  seguranca o melhor plano para sua rotina.
                 </p>
               </div>
 
               <p className="text-sm text-muted">
-                {plans.length} {plans.length === 1 ? "plano disponível" : "planos disponíveis"}
+                {plans.length} {plans.length === 1 ? "opcao para contratacao" : "opcoes para contratacao"}
               </p>
             </div>
 
@@ -131,7 +131,7 @@ export default async function PlanosPage() {
                     latencyTarget: plan.latencyTarget,
                     benefits: mapBenefits(plan),
                   }}
-                  ctaLabel="Contratar"
+                  ctaLabel="Quero contratar"
                 />
               ))}
             </div>
@@ -141,3 +141,6 @@ export default async function PlanosPage() {
     </Container>
   );
 }
+
+
+

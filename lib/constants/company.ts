@@ -1,4 +1,4 @@
-export type CompanyMetric = {
+﻿export type CompanyMetric = {
   label: string;
   value: string;
   helper: string;
@@ -10,52 +10,52 @@ export type CompanyDifferential = {
 };
 
 export const COMPANY_PROFILE = {
-  name: "Verde Vale",
-  heroEyebrow: "Institucional • operacao regional • atendimento confiavel",
-  heroBadge: "Sobre a Verde Vale",
-  heroTitle: "Conectividade com foco em estabilidade, atendimento e transparencia",
+  name: "Verde Vale Connect",
+  heroEyebrow: "Provedor regional | internet fibra | atendimento proximo",
+  heroBadge: "Sobre a Verde Vale Connect",
+  heroTitle: "Internet fibra com operacao regional transparente e atendimento proximo",
   heroDescription:
-    "A Verde Vale organiza planos, cobertura, status e canais de contato em uma jornada simples e confiavel para clientes residenciais e comerciais.",
+    "A Verde Vale Connect atua como provedor regional, conectando clientes residenciais e empresas com planos de internet fibra, cobertura consultavel e suporte acessivel.",
   summary:
-    "Atuamos com operacao continua na regiao, mantendo comunicacao clara e suporte objetivo em todas as etapas da jornada.",
+    "Nosso foco e manter estabilidade, comunicacao clara e acompanhamento do servico do primeiro contato ate o pos-instalacao.",
   metrics: [
     {
-      label: "Tempo de empresa",
-      value: "Atuacao continua",
-      helper: "Operacao consolidada com rotina publica de atendimento.",
+      label: "Atuacao regional",
+      value: "Presenca local continua",
+      helper: "Operacao proxima da realidade de cada cidade e bairro atendido.",
     },
     {
-      label: "Presenca regional",
-      value: "Cidades e bairros mapeados",
-      helper: "Cobertura consultavel por cidade, bairro e CEP.",
+      label: "Cobertura consultavel",
+      value: "Cidade, bairro e CEP",
+      helper: "Consultar cobertura para apoiar a decisao de contratacao.",
     },
     {
-      label: "Foco operacional",
-      value: "Estabilidade e resposta",
-      helper: "Suporte e status publico para reduzir duvidas.",
+      label: "Transparencia operacional",
+      value: "Status e suporte publicos",
+      helper: "Atualizacoes da rede e canais de atendimento para reduzir duvidas.",
     },
   ] satisfies CompanyMetric[],
   differentials: [
     {
-      title: "Comunicacao objetiva",
+      title: "Atendimento proximo",
       description:
-        "Status, cobertura e contato ficam em paginas diretas, com leitura clara para decidir rapido.",
+        "Equipe disponivel para orientar contratacao, suporte inicial e proximos passos com clareza.",
     },
     {
-      title: "Atendimento organizado",
+      title: "Informacao transparente",
       description:
-        "Fluxos separados para comercial e suporte tecnico evitam retrabalho e melhoram o retorno.",
+        "Cobertura, status da rede e canais de contato sao apresentados de forma direta para consulta.",
     },
     {
-      title: "Jornada sem atrito",
+      title: "Operacao voltada ao cliente",
       description:
-        "Da consulta de cobertura ate a contratacao, a navegacao prioriza clareza e proximos passos.",
+        "Da consulta de cobertura ao suporte, o servico prioriza estabilidade e comunicacao objetiva.",
     },
   ] satisfies CompanyDifferential[],
   regionalScope: [
-    "Cobertura publicada com consulta por localidade antes da contratacao.",
-    "Atualizacao operacional com status publico para incidentes e manutencoes.",
-    "Canais de contato para suporte inicial e atendimento comercial.",
+    "Consulta de cobertura por localidade antes da contratacao.",
+    "Acompanhamento publico do status da rede para manutencoes e ocorrencias.",
+    "Canais de atendimento para suporte e orientacao comercial.",
   ],
 } as const;
 

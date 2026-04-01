@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -190,13 +190,13 @@ export default function CoberturaClient({ areas }: Props) {
 
             <div className="max-w-3xl space-y-3">
               <h1 className="text-3xl font-bold tracking-tight text-primary md:text-4xl">
-                Consulte disponibilidade na sua região
+                Consultar disponibilidade de internet fibra na sua região
               </h1>
 
               <p className="text-sm leading-6 text-secondary md:text-base">
-                Pesquise por CEP, cidade ou bairro para verificar disponibilidade
-                antes de avançar para contratação. Abaixo, você também encontra a
-                listagem pública das áreas já atendidas.
+                Informe CEP, cidade ou bairro para verificar cobertura de forma
+                rápida. Você também encontra a lista pública das áreas atendidas
+                para apoiar sua decisão de contratação.
               </p>
             </div>
           </div>
@@ -212,7 +212,7 @@ export default function CoberturaClient({ areas }: Props) {
                     {areas.length}
                   </p>
                   <p className="text-sm leading-6 text-secondary">
-                    Regiões públicas marcadas como disponíveis no sistema.
+                    Regiões com disponibilidade publicada para consulta pública.
                   </p>
                 </div>
               </CardContent>
@@ -228,7 +228,7 @@ export default function CoberturaClient({ areas }: Props) {
                     {uniqueCities}
                   </p>
                   <p className="text-sm leading-6 text-secondary">
-                    Visão pública por cidade para reduzir atrito na consulta
+                    Cidades com cobertura cadastrada para facilitar a consulta
                     inicial.
                   </p>
                 </div>
@@ -245,8 +245,8 @@ export default function CoberturaClient({ areas }: Props) {
                     {uniqueDistricts}
                   </p>
                   <p className="text-sm leading-6 text-secondary">
-                    Bairros ou combinações públicas de cidade e distrito já
-                    visíveis.
+                    Bairros já listados para consulta de internet fibra na
+                    região.
                   </p>
                 </div>
               </CardContent>
@@ -256,8 +256,8 @@ export default function CoberturaClient({ areas }: Props) {
 
         <StatusBanner
           status="Consulta pública"
-          title="Validação rápida antes da contratação"
-          description="Reduza atrito comercial com uma consulta simples e uma visualização clara das áreas disponíveis."
+          title="Consulta de cobertura antes da contratação"
+          description="Verifique disponibilidade com clareza e siga para atendimento comercial com mais segurança."
         />
 
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
@@ -268,10 +268,11 @@ export default function CoberturaClient({ areas }: Props) {
           >
             <Card className="rounded-[28px] border-border">
               <CardHeader className="space-y-3">
-                <CardTitle className="text-xl">Consulta rápida</CardTitle>
+                <CardTitle className="text-xl">Consultar cobertura</CardTitle>
                 <p className="text-sm leading-6 text-secondary">
-                  Informe pelo menos um campo para buscar disponibilidade. O
-                  ideal é usar CEP, cidade ou bairro com o máximo de precisão.
+                  Preencha pelo menos um campo para verificar disponibilidade.
+                  Para resultado mais preciso, informe CEP, cidade ou bairro da
+                  instalação.
                 </p>
               </CardHeader>
 
@@ -329,12 +330,12 @@ export default function CoberturaClient({ areas }: Props) {
 
                   <div className="rounded-2xl border border-border bg-surface-secondary/70 p-4">
                     <p className="text-sm font-medium text-primary">
-                      Como usar a consulta
+                      Como consultar disponibilidade
                     </p>
                     <p className="mt-2 text-sm leading-6 text-secondary">
-                      Você pode pesquisar por CEP, cidade ou bairro. Para um
-                      retorno mais preciso, prefira informar dados reais da
-                      região onde a instalação será feita.
+                      Você pode consultar por CEP, cidade ou bairro. Para um
+                      retorno mais confiável, use os dados reais do endereço
+                      onde o serviço será instalado.
                     </p>
                   </div>
 
@@ -358,8 +359,8 @@ export default function CoberturaClient({ areas }: Props) {
                     >
                       <p className="font-semibold">
                         {result.available
-                          ? "Cobertura disponível para a região informada."
-                          : "Ainda não encontramos cobertura disponível para a região informada."}
+                          ? "Cobertura disponível para o endereço informado."
+                          : "Ainda não há cobertura disponível para o endereço informado."}
                       </p>
 
                       {result.notes ? (
@@ -381,7 +382,7 @@ export default function CoberturaClient({ areas }: Props) {
                               className="w-full sm:w-auto"
                             >
                               <Link href="/contato#formulario-contato">
-                                Tirar dúvidas
+                                Falar com atendimento
                               </Link>
                             </Button>
                           </>
@@ -403,7 +404,7 @@ export default function CoberturaClient({ areas }: Props) {
                               className="w-full sm:w-auto"
                             >
                               <Link href="/planos#comparacao-planos">
-                                Ver planos
+                                Ver planos de internet
                               </Link>
                             </Button>
                           </>
@@ -456,12 +457,12 @@ export default function CoberturaClient({ areas }: Props) {
 
                 <div className="space-y-3 text-sm leading-6 text-secondary">
                   <p>
-                    A consulta rápida usa os dados cadastrados no sistema e pode
-                    variar conforme atualização operacional.
+                    A consulta utiliza os dados cadastrados no sistema e pode
+                    variar conforme atualização operacional da cobertura.
                   </p>
                   <p>
-                    Após confirmar a disponibilidade, o próximo passo ideal é
-                    seguir para a jornada comercial de contratação.
+                    Após confirmar disponibilidade, você pode seguir para
+                    contratação ou falar com nosso atendimento comercial.
                   </p>
                 </div>
 
@@ -489,10 +490,10 @@ export default function CoberturaClient({ areas }: Props) {
               Áreas públicas
             </p>
             <h2 className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">
-              Regiões atendidas
+              Áreas com cobertura disponível
             </h2>
             <p className="max-w-2xl text-sm leading-6 text-secondary md:text-base">
-              Lista pública das regiões atualmente marcadas como disponíveis.
+              Lista pública das áreas atualmente disponíveis para internet fibra.
             </p>
           </div>
 
@@ -500,7 +501,7 @@ export default function CoberturaClient({ areas }: Props) {
             <CardContent className="p-5 sm:p-6">
               {areas.length === 0 ? (
                 <div className="rounded-2xl border border-border bg-background px-4 py-4 text-sm text-secondary">
-                  Ainda não há áreas cadastradas publicamente.
+                  Ainda não há áreas com cobertura publicada no momento.
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -510,7 +511,7 @@ export default function CoberturaClient({ areas }: Props) {
                       className="rounded-2xl border border-border bg-background p-4"
                     >
                       <h3 className="text-base font-semibold leading-6 text-primary">
-                        {area.city} — {area.district}
+                        {area.city} - {area.district}
                       </h3>
 
                       <p className="mt-3 text-sm leading-6 text-secondary">
@@ -533,3 +534,4 @@ export default function CoberturaClient({ areas }: Props) {
     </Container>
   );
 }
+

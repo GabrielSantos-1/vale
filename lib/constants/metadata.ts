@@ -1,4 +1,4 @@
-export const DEFAULT_METADATA = {
-  title: 'Verde Vale 2.0',
-  description: 'Provedor de internet fibra óptica com estética Cyber-Professional',
+﻿export const DEFAULT_METADATA = {
+  title: 'Verde Vale Connect',
+  description: 'Internet fibra com planos claros, cobertura regional e atendimento proximo.',
 };

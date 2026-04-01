@@ -1,5 +1,6 @@
-"use client";
+﻿"use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
@@ -31,24 +32,21 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 md:px-6 md:py-4">
         <Link
           href="/"
-          aria-label="Ir para a página inicial da Verde Vale"
-          className="group flex min-w-0 items-center gap-3"
+          aria-label="Ir para a pagina inicial da Verde Vale Connect"
+          className="group flex min-w-0 items-center"
         >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#0f172a,#1d4ed8)] text-sm font-bold text-white shadow-soft transition-transform duration-200 group-hover:scale-[1.03]">
-            VV
+          <span className="relative block h-12 w-40 shrink-0 overflow-hidden transition-transform duration-200 group-hover:scale-[1.02] md:h-14 md:w-48">
+            <Image
+              src="/brand/logo-verde-vale-connect.svg"
+              alt="Logo Verde Vale Connect"
+              fill
+              sizes="(max-width: 768px) 160px, 192px"
+              className="object-contain object-left"
+            />
           </span>
-
-          <div className="min-w-0 leading-tight">
-            <span className="block truncate text-sm font-semibold text-primary md:text-[15px]">
-              Verde Vale
-            </span>
-            <span className="block truncate text-[11px] text-secondary md:text-xs">
-              Fibra • Cobertura • Transparência
-            </span>
-          </div>
         </Link>
 
-        <nav aria-label="Navegação principal" className="hidden items-center gap-1 md:flex">
+        <nav aria-label="Navegacao principal" className="hidden items-center gap-1 md:flex">
           {navItems.map((item) => {
             const active = isActivePath(pathname, item.href);
 

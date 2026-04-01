@@ -1,11 +1,11 @@
-import { Container } from "@/components/ui/core/container";
+﻿import { Container } from "@/components/ui/core/container";
 import { AboutHero } from "@/components/marketing/about-hero";
 import { AboutMetrics } from "@/components/marketing/about-metrics";
 import { AboutDifferentials } from "@/components/marketing/about-differentials";
 import { AboutCta } from "@/components/marketing/about-cta";
 
 export const metadata = {
-  title: "Sobre | Verde Vale",
+  title: "Sobre | Verde Vale Connect",
 };
 
 export default function SobrePage() {
@@ -20,3 +20,5 @@ export default function SobrePage() {
     </Container>
   );
 }
+
+

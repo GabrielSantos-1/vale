@@ -2,19 +2,19 @@
 
 ## Objetivo
 
-Este documento registra o estado atual de execução por sprint e as próximas tarefas reais do projeto.
+Registrar o status de execução por sprint e as próximas tarefas reais do projeto.
 
 ---
 
 ## Data de referência
 
-2026-03-31
+2026-04-01
 
 ---
 
 ## Sprint atual
 
-Sprint 7 — Hardening, estabilização pós-deploy e higiene de segurança
+Sprint 8 — Refino comercial/SEO on-page concluído + continuidade de hardening técnico
 
 ---
 
@@ -39,9 +39,9 @@ Sprint 7 — Hardening, estabilização pós-deploy e higiene de segurança
 - [x] tokens visuais aplicados
 
 ## Sprint 2 — Home Page
-- [x] Hero premium implementada
+- [x] Hero principal implementada
 - [x] seções de valor e conversão presentes
-- [x] CTA de cobertura e previews de status/faq presentes
+- [x] CTA de cobertura e previews de status/FAQ presentes
 - [x] metadata SEO base aplicada
 
 ## Sprint 3 — Páginas públicas
@@ -64,13 +64,12 @@ Sprint 7 — Hardening, estabilização pós-deploy e higiene de segurança
 - [x] acesso admin recuperado em produção
 - [x] produção validada com domínio final correto
 - [~] revisão final de segurança da sessão pendente
-- [ ] recuperação de senha/admin ainda não implementada
+- [ ] recuperação de senha/admin ainda pendente de fechamento final
 
 ## Sprint 6 — Painel administrativo
 - [x] base do painel admin implementada
 - [x] dashboard e layout admin ativos
-- [x] gestão de planos/cobertura/faq/status/leads ativa
-- [x] cards de planos refinados
+- [x] gestão de planos/cobertura/FAQ/status/leads ativa
 - [x] bug do badge comercial corrigido no admin
 - [ ] revisão final de estados vazios/form feedback ainda pode ser aprofundada
 
@@ -79,34 +78,41 @@ Sprint 7 — Hardening, estabilização pós-deploy e higiene de segurança
 - [x] migrations aplicadas com sucesso
 - [x] produção validada com `/api/plans`
 - [x] env principal da Vercel validada
-- [x] CSP corrigida o suficiente para destravar login/admin
+- [x] CSP ajustada para destravar login/admin
 - [~] revisão fina da CSP pendente
 - [ ] limpeza de arquivos temporários/sensíveis pendente
 - [ ] revisão de `.gitignore` pendente
 - [ ] revisão de scripts auxiliares pendente
-- [ ] implementação de recuperação de senha/admin pendente
 - [ ] rodada final de hardening de auth/headers/rate-limit pendente
-- [ ] consolidar testes mínimos pós-estabilização
+
+## Sprint 8 — Refino comercial e SEO on-page (páginas públicas)
+- [x] Home refinada (hero, blocos institucionais, planos, diferenciais, consistência verbal)
+- [x] Página Planos refinada para clareza comercial e decisão
+- [x] Página Cobertura refinada com foco em consulta de disponibilidade e próximos passos
+- [x] Página Status refinada para transparência operacional e comunicação útil
+- [x] Página Contato refinada para atendimento/suporte com linguagem objetiva
+- [x] Página Sobre refinada com posicionamento institucional de provedor regional
+- [x] Ajuste textual final no rodapé público
+- [x] Consolidação documental da versão 1.0.8
+- [x] Sem alterações funcionais em API/DB/auth/rotas/lógica
 
 ---
 
 ## Próximas tarefas objetivas (execução imediata)
 
-1. Limpar arquivos temporários, artefatos e scripts auxiliares sem quebrar o projeto.
-2. Revisar `.gitignore` e garantir que dumps, hashes temporários e resíduos operacionais não entrem no Git.
-3. Revisar `lib/security/headers.ts` para endurecimento progressivo da CSP sem quebrar login/admin.
-4. Revisar fluxo de autenticação/sessão e proteção admin com foco em estabilidade pós-deploy.
-5. Implementar fluxo seguro de recuperação de senha/admin.
-6. Revisar secrets, arquivos sensíveis e higiene operacional do repositório.
-7. Consolidar checkpoint final pós-hardening.
+1. finalizar hardening técnico pendente (CSP fina, headers e rate-limit);
+2. concluir revisão de higiene operacional do repositório;
+3. validar regressão mínima automatizada após fechamento do hardening;
+4. consolidar checkpoint pós-hardening para nova baseline operacional.
 
 ---
 
 ## Regra
 
 Nenhuma etapa nova deve:
-- quebrar o banco novo;
-- quebrar o deploy da Vercel;
+
+- quebrar o banco em produção;
 - quebrar o login admin;
-- misturar limpeza com refatoração ampla;
-- alterar múltiplas camadas sensíveis ao mesmo tempo.
+- quebrar o deploy atual;
+- misturar hardening sensível com refatoração ampla;
+- alterar múltiplas camadas críticas sem checkpoint intermediário.

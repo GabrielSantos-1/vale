@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Registrar decisões arquiteturais e operacionais relevantes, mantendo histórico auditável.
+Registrar decisões arquiteturais e operacionais relevantes com histórico auditável.
 
 ---
 
@@ -16,7 +16,7 @@ Next.js + TypeScript + Tailwind + PostgreSQL + Prisma.
 
 ## Decisão 002 — Autenticação por cookie HttpOnly
 
-Sessão baseada em cookie HttpOnly para área administrativa.
+Sessão administrativa baseada em cookie HttpOnly.
 
 **Motivo:** reduzir superfície de ataque de XSS sobre credenciais.
 
@@ -32,52 +32,79 @@ Validação de entrada padronizada no servidor com schemas Zod.
 
 ## Decisão 004 — Arquitetura modular
 
-Separação clara entre UI, aplicação, segurança e persistência.
+Separação entre UI, aplicação, segurança e persistência.
 
-**Motivo:** manutenção e evolução incremental sem reescrita ampla.
-
----
-
-## Decisão 005 — Direção visual premium pública
-
-Hero premium reutilizável com fundo de fibra, superfícies profundas e contraste controlado.
-
-**Motivo:** alinhar percepção de qualidade entre público e admin.
+**Motivo:** evolução incremental com menor acoplamento e melhor manutenção.
 
 ---
 
-## Decisão 006 — Política de checkpoint datado
+## Decisão 005 — Política de checkpoint datado
 
 Registrar checkpoints técnicos datados para continuidade e rastreabilidade.
 
-**Motivo:** reduzir regressão e melhorar governança do workspace.
+**Motivo:** reduzir regressões e melhorar governança.
 
 ---
 
-## Decisão 007 — Abandono do banco anterior inconsistente
+## Decisão 006 — Abandono do banco anterior inconsistente
 
-O banco anterior foi considerado inconsistente e substituído por um novo projeto Supabase.
+O banco anterior foi considerado inconsistente e substituído por novo projeto Supabase.
 
-**Motivo:** recuperar previsibilidade operacional, alinhar produção com uma base limpa e evitar continuar sobre fundação comprometida.
+**Motivo:** recuperar previsibilidade operacional e alinhamento com produção.
 
 ---
 
-## Decisão 008 — Produção deve usar somente o domínio canônico para validação final de auth
+## Decisão 007 — Validação final de auth no domínio canônico
 
-A validação final de autenticação deve ser feita no domínio principal configurado em `NEXTAUTH_URL`, e não em previews.
+A validação final de autenticação deve ser feita no domínio principal configurado em `NEXTAUTH_URL`, e não em preview.
 
 **Motivo:** evitar falso diagnóstico por divergência de domínio/cookie/sessão.
 
 ---
 
-## Decisão 009 — Fase atual é hardening pós-recovery, não expansão funcional ampla
+## Decisão 008 — Fase pós-recovery prioriza hardening
 
-Após o recovery do deploy e do admin, o projeto entra primeiro em limpeza, endurecimento e recuperação de acesso, antes de novas expansões maiores.
+Após recuperação do deploy/admin, priorizar limpeza e endurecimento antes de expansão funcional ampla.
 
-**Motivo:** reduzir risco de regressão e consolidar base segura.
+**Motivo:** reduzir risco estrutural e consolidar base segura.
+
+---
+
+## Decisão 009 — Posicionamento verbal oficial (1.0.8)
+
+Adotar posicionamento verbal público:
+
+**“Provedor regional com identidade premium, operação transparente e atendimento próximo.”**
+
+**Motivo:** alinhar comunicação institucional/comercial em Home e páginas públicas internas.
+
+---
+
+## Decisão 010 — Refino textual sem alteração funcional
+
+Permitir ciclos de melhoria comercial/SEO on-page com escopo estrito em copy/headings/microcopy/CTAs, sem alterar lógica, dados, contratos ou comportamento.
+
+**Motivo:** elevar conversão e percepção de marca preservando estabilidade operacional.
+
+---
+
+## Decisão 011 — Diretriz de SEO on-page semântico para páginas públicas
+
+Padronizar vocabulário semântico útil ao usuário e à busca, evitando repetição artificial e promessa técnica não sustentada.
+
+Eixo semântico prioritário:
+
+- internet fibra
+- planos de internet
+- cobertura / consultar disponibilidade
+- status da rede
+- atendimento / suporte
+- provedor regional
+
+**Motivo:** melhorar legibilidade, intenção de busca e confiança sem inflar conteúdo.
 
 ---
 
 ## Regra
 
-Toda decisão que altere segurança, deploy, banco, auth ou fluxo administrativo deve ser registrada aqui.
+Toda decisão que altere segurança, deploy, banco, auth, fluxo administrativo ou padrão verbal institucional deve ser registrada aqui.

@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/card";
+﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/card";
 import { COMPANY_PROFILE } from "@/lib/constants/company";
 
 export function AboutDifferentials() {
@@ -9,10 +9,10 @@ export function AboutDifferentials() {
           Diferenciais
         </p>
         <h2 className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">
-          O que o cliente percebe no dia a dia
+          Como a Verde Vale Connect atende no dia a dia
         </h2>
         <p className="text-sm leading-6 text-secondary md:text-base">
-          Estabilidade, transparência e atendimento organizado em uma jornada única.
+          Atendimento próximo, informação clara e operação estável para clientes residenciais e empresas.
         </p>
       </div>
 
@@ -35,7 +35,7 @@ export function AboutDifferentials() {
             Atuação regional
           </p>
           <CardTitle className="text-2xl tracking-tight text-primary">
-            Presença local com cobertura publicada
+            Presença regional com cobertura e status públicos
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -54,3 +54,5 @@ export function AboutDifferentials() {
 }
 
 export default AboutDifferentials;
+
+

@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/db/prisma";
+﻿import { prisma } from "@/lib/db/prisma";
 import { Hero } from "@/components/marketing/hero";
 import CoberturaClient from "./cobertura-client";
 
 export const metadata = {
-  title: "Cobertura | Verde Vale",
+  title: "Cobertura | Verde Vale Connect",
 };
 
 export const dynamic = "force-dynamic";
@@ -18,18 +18,18 @@ export default async function CoberturaPage() {
     <>
       <div className="mx-auto w-full max-w-7xl px-4 pb-6 pt-6 md:px-6 md:pb-8 md:pt-8">
         <Hero
-          eyebrow="Cobertura • disponibilidade • consulta rápida"
-          badge="Rede verificável"
-          title="Confirme cobertura com um hero mais sofisticado e confiável"
-          description="Pesquise por CEP, cidade ou bairro para verificar disponibilidade antes de avançar para contratação."
+          eyebrow="Internet fibra | cobertura regional | consulta de disponibilidade"
+          badge="Consulta de cobertura"
+          title="Consulte cobertura de internet fibra na sua região com rapidez e clareza"
+          description="Pesquise por CEP, cidade ou bairro para verificar disponibilidade antes de contratar internet para casa ou empresa."
           primaryCta={{ label: "Quero contratar", href: "/contratar#formulario-solicitacao" }}
           secondaryCta={{ label: "Falar com atendimento", href: "/contato#formulario-contato" }}
-          note="Consulta pública para reduzir atrito e aumentar confiança."
+          note="Processo simples para consultar disponibilidade e seguir com atendimento comercial quando houver cobertura."
           stats={[
             { label: "Áreas", value: `${areas.length}` },
-            { label: "Cidades", value: "Mapeadas" },
-            { label: "Regiões", value: "Publicadas" },
-            { label: "Fluxo", value: "Sem atrito" },
+            { label: "Cidades", value: "Com cobertura publicada" },
+            { label: "Regiões", value: "Em acompanhamento" },
+            { label: "Consulta", value: "Rápida e objetiva" },
           ]}
         />
       </div>
@@ -37,3 +37,6 @@ export default async function CoberturaPage() {
     </>
   );
 }
+
+
+

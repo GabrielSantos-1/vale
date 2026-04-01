@@ -1,5 +1,6 @@
-"use client";
+﻿"use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
@@ -38,23 +39,27 @@ export function AdminSidebar() {
       </div>
 
       <div className="relative border-b border-white/10 px-5 py-5">
-        <Link href="/admin/dashboard" className="flex items-center gap-3">
-          <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white shadow-soft">
-            <div className="absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.22),transparent_65%)]" />
-            <span className="relative text-sm font-bold tracking-[0.2em]">VV</span>
+        <Link href="/admin/dashboard" className="flex flex-col gap-2">
+          <div className="relative block h-14 w-48 overflow-hidden md:h-16 md:w-56">
+            <Image
+              src="/brand/logo-verde-vale-connect-light.svg"
+              alt="Logo Verde Vale Connect"
+              fill
+              sizes="(max-width: 1024px) 192px, 224px"
+              className="object-contain object-left"
+            />
           </div>
 
           <div className="min-w-0">
-            <p className="truncate text-base font-semibold text-white">Verde Vale</p>
             <p className="truncate text-xs text-slate-300">Painel administrativo</p>
           </div>
         </Link>
       </div>
 
       <div className="relative flex-1 space-y-6 overflow-y-auto px-4 py-5">
-        <SidebarSection title="Operação" items={operationsItems} pathname={pathname} />
+        <SidebarSection title="OperaÃ§Ã£o" items={operationsItems} pathname={pathname} />
 
-        <SidebarSection title="Conteúdo" items={contentItems} pathname={pathname} />
+        <SidebarSection title="ConteÃºdo" items={contentItems} pathname={pathname} />
       </div>
 
       <div className="relative space-y-4 overflow-hidden border-t border-white/10 p-4">
@@ -85,7 +90,7 @@ export function AdminSidebar() {
               <div>
                 <p className="text-sm font-semibold text-white">Sistema ativo</p>
                 <p className="mt-1 text-xs leading-5 text-slate-300">
-                  Operação estável, pronta para gestão comercial e institucional.
+                  OperaÃ§Ã£o estÃ¡vel, pronta para gestÃ£o comercial e institucional.
                 </p>
               </div>
 
@@ -96,7 +101,7 @@ export function AdminSidebar() {
               <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300">
                 Ambiente
               </p>
-              <p className="mt-1 text-sm font-medium text-white">Admin - Verde Vale</p>
+              <p className="mt-1 text-sm font-medium text-white">Admin - Verde Vale Connect</p>
             </div>
           </div>
         </div>
@@ -267,3 +272,5 @@ function PlusIcon({ className }: { className?: string }) {
     className
   );
 }
+
+

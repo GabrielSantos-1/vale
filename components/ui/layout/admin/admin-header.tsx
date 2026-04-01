@@ -1,5 +1,6 @@
-"use client";
+﻿"use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo, useState, type ReactNode } from "react";
@@ -26,37 +27,37 @@ const pageMeta: Record<
   "/admin": {
     eyebrow: "Admin",
     title: "Dashboard",
-    description: "Visão executiva da operação.",
+    description: "VisÃ£o executiva da operaÃ§Ã£o.",
   },
   "/admin/dashboard": {
     eyebrow: "Admin",
     title: "Dashboard",
-    description: "Visão executiva da operação.",
+    description: "VisÃ£o executiva da operaÃ§Ã£o.",
   },
   "/admin/leads": {
     eyebrow: "Comercial",
     title: "Leads",
-    description: "Pipeline, conversão e acompanhamento comercial.",
+    description: "Pipeline, conversÃ£o e acompanhamento comercial.",
   },
   "/admin/planos": {
-    eyebrow: "Catálogo",
+    eyebrow: "CatÃ¡logo",
     title: "Planos",
-    description: "Gestão dos planos publicados no site.",
+    description: "GestÃ£o dos planos publicados no site.",
   },
   "/admin/cobertura": {
-    eyebrow: "Operação",
+    eyebrow: "OperaÃ§Ã£o",
     title: "Cobertura",
-    description: "Áreas, CEPs e disponibilidade da rede.",
+    description: "Ãreas, CEPs e disponibilidade da rede.",
   },
   "/admin/faq": {
-    eyebrow: "Conteúdo",
+    eyebrow: "ConteÃºdo",
     title: "FAQ",
-    description: "Perguntas frequentes do site público.",
+    description: "Perguntas frequentes do site pÃºblico.",
   },
   "/admin/status": {
-    eyebrow: "Operação",
+    eyebrow: "OperaÃ§Ã£o",
     title: "Status",
-    description: "Avisos e comunicação operacional com clientes.",
+    description: "Avisos e comunicaÃ§Ã£o operacional com clientes.",
   },
   "/admin/contato": {
     eyebrow: "Atendimento",
@@ -77,7 +78,7 @@ function resolvePageMeta(pathname: string) {
   return {
     eyebrow: "Admin",
     title: "Painel",
-    description: "Gestão central do sistema.",
+    description: "GestÃ£o central do sistema.",
   };
 }
 
@@ -122,17 +123,17 @@ export function AdminHeader() {
               <div className="relative min-w-0 flex-1 lg:w-[320px]">
                 <SearchIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
                 <input
-                  placeholder="Buscar módulo, lead ou conteúdo..."
+                  placeholder="Buscar mÃ³dulo, lead ou conteÃºdo..."
                   className="h-11 w-full rounded-2xl border border-border bg-white/80 pl-11 pr-4 text-sm text-primary outline-none transition placeholder:text-muted focus:border-[color:var(--ring)] focus:ring-2 focus:ring-[color:var(--ring)]/20"
                 />
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <IconButton label="Notificações">
+                <IconButton label="NotificaÃ§Ãµes">
                   <BellIcon className="h-4 w-4" />
                 </IconButton>
 
-                <IconButton label="Configurações">
+                <IconButton label="ConfiguraÃ§Ãµes">
                   <SettingsIcon className="h-4 w-4" />
                 </IconButton>
 
@@ -179,7 +180,15 @@ export function AdminHeader() {
           <div className="flex h-full max-w-[320px] flex-col border-r border-white/10 bg-sidebar/95 p-5 shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
               <div>
-                <p className="text-base font-semibold text-white">Verde Vale</p>
+                <div className="relative mb-1 h-10 w-36 overflow-hidden">
+                  <Image
+                    src="/brand/logo-verde-vale-connect-light.svg"
+                    alt="Logo Verde Vale Connect"
+                    fill
+                    sizes="144px"
+                    className="object-contain object-left"
+                  />
+                </div>
                 <p className="text-xs text-slate-300">Painel administrativo</p>
               </div>
 
@@ -324,3 +333,5 @@ function SettingsIcon({ className }: { className?: string }) {
     className
   );
 }
+
+

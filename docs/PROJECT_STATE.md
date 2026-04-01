@@ -2,32 +2,43 @@
 
 ## Objetivo
 
-Este documento registra o estado técnico atual do projeto **Verde Vale 2**.
-Ele funciona como snapshot oficial para retomada segura, continuidade controlada e execução por etapas sem quebrar o ambiente atual.
+Registrar o estado técnico oficial do projeto **Verde Vale 2** para continuidade segura, rastreabilidade e execução incremental sem regressão.
 
 ---
 
 ## Data de referência
 
-2026-03-31
+2026-04-01
+
+---
+
+## Release documental
+
+### Versão: 1.0.8 (documental)
+
+Esta versão consolida documentação de refinamento comercial e SEO on-page das páginas públicas, sem alteração funcional de backend, autenticação, banco, rotas ou contratos.
 
 ---
 
 ## Resumo executivo
 
-O projeto saiu do estado de recuperação emergencial e entrou em estado **funcional em produção**, com o novo banco Supabase conectado, migrations aplicadas, API principal validada, acesso administrativo restaurado e deploy operacional na Vercel.
+O sistema permanece funcional e estabilizado em produção, com foco recente em refinamento verbal/comercial das páginas públicas.
 
-Estado validado nesta data:
+Consolidado em 1.0.8:
 
-- banco novo Supabase ativo e coerente com produção;
-- `DATABASE_URL` e `DIRECT_URL` configuradas para o novo ambiente;
-- `NEXTAUTH_URL` e `NEXTAUTH_SECRET` existentes na Vercel;
-- `/api/plans` em produção retornando corretamente os 5 planos;
-- login admin funcionando em produção;
-- acesso ao admin validado;
-- cards de planos melhorados;
-- bug de atualização/remoção do badge comercial corrigido no admin;
-- CSP ajustada para não bloquear o runtime necessário do login/admin.
+- refinamento de copy na Home;
+- refinamento de copy em `/planos`, `/cobertura`, `/status`, `/contato` e `/sobre`;
+- padronização verbal para posicionamento institucional de provedor regional;
+- ajuste textual final no rodapé público;
+- validações de build executadas durante o ciclo de refinamento.
+
+Sem mudança funcional:
+
+- sem alteração de API;
+- sem alteração de schema Prisma;
+- sem alteração de lógica de autenticação/autorização;
+- sem alteração de fluxos de formulário e handlers;
+- sem alteração de rotas públicas e administrativas.
 
 ---
 
@@ -35,80 +46,66 @@ Estado validado nesta data:
 
 ### Público
 
-- home, planos, cobertura, suporte, contato, status, sobre, política e termos ativos;
-- visual premium consolidado;
-- cards de planos refinados;
-- fluxo público principal operacional;
-- API de planos validada em produção.
+- páginas públicas principais operacionais: Home, Planos, Cobertura, Contato, Status, Sobre, Suporte, Políticas e Termos;
+- comunicação comercial mais clara para internet fibra, cobertura e contratação;
+- status da rede com linguagem mais operacional e transparente;
+- CTAs públicos mais consistentes entre páginas.
 
 ### Administrativo
 
-- login admin funcional em produção;
-- dashboard/admin acessível;
-- gestão de planos funcional;
-- correção aplicada no fluxo de badge comercial ao editar plano;
-- autenticação baseada em cookie HttpOnly em operação.
+- painel admin, login e gestão operacional mantidos;
+- sem alteração de comportamento ou contratos administrativos nesta versão documental.
 
 ### API e persistência
 
-- rotas públicas e administrativas segregadas;
-- banco novo Supabase em uso na produção;
-- Prisma alinhado com schema e migrations;
-- `/api/plans` validada em produção com dados corretos;
-- backend principal operacional.
+- rotas públicas e administrativas mantidas;
+- Prisma e banco sem alterações em estrutura ou consultas por este release documental;
+- contratos e validações existentes preservados.
 
 ---
 
-## Incidentes recentes consolidados
+## Evidências do ciclo refinado (1.0.8)
 
-1. banco anterior inconsistente e abandonado;
-2. ausência de `DIRECT_URL` no ambiente local durante parte da recuperação;
-3. divergência entre login local e produção;
-4. role do admin incorreta em parte da investigação;
-5. hash/senha do admin precisando redefinição controlada;
-6. `/api/auth/session` retornando `{}` em produção;
-7. CSP excessivamente restritiva bloqueando runtime/login;
-8. tentativas de validação em domínio preview em vez do domínio final;
-9. mudanças locais não commitadas em alguns momentos do processo.
+Áreas refinadas de comunicação textual:
 
-Todos esses pontos foram rastreados durante a recuperação até o estado atual funcional.
+- Home (`app/(public)/page.tsx`);
+- Planos (`app/(public)/planos/page.tsx`);
+- Cobertura (`app/(public)/cobertura/page.tsx`, `app/(public)/cobertura/cobertura-client.tsx`);
+- Status (`app/(public)/status/page.tsx`);
+- Contato (`app/(public)/contato/page.tsx`);
+- Sobre (`app/(public)/sobre/page.tsx`, constantes institucionais e blocos de apoio);
+- Rodapé (`components/layout/public/footer.tsx`).
 
----
+Documentação de rastreabilidade:
 
-## Qualidade técnica e riscos atuais
-
-### Estado atual
-- aplicação operacional em produção;
-- admin funcional;
-- deploy funcional;
-- ambiente principal estabilizado.
-
-### Riscos ativos
-1. necessidade de hardening pós-recuperação, especialmente em headers/CSP, auth e higiene de repositório;
-2. possibilidade de arquivos temporários, scripts auxiliares ou resíduos operacionais permanecerem localmente;
-3. necessidade de revisar a política CSP atual para endurecimento progressivo sem quebrar o runtime;
-4. ausência, neste momento, de um fluxo formal de recuperação de senha/admin;
-5. necessidade de revisão final de segredos, artefatos e arquivos sensíveis.
+- `docs/CHECKPOINT_2026-04-01_v1.0.8.md`;
+- `docs/checkpoints/2026-04-01-v1-0-8-refino-comercial-publico/*`.
 
 ---
 
-## Ordem recomendada de continuidade
+## Riscos ativos
 
-1. congelar este checkpoint como base oficial pós-recovery;
-2. executar limpeza controlada de arquivos temporários e resíduos operacionais;
-3. revisar segurança do runtime sem quebrar o deploy atual;
-4. implementar recuperação segura de acesso admin;
-5. revisar repositório, `.gitignore`, scripts e superfície sensível;
-6. só depois seguir para melhorias adicionais.
+1. hardening final de segurança ainda pendente (CSP fina, revisão de headers, revisão final de rate limit);
+2. higiene operacional contínua de repositório e artefatos temporários;
+3. manter disciplina de escopo para não misturar refino textual com alteração funcional sensível.
+
+---
+
+## Próximos passos recomendados
+
+1. concluir pendências técnicas de hardening pós-estabilização;
+2. consolidar rodada mínima de testes automatizados por camada crítica;
+3. manter checkpoints datados por lote relevante;
+4. iniciar apenas melhorias funcionais após fechamento dos itens de segurança pendentes.
 
 ---
 
 ## Regra de manutenção
 
 Atualizar este arquivo sempre que houver mudança relevante em:
-- deploy/produção;
-- banco, auth, sessão ou CSP;
-- segurança/hardening;
-- fluxo administrativo;
-- recuperação de acesso;
-- risco estrutural do projeto.
+
+- produção/deploy;
+- segurança, autenticação, sessão, CSP ou headers;
+- banco/schema/contratos;
+- escopo funcional administrativo;
+- mudanças documentais de release que afetem governança e rastreabilidade.
