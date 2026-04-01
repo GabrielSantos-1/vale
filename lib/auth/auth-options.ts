@@ -58,18 +58,36 @@ export const authOptions: NextAuthOptions = {
 
         const email = normalizeEmail(credentials.email);
         const password = credentials.password;
+        let user: {
+          id: string;
+          name: string;
+          email: string;
+          role: string;
+          isActive: boolean;
+          passwordHash: string;
+        } | null = null;
 
-        const user = await prisma.adminUser.findUnique({
-          where: { email },
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            isActive: true,
-            passwordHash: true,
-          },
-        });
+        try {
+          user = await prisma.adminUser.findUnique({
+            where: { email },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+              isActive: true,
+              passwordHash: true,
+            },
+          });
+        } catch (error) {
+          logger.error('Admin login failed due to auth backend dependency', {
+            route: '/api/auth/[...nextauth]',
+            dependency: 'database',
+            error,
+          });
+
+          return null;
+        }
 
         if (!user || !user.isActive) {
           logger.warn('Admin login rejected: invalid account state', {
