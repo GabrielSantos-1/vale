@@ -6,18 +6,18 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://verdevale.example.com"),
   title: "Verde Vale Connect",
   description:
-    "Internet fibra com planos claros, cobertura regional e atendimento proximo.",
+    "Internet fibra com planos claros, cobertura regional e atendimento próximo.",
   openGraph: {
     title: "Verde Vale Connect",
     description:
-      "Internet fibra com planos claros, cobertura regional e atendimento proximo.",
+      "Internet fibra com planos claros, cobertura regional e atendimento próximo.",
     images: ["/og-image.png"],
   },
   twitter: {
     card: "summary_large_image",
     title: "Verde Vale Connect",
     description:
-      "Internet fibra com planos claros, cobertura regional e atendimento proximo.",
+      "Internet fibra com planos claros, cobertura regional e atendimento próximo.",
     images: ["/og-image.png"],
   },
   icons: {

@@ -73,16 +73,16 @@ export default async function PlanosPage() {
         <Hero
           eyebrow="Internet fibra | planos para casa e empresa | cobertura regional"
           badge="Planos de internet fibra"
-          title="Planos de internet fibra para casa e empresa, com velocidade estavel e contratacao simples"
-          description="Compare opcoes com clareza, escolha o plano ideal para seu perfil e avance com atendimento proximo desde a contratacao."
-          primaryCta={{ label: "Quero contratar", href: "/contratar#formulario-solicitacao" }}
+          title="Planos de internet fibra para casa e empresa, com velocidade estável e contratação simples"
+          description="Compare opções com clareza, escolha o plano ideal para seu perfil e avance com atendimento próximo desde a contratação."
+          primaryCta={{ label: "Contratar agora", href: "/contratar#formulario-solicitacao" }}
           secondaryCta={{ label: "Consultar cobertura", href: "/cobertura#consulta-cobertura" }}
-          note="Consulte cobertura, compare velocidade e finalize sua contratacao com informacao clara e suporte comercial."
+          note="Consulte cobertura, compare velocidade e finalize sua contratação com informação clara e suporte comercial."
           stats={[
-            { label: "Instalacao", value: "Ate 24h" },
-            { label: "Atendimento", value: "Equipe proxima" },
+            { label: "Instalação", value: "Até 24h" },
+            { label: "Atendimento", value: "Equipe próxima" },
             { label: "Cobertura", value: "Consulte disponibilidade" },
-            { label: "Servico", value: "Fibra para casa e empresa" },
+            { label: "Serviço", value: "Fibra para casa e empresa" },
           ]}
         />
 
@@ -91,7 +91,7 @@ export default async function PlanosPage() {
             <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl space-y-2">
                 <h2 className="text-lg font-semibold text-primary md:text-xl">
-                  Nenhum plano disponivel no momento
+                  Nenhum plano disponível no momento
                 </h2>
                 <p className="text-sm leading-6 text-secondary">
                   Estamos atualizando nossa grade comercial de planos de internet.
@@ -105,7 +105,7 @@ export default async function PlanosPage() {
                 </Button>
 
                 <Button asChild className="w-full sm:w-auto">
-                  <Link href="/contato#formulario-contato">Falar com atendimento</Link>
+                  <Link href="/contato#formulario-contato">Entrar em contato</Link>
                 </Button>
               </div>
             </CardContent>
@@ -115,16 +115,16 @@ export default async function PlanosPage() {
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">
-                  Compare os planos de internet disponiveis na sua regiao
+                  Compare os planos de internet disponíveis na sua região
                 </h2>
                 <p className="max-w-2xl text-sm leading-6 text-secondary md:text-base">
-                  Analise velocidade, latencia e beneficios para escolher com
-                  seguranca o melhor plano para sua rotina.
+                  Analise velocidade, latência e benefícios para escolher com
+                  segurança o melhor plano para sua rotina.
                 </p>
               </div>
 
               <p className="text-sm text-muted">
-                {plans.length} {plans.length === 1 ? "opcao para contratacao" : "opcoes para contratacao"}
+                {plans.length} {plans.length === 1 ? "opção para contratação" : "opções para contratação"}
               </p>
             </div>
 
@@ -144,7 +144,7 @@ export default async function PlanosPage() {
                     latencyTarget: plan.latencyTarget,
                     benefits: mapBenefits(plan),
                   }}
-                  ctaLabel="Quero contratar"
+                  ctaLabel="Contratar agora"
                 />
               ))}
             </div>

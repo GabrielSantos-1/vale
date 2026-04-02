@@ -1,4 +1,4 @@
-import { ContactMessageStatus } from '@prisma/client';
+﻿import { ContactMessageStatus } from '@prisma/client';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
@@ -376,3 +376,4 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
     });
   }
 }
+

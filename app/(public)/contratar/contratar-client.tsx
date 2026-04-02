@@ -59,11 +59,11 @@ const conversionHighlights = [
     label: "Jornada",
     value: "Mais clara",
     description:
-      "SeleÃ§Ã£o de plano, dados de contato e envio em um fluxo direto.",
+      "Seleção de plano, dados de contato e envio em um fluxo direto.",
   },
   {
     label: "Retorno",
-    value: "Mais rÃ¡pido",
+    value: "Mais rápido",
     description:
       "Dados bem preenchidos ajudam a equipe comercial a responder sem retrabalho.",
   },
@@ -71,7 +71,7 @@ const conversionHighlights = [
     label: "Cobertura",
     value: "Sem atrito",
     description:
-      "VocÃª pode validar a regiÃ£o antes de avanÃ§ar para a solicitaÃ§Ã£o comercial.",
+      "Você pode validar a região antes de avançar para a solicitação comercial.",
   },
 ] as const;
 
@@ -207,7 +207,7 @@ export default function ContratarClient({ plano, plans }: Props) {
     if (!trimmedName) {
       nextErrors.name = "Informe seu nome.";
     } else if (trimmedName.length < 3) {
-      nextErrors.name = "Informe um nome vÃ¡lido.";
+      nextErrors.name = "Informe um nome válido.";
     }
 
     if (!trimmedPhone) {
@@ -215,45 +215,45 @@ export default function ContratarClient({ plano, plans }: Props) {
     } else {
       const digits = trimmedPhone.replace(/\D/g, "");
       if (digits.length < 10 || digits.length > 11) {
-        nextErrors.phone = "Informe um telefone vÃ¡lido.";
+        nextErrors.phone = "Informe um telefone válido.";
       }
     }
 
     if (trimmedEmail) {
       const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
       if (!isEmailValid) {
-        nextErrors.email = "Informe um e-mail vÃ¡lido.";
+        nextErrors.email = "Informe um e-mail válido.";
       }
     }
 
     if (trimmedCep) {
       const digits = trimmedCep.replace(/\D/g, "");
       if (digits.length !== 8) {
-        nextErrors.cep = "Informe um CEP vÃ¡lido.";
+        nextErrors.cep = "Informe um CEP válido.";
       }
     }
 
     if (trimmedPlanSlug) {
       const planExists = plans.some((plan) => plan.slug === trimmedPlanSlug);
       if (!planExists) {
-        nextErrors.planSlug = "Selecione um plano vÃ¡lido.";
+        nextErrors.planSlug = "Selecione um plano válido.";
       }
     }
 
     if (form.website.trim()) {
-      nextErrors.website = "Envio invÃ¡lido.";
+      nextErrors.website = "Envio inválido.";
     }
 
     if (form.message.trim().length > 500) {
-      nextErrors.message = "ObservaÃ§Ãµes devem ter no mÃ¡ximo 500 caracteres.";
+      nextErrors.message = "Observações devem ter no máximo 500 caracteres.";
     }
 
     if (form.city.trim().length > 80) {
-      nextErrors.city = "Cidade deve ter no mÃ¡ximo 80 caracteres.";
+      nextErrors.city = "Cidade deve ter no máximo 80 caracteres.";
     }
 
     if (form.district.trim().length > 80) {
-      nextErrors.district = "Bairro deve ter no mÃ¡ximo 80 caracteres.";
+      nextErrors.district = "Bairro deve ter no máximo 80 caracteres.";
     }
 
     return nextErrors;
@@ -319,7 +319,7 @@ export default function ContratarClient({ plano, plans }: Props) {
       }
 
       setSuccess(
-        "SolicitaÃ§Ã£o enviada com sucesso. Nossa equipe entrarÃ¡ em contato em breve."
+        "Solicitação enviada com sucesso. Nossa equipe entrará em contato em breve."
       );
 
       setForm({
@@ -328,7 +328,7 @@ export default function ContratarClient({ plano, plans }: Props) {
       });
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Erro ao enviar sua solicitaÃ§Ã£o."
+        err instanceof Error ? err.message : "Erro ao enviar sua solicitação."
       );
     } finally {
       setLoading(false);
@@ -341,7 +341,7 @@ export default function ContratarClient({ plano, plans }: Props) {
         <header className="space-y-5">
           <div className="space-y-3">
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-accent">
-              ContrataÃ§Ã£o
+              Contratação
             </p>
 
             <div className="max-w-3xl space-y-3">
@@ -350,9 +350,9 @@ export default function ContratarClient({ plano, plans }: Props) {
               </h1>
 
               <p className="text-sm leading-6 text-secondary md:text-base">
-                Envie seus dados para anÃ¡lise comercial e retorno da equipe. O
-                formulÃ¡rio foi pensado para reduzir atrito, manter a validaÃ§Ã£o
-                clara e acelerar a conversÃ£o.
+                Envie seus dados para análise comercial e retorno da equipe. O
+                formulário foi pensado para reduzir atrito, manter a validação
+                clara e acelerar a conversão.
               </p>
             </div>
           </div>
@@ -381,7 +381,7 @@ export default function ContratarClient({ plano, plans }: Props) {
 
         <StatusBanner
           status="Comercial"
-          title="Jornada de contrataÃ§Ã£o com menos atrito"
+          title="Jornada de contratação com menos atrito"
           description="Selecione um plano, envie seus dados e avance com mais clareza no contato comercial."
         />
 
@@ -393,10 +393,10 @@ export default function ContratarClient({ plano, plans }: Props) {
           >
             <Card className="rounded-[28px] border-border">
             <CardHeader className="space-y-3">
-              <CardTitle className="text-xl">SolicitaÃ§Ã£o comercial</CardTitle>
+              <CardTitle className="text-xl">Solicitação comercial</CardTitle>
               <p className="text-sm leading-6 text-secondary">
-                Os campos obrigatÃ³rios ajudam a equipe a validar contato,
-                disponibilidade e prÃ³ximos passos sem perder contexto.
+                Os campos obrigatórios ajudam a equipe a validar contato,
+                disponibilidade e próximos passos sem perder contexto.
               </p>
             </CardHeader>
 
@@ -407,8 +407,8 @@ export default function ContratarClient({ plano, plans }: Props) {
                 </div>
               ) : (
                 <div className="mb-5 rounded-2xl border border-border bg-surface-secondary/70 px-4 py-4 text-sm text-secondary">
-                  VocÃª pode enviar a solicitaÃ§Ã£o sem plano definido, mas selecionar
-                  uma opÃ§Ã£o ajuda a equipe comercial a responder com mais precisÃ£o.
+                  Você pode enviar a solicitação sem plano definido, mas selecionar
+                  uma opção ajuda a equipe comercial a responder com mais precisão.
                 </div>
               )}
 
@@ -524,7 +524,7 @@ export default function ContratarClient({ plano, plans }: Props) {
                   id="planSlug"
                   label="Plano de interesse"
                   error={errors.planSlug}
-                  hint="Selecione um plano disponÃ­vel."
+                  hint="Selecione um plano disponível."
                 >
                   <Select value={form.planSlug} onChange={(e) => handlePlanChange(e.target.value)}>
                     <option value="">Selecione um plano</option>
@@ -538,12 +538,12 @@ export default function ContratarClient({ plano, plans }: Props) {
 
                 <FormField
                   id="message"
-                  label="ObservaÃ§Ãµes"
+                  label="Observações"
                   error={errors.message}
-                  hint="Ex.: melhor horÃ¡rio para contato, referÃªncia ou complemento."
+                  hint="Ex.: melhor horário para contato, referência ou complemento."
                 >
                   <Textarea
-                    placeholder="Ex.: melhor horÃ¡rio para contato, referÃªncia, complemento de endereÃ§o ou dÃºvida."
+                    placeholder="Ex.: melhor horário para contato, referência, complemento de endereço ou dúvida."
                     value={form.message}
                     onChange={(e) => updateField("message", e.target.value)}
                     maxLength={500}
@@ -555,8 +555,8 @@ export default function ContratarClient({ plano, plans }: Props) {
                     Antes de enviar
                   </p>
                   <p className="mt-2 text-sm leading-6 text-secondary">
-                    Dados corretos, telefone vÃ¡lido e plano de interesse ajudam a
-                    equipe a responder de forma mais rÃ¡pida e objetiva.
+                    Dados corretos, telefone válido e plano de interesse ajudam a
+                    equipe a responder de forma mais rápida e objetiva.
                   </p>
                 </div>
 
@@ -587,7 +587,7 @@ export default function ContratarClient({ plano, plans }: Props) {
                       size="lg"
                       className="w-full sm:w-auto"
                     >
-                      {loading ? "Enviando solicitaÃ§Ã£o..." : "Enviar solicitaÃ§Ã£o"}
+                      {loading ? "Enviando solicitação..." : "Enviar solicitação"}
                     </Button>
 
                     <Button
@@ -605,7 +605,7 @@ export default function ContratarClient({ plano, plans }: Props) {
                         setSuccess(null);
                       }}
                     >
-                      Limpar formulÃ¡rio
+                      Limpar formulário
                     </Button>
                   </div>
 
@@ -624,7 +624,7 @@ export default function ContratarClient({ plano, plans }: Props) {
           <aside className="space-y-6">
             <Card className="rounded-[28px] border-border">
               <CardHeader className="space-y-3">
-                <CardTitle className="text-lg">Resumo da solicitaÃ§Ã£o</CardTitle>
+                <CardTitle className="text-lg">Resumo da solicitação</CardTitle>
               </CardHeader>
 
               <CardContent className="space-y-4">
@@ -633,14 +633,14 @@ export default function ContratarClient({ plano, plans }: Props) {
                     Plano selecionado
                   </p>
                   <p className="mt-2 text-lg font-semibold text-primary">
-                    {selectedPlan ? selectedPlan.name : "Ainda nÃ£o selecionado"}
+                    {selectedPlan ? selectedPlan.name : "Ainda não selecionado"}
                   </p>
                 </div>
 
                 <div className="space-y-3 text-sm leading-6 text-secondary">
-                  <p>1. VocÃª envia sua solicitaÃ§Ã£o comercial.</p>
-                  <p>2. A equipe avalia disponibilidade comercial e tÃ©cnica.</p>
-                  <p>3. O retorno Ã© feito com os prÃ³ximos passos de instalaÃ§Ã£o.</p>
+                  <p>1. Você envia sua solicitação comercial.</p>
+                  <p>2. A equipe avalia disponibilidade comercial e técnica.</p>
+                  <p>3. O retorno é feito com os próximos passos de instalação.</p>
                 </div>
               </CardContent>
             </Card>
@@ -672,5 +672,4 @@ export default function ContratarClient({ plano, plans }: Props) {
     </Container>
   );
 }
-
 

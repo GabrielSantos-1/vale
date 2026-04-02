@@ -1,4 +1,4 @@
-import { z } from 'zod';
+﻿import { z } from 'zod';
 
 export const adminRecoveryRequestSchema = z
   .object({
@@ -42,3 +42,4 @@ export type AdminRecoveryRequestInput = z.infer<
   typeof adminRecoveryRequestSchema
 >;
 export type AdminRecoveryResetInput = z.infer<typeof adminRecoveryResetSchema>;
+

@@ -337,7 +337,7 @@ export function ContactForm() {
       ) : null}
 
       <Button type="submit" disabled={isSubmitDisabled}>
-        {submitting ? 'Enviando...' : 'Enviar'}
+        {submitting ? 'Enviando solicitação...' : 'Enviar solicitação'}
       </Button>
     </form>
   )

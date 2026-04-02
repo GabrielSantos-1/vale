@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db/prisma';
+﻿import { prisma } from '@/lib/db/prisma';
 import { requireAdmin } from '@/lib/api/admin';
 import { logger } from '@/lib/security/logger';
 import { fail, internalError, ok } from '@/lib/security/response';
@@ -69,7 +69,7 @@ function buildDailyPoints(now: Date) {
   return {
     startDate,
     buckets,
-    rangeLabel: 'Últimos 7 dias',
+    rangeLabel: 'Ãšltimos 7 dias',
   };
 }
 
@@ -99,7 +99,7 @@ function buildWeeklyPoints(now: Date) {
   return {
     startDate,
     buckets,
-    rangeLabel: 'Últimas 8 semanas',
+    rangeLabel: 'Ãšltimas 8 semanas',
   };
 }
 
@@ -149,7 +149,7 @@ function buildMonthlyPoints(now: Date) {
   return {
     startDate,
     buckets,
-    rangeLabel: 'Últimos 6 meses',
+    rangeLabel: 'Ãšltimos 6 meses',
   };
 }
 
@@ -262,3 +262,4 @@ export async function GET(request: Request) {
     });
   }
 }
+

@@ -7,6 +7,7 @@ import { StatCard } from "@/components/ui/core/stat-card";
 import { Card, CardContent } from "@/components/ui/core/card";
 import { Input } from "@/components/ui/forms/input";
 import { Label } from "@/components/ui/forms/label";
+import { Select } from "@/components/ui/forms/select";
 import { Textarea } from "@/components/ui/forms/textarea";
 import { AdminHero } from "@/components/admin/layout/admin-hero";
 
@@ -447,9 +448,8 @@ export default function StatusAdminPage() {
 
                 <div>
                   <Label htmlFor="status">Status</Label>
-                  <select
+                  <Select
                     id="status"
-                    className="w-full rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-primary outline-none transition focus:border-[color:var(--ring)] focus:ring-2 focus:ring-[color:var(--ring)]/20"
                     value={form.status}
                     onChange={(e) => updateField("status", e.target.value)}
                   >
@@ -458,7 +458,7 @@ export default function StatusAdminPage() {
                     <option value="indisponivel">Indisponível</option>
                     <option value="manutencao">Manutenção</option>
                     <option value="resolvido">Resolvido</option>
-                  </select>
+                  </Select>
                 </div>
 
                 <div>
@@ -635,5 +635,4 @@ export default function StatusAdminPage() {
     </div>
   );
 }
-
 

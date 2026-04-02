@@ -23,12 +23,14 @@ export function resolveStatusTone(status?: string): StatusTone {
   }
 
   if (
+    normalized.includes("manutenção") ||
     normalized.includes("manutencao") ||
+    normalized.includes("atenção") ||
     normalized.includes("atencao")
   ) {
     return {
       dotClassName: "bg-amber-400",
-      pillText: "Monitoramento e manutencao",
+      pillText: "Monitoramento e manutenção",
       panelClassName:
         "border-amber-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(255,250,240,0.96)_100%)]",
       cardClassName: "border-amber-200 bg-amber-50/80 text-amber-900",
@@ -51,7 +53,7 @@ export function resolveStatusTone(status?: string): StatusTone {
 
   return {
     dotClassName: "bg-sky-400",
-    pillText: "Status publico disponivel",
+      pillText: "Status público disponível",
     panelClassName:
       "border-border bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,251,255,0.96)_100%)]",
     cardClassName: "border-sky-200 bg-sky-50/80 text-sky-900",

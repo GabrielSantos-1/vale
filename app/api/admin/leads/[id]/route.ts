@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db/prisma';
+﻿import { prisma } from '@/lib/db/prisma';
 import { requireAdmin } from '@/lib/api/admin';
 import { logger } from '@/lib/security/logger';
 import { fail, internalError, notFound, ok } from '@/lib/security/response';
@@ -206,3 +206,4 @@ export async function DELETE(request: Request, context: RouteContext) {
     });
   }
 }
+

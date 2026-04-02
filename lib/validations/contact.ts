@@ -1,4 +1,4 @@
-import { z } from 'zod';
+﻿import { z } from 'zod';
 
 export const contactSchema = z
   .object({
@@ -63,3 +63,4 @@ export const contactSchema = z
 export type ContactInput = z.infer<typeof contactSchema>;
 
 export default contactSchema;
+

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+﻿import { z } from 'zod';
 
 function normalizeCep(value: string) {
   return value.replace(/\D/g, '');
@@ -51,3 +51,4 @@ export const coverageSchema = z
 export type CoverageInput = z.infer<typeof coverageSchema>;
 
 export default coverageSchema;
+

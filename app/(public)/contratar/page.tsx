@@ -1,4 +1,4 @@
-﻿import ContratarClient from "./contratar-client";
+import ContratarClient from "./contratar-client";
 import { prisma } from "@/lib/db/prisma";
 import { Hero } from "@/components/marketing/hero";
 import { PremiumImageGrid } from "@/components/marketing/premium-image-grid";
@@ -33,16 +33,16 @@ export default async function ContratarPage({ searchParams }: Props) {
     <>
       <div className="mx-auto w-full max-w-7xl px-4 pb-6 pt-6 md:px-6 md:pb-8 md:pt-8">
         <Hero
-          eyebrow="ContrataÃ§Ã£o â€¢ formulÃ¡rio guiado â€¢ conversÃ£o"
-          badge="SolicitaÃ§Ã£o comercial"
+          eyebrow="Contratação • formulário guiado • conversão"
+          badge="Solicitação comercial"
           title="Solicite sua internet com uma interface mais premium e objetiva"
-          description="Envie seus dados para anÃ¡lise comercial e retorno da equipe. O formulÃ¡rio foi pensado para reduzir atrito e acelerar a conversÃ£o."
+          description="Envie seus dados para análise comercial e retorno da equipe. O formulário foi pensado para reduzir atrito e acelerar a conversão."
           primaryCta={{ label: "Ver planos", href: "/planos#comparacao-planos" }}
           secondaryCta={{ label: "Consultar cobertura", href: "/cobertura#consulta-cobertura" }}
-          note="Jornada de contrataÃ§Ã£o com mais clareza e menos ruÃ­do visual."
+          note="Jornada de contratação com mais clareza e menos ruído visual."
           stats={[
             { label: "Jornada", value: "Mais clara" },
-            { label: "Retorno", value: "Mais rÃ¡pido" },
+            { label: "Retorno", value: "Mais rápido" },
             { label: "Cobertura", value: "Sem atrito" },
             { label: "Produto", value: "Fibra premium" },
           ]}
@@ -50,15 +50,15 @@ export default async function ContratarPage({ searchParams }: Props) {
 
         <div className="mt-8">
           <PremiumImageGrid
-            eyebrow="ConversÃ£o premium"
-            title="Imagens que deixam a contrataÃ§Ã£o mais clara"
-            description="Um bloco visual leve sustenta decisÃ£o comercial sem disputar atenÃ§Ã£o com o formulÃ¡rio."
+            eyebrow="Conversão premium"
+            title="Imagens que deixam a contratação mais clara"
+            description="Um bloco visual leve sustenta decisão comercial sem disputar atenção com o formulário."
             items={[
               {
                 eyebrow: "Atendimento",
                 title: "Canal comercial",
                 description:
-                  "Ambiente premium para reforÃ§ar rapidez, acolhimento e clareza na contrataÃ§Ã£o.",
+                  "Ambiente premium para reforçar rapidez, acolhimento e clareza na contratação.",
                 imageSrc: PUBLIC_VISUALS.contactPremium,
                 imageAlt: "Ambiente executivo com atendimento comercial e fibra",
                 href: "/contato#formulario-contato",
@@ -82,5 +82,3 @@ export default async function ContratarPage({ searchParams }: Props) {
     </>
   );
 }
-
-

@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+﻿import { NextRequest } from 'next/server';
 import { LeadStatus, Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/db/prisma';
@@ -280,3 +280,4 @@ export async function GET(request: NextRequest) {
     });
   }
 }
+

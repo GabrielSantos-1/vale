@@ -124,7 +124,7 @@ export default function ContatoPage() {
           badge="Atendimento Verde Vale Connect"
           title="Fale com nosso atendimento para contratar internet fibra ou tirar dúvidas"
           description="Use este canal para atendimento comercial, suporte inicial e orientação sobre cobertura. Nossa equipe analisa sua solicitação com retorno claro."
-          primaryCta={{ label: "Ver planos de internet", href: "/planos#comparacao-planos" }}
+          primaryCta={{ label: "Entrar em contato", href: "#formulario-contato" }}
           secondaryCta={{ label: "Consultar cobertura", href: "/cobertura#consulta-cobertura" }}
           note="Canal direto para atendimento regional com comunicação objetiva do primeiro contato ao próximo passo."
           stats={[
@@ -146,10 +146,9 @@ export default function ContatoPage() {
           className="scroll-mt-24 rounded-[28px] border-border public-card"
         >
           <CardHeader className="space-y-3">
-            <CardTitle className="text-xl">Formulário de contato</CardTitle>
+            <CardTitle className="text-xl">Entrar em contato</CardTitle>
             <p className="text-sm leading-6 text-secondary">
-              Preencha os campos obrigatórios com informações corretas para
-              receber um retorno mais rápido e objetivo.
+              Informe seus dados para receber atendimento com retorno mais rápido e objetivo.
             </p>
           </CardHeader>
 
@@ -302,6 +301,5 @@ export default function ContatoPage() {
     </Container>
   );
 }
-
 
 

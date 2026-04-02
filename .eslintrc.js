@@ -27,6 +27,18 @@ module.exports = {
     'no-undef': 'off',
     '@typescript-eslint/no-require-imports': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: ['@/components/layout/admin/*', 'components/layout/admin/*'],
+            message:
+              'Use os componentes canônicos em "@/components/ui/layout/admin/*".',
+          },
+        ],
+      },
+    ],
   },
   overrides: [
     {

@@ -83,7 +83,7 @@ export function PremiumImageGrid({
               {item.href ? (
                 <div className="mt-auto pt-1">
                   <Button asChild variant="secondary" className="w-full sm:w-auto">
-                    <Link href={item.href}>{item.ctaLabel ?? "Saiba mais"}</Link>
+                    <Link href={item.href}>{item.ctaLabel ?? "Ver detalhes"}</Link>
                   </Button>
                 </div>
               ) : null}
@@ -94,4 +94,3 @@ export function PremiumImageGrid({
     </section>
   );
 }
-

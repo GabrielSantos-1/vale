@@ -116,8 +116,8 @@ export default async function Home() {
           badge="Provedor regional de fibra"
           title="Fibra óptica estável para sua casa, com atendimento próximo e operação transparente"
           description="Veja se atendemos seu endereço, escolha o plano ideal e acompanhe o status da rede em tempo real."
-          primaryCta={{ label: "Consultar cobertura", href: "/planos#comparacao-planos" }}
-          secondaryCta={{ label: "Ver planos", href: "/cobertura#consulta-cobertura" }}
+          primaryCta={{ label: "Ver planos", href: "/planos#comparacao-planos" }}
+          secondaryCta={{ label: "Consultar cobertura", href: "/cobertura#consulta-cobertura" }}
           note="Contratação simples, suporte humano e comunicação clara do início ao pós-instalação."
           stats={[
             { label: "Cobertura", value: "Consulta por endereço" },
@@ -188,7 +188,7 @@ export default async function Home() {
             </div>
 
             <Button asChild variant="ghost">
-              <Link href="/planos#comparacao-planos">Comparar todos os planos</Link>
+              <Link href="/planos#comparacao-planos">Ver planos</Link>
             </Button>
           </div>
 
@@ -199,7 +199,7 @@ export default async function Home() {
                   key={plan.id}
                   plan={plan}
                   compact
-                  ctaLabel="Quero este plano"
+                  ctaLabel="Falar sobre este plano"
                 />
               ))}
             </div>
@@ -216,7 +216,7 @@ export default async function Home() {
                 </div>
 
                 <Button asChild className="w-full md:w-auto">
-                  <Link href="/contato#formulario-contato">Falar com atendimento</Link>
+                  <Link href="/contato#formulario-contato">Entrar em contato</Link>
                 </Button>
               </CardContent>
             </Card>

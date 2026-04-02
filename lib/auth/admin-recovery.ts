@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'crypto';
+﻿import { createHash, randomBytes } from 'crypto';
 import { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/db/prisma';
@@ -135,7 +135,7 @@ export async function sendRecoveryEmail(params: {
   const html = [
     `<p>Olá ${params.name || 'Administrador'},</p>`,
     '<p>Recebemos uma solicitação para redefinir sua senha administrativa.</p>',
-    `<p><a href="${resetUrl.toString()}">Clique aqui para redefinir sua senha</a></p>`,
+    `<p><a href="${resetUrl.toString()}">Redefinir senha administrativa</a></p>`,
     '<p>Este link expira em 15 minutos e pode ser usado apenas uma vez.</p>',
     '<p>Se você não solicitou a redefinição, ignore esta mensagem.</p>',
   ].join('');
@@ -171,3 +171,4 @@ export async function sendRecoveryEmail(params: {
     return false;
   }
 }
+

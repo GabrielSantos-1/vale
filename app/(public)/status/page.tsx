@@ -47,8 +47,8 @@ export default async function StatusPage() {
           badge="Acompanhamento operacional"
           title="Acompanhe o status da rede com transparência e informação clara"
           description="Consulte incidentes, manutenções e normalizações em andamento para acompanhar o serviço com mais segurança."
-          primaryCta={{ label: "Consultar cobertura", href: "/cobertura" }}
-          secondaryCta={{ label: "Falar com atendimento", href: "/contato" }}
+          primaryCta={{ label: "Ver status da rede", href: "/status#status-lista" }}
+          secondaryCta={{ label: "Acompanhar atualização", href: "/status#status-lista" }}
           note="Comunicados públicos para manter clientes informados sobre ocorrências e atualizações da rede."
           stats={[
             { label: "Ativos", value: `${summary.activeCount}` },
@@ -111,7 +111,7 @@ export default async function StatusPage() {
 
         <StatusBanner
           status={bannerStatus}
-          title="Acompanhamento publico do status da rede"
+          title="Acompanhamento público do status da rede"
           description="Atualizações operacionais ajudam você a acompanhar manutenção, incidentes e normalização com clareza."
         />
 
@@ -134,7 +134,7 @@ export default async function StatusPage() {
                 </Button>
 
                 <Button asChild className="w-full sm:w-auto">
-                  <Link href="/contato#formulario-contato">Falar com atendimento</Link>
+                  <Link href="/contato#formulario-contato">Falar com suporte</Link>
                 </Button>
               </div>
             </CardContent>

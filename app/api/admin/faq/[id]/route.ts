@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../../lib/auth/auth-options'
 import { faqSchema } from '../../../../../lib/validations/faq'
@@ -93,3 +93,4 @@ export async function DELETE(_req: Request, context: Context) {
     )
   }
 }
+

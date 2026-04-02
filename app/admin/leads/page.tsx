@@ -152,7 +152,7 @@ function normalizeText(value?: string | null) {
 function getPrimaryAction(status: LeadStatus) {
   switch (status) {
     case "NOVO":
-      return { label: "Iniciar atendimento", nextStatus: "EM_ATENDIMENTO" as const };
+      return { label: "Atualizar status", nextStatus: "EM_ATENDIMENTO" as const };
     case "EM_ATENDIMENTO":
       return { label: "Converter", nextStatus: "CONVERTIDO" as const };
     case "CONVERTIDO":
@@ -462,7 +462,7 @@ export default function LeadsPage() {
                   onClick={() => archiveLead(lead.id)}
                   disabled={isBusy}
                 >
-                  Arquivar
+                  Arquivar item
                 </Button>
               ) : null}
 
@@ -473,7 +473,7 @@ export default function LeadsPage() {
                 onClick={() => deleteLead(lead.id)}
                 disabled={isBusy}
               >
-                Excluir
+                Excluir registro
               </Button>
             </div>
           );
@@ -690,5 +690,4 @@ export default function LeadsPage() {
     </div>
   );
 }
-
 

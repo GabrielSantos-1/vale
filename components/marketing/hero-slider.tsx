@@ -144,7 +144,7 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
       href: "/contratar",
     },
     secondaryCta: {
-      label: "Saiba mais",
+      label: "Conhecer a empresa",
       href: "/sobre",
     },
     imageSrc: "/images/public/fiber-residential-valley.png",

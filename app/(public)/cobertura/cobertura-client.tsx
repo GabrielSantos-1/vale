@@ -392,7 +392,7 @@ export default function CoberturaClient({ areas }: Props) {
                           <>
                             <Button asChild className="w-full sm:w-auto">
                               <Link href="/contratar#formulario-solicitacao">
-                                Avançar para contratação
+                                Ver disponibilidade
                               </Link>
                             </Button>
 
@@ -402,7 +402,7 @@ export default function CoberturaClient({ areas }: Props) {
                               className="w-full sm:w-auto"
                             >
                               <Link href="/contato#formulario-contato">
-                                Falar com atendimento
+                                Solicitar atendimento
                               </Link>
                             </Button>
                           </>
@@ -414,7 +414,7 @@ export default function CoberturaClient({ areas }: Props) {
                               className="w-full sm:w-auto"
                             >
                               <Link href="/contato#formulario-contato">
-                                Falar com atendimento
+                                Solicitar atendimento
                               </Link>
                             </Button>
 
@@ -424,7 +424,7 @@ export default function CoberturaClient({ areas }: Props) {
                               className="w-full sm:w-auto"
                             >
                               <Link href="/contratar#formulario-solicitacao">
-                                Solicitar expansao
+                                Solicitar atendimento
                               </Link>
                             </Button>
                           </>
@@ -489,13 +489,13 @@ export default function CoberturaClient({ areas }: Props) {
                 <div className="flex flex-col gap-3">
                   <Button asChild className="w-full">
                     <Link href="/contratar#formulario-solicitacao">
-                      Quero contratar
+                      Contratar agora
                     </Link>
                   </Button>
 
                   <Button asChild variant="outline" className="w-full">
                     <Link href="/contato#formulario-contato">
-                      Falar com atendimento
+                      Solicitar atendimento
                     </Link>
                   </Button>
                 </div>
@@ -530,7 +530,7 @@ export default function CoberturaClient({ areas }: Props) {
                   </p>
                   <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <Button asChild variant="secondary" className="w-full sm:w-auto">
-                      <Link href="/contato#formulario-contato">Falar com atendimento</Link>
+                      <Link href="/contato#formulario-contato">Solicitar atendimento</Link>
                     </Button>
                     <Button asChild variant="outline" className="w-full sm:w-auto">
                       <Link href="/contratar#formulario-solicitacao">Solicitar prioridade</Link>
@@ -568,4 +568,3 @@ export default function CoberturaClient({ areas }: Props) {
     </Container>
   );
 }
-

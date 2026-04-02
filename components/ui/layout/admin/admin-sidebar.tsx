@@ -57,9 +57,9 @@ export function AdminSidebar() {
       </div>
 
       <div className="relative flex-1 space-y-6 overflow-y-auto px-4 py-5">
-        <SidebarSection title="OperaÃ§Ã£o" items={operationsItems} pathname={pathname} />
+        <SidebarSection title="Operação" items={operationsItems} pathname={pathname} />
 
-        <SidebarSection title="ConteÃºdo" items={contentItems} pathname={pathname} />
+        <SidebarSection title="Conteúdo" items={contentItems} pathname={pathname} />
       </div>
 
       <div className="relative space-y-4 overflow-hidden border-t border-white/10 p-4">
@@ -90,7 +90,7 @@ export function AdminSidebar() {
               <div>
                 <p className="text-sm font-semibold text-white">Sistema ativo</p>
                 <p className="mt-1 text-xs leading-5 text-slate-300">
-                  OperaÃ§Ã£o estÃ¡vel, pronta para gestÃ£o comercial e institucional.
+                  Operação estável, pronta para gestão comercial e institucional.
                 </p>
               </div>
 

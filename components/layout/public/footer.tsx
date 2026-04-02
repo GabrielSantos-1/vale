@@ -16,11 +16,11 @@ const navItems: NavItem[] = [
 ];
 
 const institutionalItems: NavItem[] = [
-  { href: "/politica-de-privacidade", label: "Politica de privacidade" },
+  { href: "/politica-de-privacidade", label: "Política de privacidade" },
   { href: "/termos", label: "Termos de uso" },
   { href: "/cliente/login", label: "Central do Cliente" },
-  { href: "/suporte", label: "Atendimento e suporte" },
-  { href: "/contato#formulario-contato", label: "Canal oficial de contato" },
+  { href: "/suporte", label: "Falar com suporte" },
+  { href: "/contato#formulario-contato", label: "Entrar em contato" },
 ];
 
 export default function Footer() {
@@ -49,16 +49,16 @@ export default function Footer() {
             </span>
 
             <p className="max-w-md text-sm leading-6 text-slate-700">
-              Internet fibra com planos claros, cobertura regional e atendimento mais proximo.
+              Internet fibra com planos claros, cobertura regional e atendimento próximo.
             </p>
 
             <div className="max-w-md rounded-2xl border border-cyan-200/70 bg-white/60 p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700">
-                Presenca institucional
+                Presença institucional
               </p>
               <p className="mt-2 text-sm leading-6 text-slate-700">
-                Provedor regional com comunicacao operacional clara, canais oficiais de atendimento
-                e publicacao continua de status, cobertura e orientacoes ao assinante.
+                Provedor regional com comunicação operacional clara, canais oficiais de atendimento
+                e publicação contínua de status, cobertura e orientações ao assinante.
               </p>
             </div>
           </div>
@@ -70,7 +70,7 @@ export default function Footer() {
               </p>
 
               <nav
-                aria-label="Links de navegacao do rodape"
+                aria-label="Links de navegação do rodapé"
                 className="flex flex-wrap gap-x-4 gap-y-3 text-sm text-slate-700"
               >
                 {navItems.map((item) => (
@@ -108,7 +108,7 @@ export default function Footer() {
 
             <div className="space-y-2">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700">
-                Acesso rapido
+                Acesso rápido
               </p>
 
               <div className="flex flex-wrap gap-2">
@@ -118,21 +118,21 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center rounded-full border border-emerald-300/70 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 transition duration-200 hover:bg-emerald-100"
                 >
-                  Atendimento via WhatsApp
+                  Falar no WhatsApp
                 </a>
 
                 <span
                   aria-disabled="true"
                   className="inline-flex cursor-default items-center rounded-full border border-sky-200/80 bg-white/65 px-3 py-1 text-xs font-medium text-slate-700"
                 >
-                  2a via - Em preparação
+                  2ª via: em breve
                 </span>
               </div>
             </div>
 
             <p className="text-xs leading-5 text-slate-600">
-              Dados cadastrais e informacoes regulatórias sao disponibilizados pelos canais oficiais
-              de atendimento, conforme atualizacao operacional.
+              Dados cadastrais e informações regulatórias são disponibilizados pelos canais oficiais
+              de atendimento, conforme atualização operacional.
             </p>
           </div>
         </div>

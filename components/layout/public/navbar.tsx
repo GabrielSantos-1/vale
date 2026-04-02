@@ -36,7 +36,7 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 md:px-6 md:py-4">
         <Link
           href="/"
-          aria-label="Ir para a pagina inicial da Verde Vale Connect"
+          aria-label="Ir para a página inicial da Verde Vale Connect"
           className="group flex min-w-0 items-center"
         >
           <span className="relative block h-12 w-40 shrink-0 overflow-hidden transition-transform duration-200 group-hover:scale-[1.02] md:h-14 md:w-48">
@@ -50,7 +50,7 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <nav aria-label="Navegacao principal" className="hidden items-center gap-1 md:flex">
+        <nav aria-label="Navegação principal" className="hidden items-center gap-1 md:flex">
           {navItems.map((item) => {
             const active = isActivePath(pathname, item.href);
 
@@ -79,7 +79,7 @@ export default function Navbar() {
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center rounded-full border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800 transition duration-200 hover:bg-emerald-100"
           >
-            WhatsApp rápido
+            Falar no WhatsApp
           </a>
 
           <Link
@@ -91,7 +91,7 @@ export default function Navbar() {
         </div>
 
         <div
-          aria-label="Servicos em breve"
+          aria-label="Serviços em breve"
           className="hidden w-full items-center justify-end gap-2 md:flex"
         >
           {CUSTOMER_PORTAL_COMING_SOON_ITEMS.map((label) => (
@@ -100,7 +100,7 @@ export default function Navbar() {
               aria-disabled="true"
               className="inline-flex cursor-default items-center rounded-full border border-sky-200/70 bg-white/65 px-3 py-1 text-xs font-medium text-slate-700"
             >
-              {label} - Em breve
+              {label}: em breve
             </span>
           ))}
         </div>

@@ -1,10 +1,12 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/core/button";
 import { StatCard } from "@/components/ui/core/stat-card";
 import { Card, CardContent } from "@/components/ui/core/card";
 import { Input } from "@/components/ui/forms/input";
+import { Label } from "@/components/ui/forms/label";
+import { Select } from "@/components/ui/forms/select";
 import { AdminHero } from "@/components/admin/layout/admin-hero";
 
 type ContactStatus = "NOVA" | "LIDA" | "RESPONDIDA" | "ARQUIVADA";
@@ -359,9 +361,9 @@ export default function AdminContatoPage() {
           <form onSubmit={handleSearchSubmit} className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
             <div className="grid w-full gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">
               <div>
-                <label className="mb-2 block text-sm font-medium text-secondary">
+                <Label className="mb-2 block text-sm font-medium text-secondary">
                   Buscar
-                </label>
+                </Label>
                 <Input
                   type="text"
                   value={searchInput}
@@ -371,23 +373,22 @@ export default function AdminContatoPage() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-secondary">
+                <Label className="mb-2 block text-sm font-medium text-secondary">
                   Status
-                </label>
-                <select
+                </Label>
+                <Select
                   value={status}
                   onChange={(e) => {
                     setPage(1);
                     setStatus(e.target.value as "ALL" | ContactStatus);
                   }}
-                  className="w-full rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-primary outline-none transition focus:border-[color:var(--ring)] focus:ring-2 focus:ring-[color:var(--ring)]/20"
                 >
                   {STATUS_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
             </div>
 
@@ -795,4 +796,5 @@ export default function AdminContatoPage() {
     </div>
   );
 }
+
 

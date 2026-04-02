@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+﻿import { NextRequest } from 'next/server';
 import { ContactMessageStatus, Prisma } from '@prisma/client';
 import { z } from 'zod';
 
@@ -171,3 +171,4 @@ export async function GET(req: NextRequest) {
     });
   }
 }
+

@@ -41,7 +41,7 @@ function QuickActionCardContent({
         </div>
 
         <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 transition group-hover:text-emerald-300">
-          {actionLabel || "Acessar"}
+          {actionLabel || "Ver detalhes"}
         </span>
       </div>
     </div>

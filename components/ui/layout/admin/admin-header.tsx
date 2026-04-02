@@ -27,37 +27,37 @@ const pageMeta: Record<
   "/admin": {
     eyebrow: "Admin",
     title: "Dashboard",
-    description: "VisÃ£o executiva da operaÃ§Ã£o.",
+    description: "Visão executiva da operação.",
   },
   "/admin/dashboard": {
     eyebrow: "Admin",
     title: "Dashboard",
-    description: "VisÃ£o executiva da operaÃ§Ã£o.",
+    description: "Visão executiva da operação.",
   },
   "/admin/leads": {
     eyebrow: "Comercial",
     title: "Leads",
-    description: "Pipeline, conversÃ£o e acompanhamento comercial.",
+    description: "Pipeline, conversão e acompanhamento comercial.",
   },
   "/admin/planos": {
-    eyebrow: "CatÃ¡logo",
+    eyebrow: "Catálogo",
     title: "Planos",
-    description: "GestÃ£o dos planos publicados no site.",
+    description: "Gestão dos planos publicados no site.",
   },
   "/admin/cobertura": {
-    eyebrow: "OperaÃ§Ã£o",
+    eyebrow: "Operação",
     title: "Cobertura",
-    description: "Ãreas, CEPs e disponibilidade da rede.",
+    description: "Áreas, CEPs e disponibilidade da rede.",
   },
   "/admin/faq": {
-    eyebrow: "ConteÃºdo",
+    eyebrow: "Conteúdo",
     title: "FAQ",
-    description: "Perguntas frequentes do site pÃºblico.",
+    description: "Perguntas frequentes do site público.",
   },
   "/admin/status": {
-    eyebrow: "OperaÃ§Ã£o",
+    eyebrow: "Operação",
     title: "Status",
-    description: "Avisos e comunicaÃ§Ã£o operacional com clientes.",
+    description: "Avisos e comunicação operacional com clientes.",
   },
   "/admin/contato": {
     eyebrow: "Atendimento",
@@ -78,7 +78,7 @@ function resolvePageMeta(pathname: string) {
   return {
     eyebrow: "Admin",
     title: "Painel",
-    description: "GestÃ£o central do sistema.",
+    description: "Gestão central do sistema.",
   };
 }
 
@@ -123,17 +123,17 @@ export function AdminHeader() {
               <div className="relative min-w-0 flex-1 lg:w-[320px]">
                 <SearchIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
                 <input
-                  placeholder="Buscar mÃ³dulo, lead ou conteÃºdo..."
+                  placeholder="Buscar modulo, lead ou conteúdo..."
                   className="h-11 w-full rounded-2xl border border-border bg-white/80 pl-11 pr-4 text-sm text-primary outline-none transition placeholder:text-muted focus:border-[color:var(--ring)] focus:ring-2 focus:ring-[color:var(--ring)]/20"
                 />
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <IconButton label="NotificaÃ§Ãµes">
+                <IconButton label="Notificações">
                   <BellIcon className="h-4 w-4" />
                 </IconButton>
 
-                <IconButton label="ConfiguraÃ§Ãµes">
+                <IconButton label="Configurações">
                   <SettingsIcon className="h-4 w-4" />
                 </IconButton>
 
