@@ -30,7 +30,7 @@ type MetricsResponse = {
 };
 
 const viewOptions: Array<{ value: MetricsView; label: string }> = [
-  { value: "daily", label: "Di\u00e1rio" },
+  { value: "daily", label: "Diario" },
   { value: "weekly", label: "Semanal" },
   { value: "monthly", label: "Mensal" },
 ];
@@ -61,7 +61,7 @@ export function LeadsMetricsPanel() {
       const payload: MetricsResponse = await response.json();
 
       if (!payload.success) {
-        setError(payload.error?.message || "Erro ao carregar m\u00e9tricas.");
+        setError(payload.error?.message || "Erro ao carregar metricas.");
         setData([]);
         setSummary(undefined);
         return;
@@ -71,7 +71,7 @@ export function LeadsMetricsPanel() {
       setSummary(payload.meta?.summary);
     } catch (err) {
       logClientError(err);
-      setError("Erro ao carregar m\u00e9tricas.");
+      setError("Erro ao carregar metricas.");
       setData([]);
       setSummary(undefined);
     } finally {
@@ -88,7 +88,7 @@ export function LeadsMetricsPanel() {
       case "weekly":
         return "Leads por semana";
       case "monthly":
-        return "Leads por m\u00eas";
+        return "Leads por mês";
       default:
         return "Leads por dia";
     }
@@ -97,11 +97,11 @@ export function LeadsMetricsPanel() {
   const description = useMemo(() => {
     switch (view) {
       case "weekly":
-        return "Acompanhe a evolu\u00e7\u00e3o semanal das entradas comerciais para identificar tend\u00eancia m\u00e9dia do funil.";
+        return "Acompanhe a evolução semanal das entradas comerciais para identificar tendência média do funil.";
       case "monthly":
-        return "Visualize a distribui\u00e7\u00e3o mensal dos leads para entender sazonalidade e comportamento comercial.";
+        return "Visualize a distribuição mensal dos leads para entender sazonalidade e comportamento comercial.";
       default:
-        return "Acompanhe o volume di\u00e1rio de entradas comerciais recentes para identificar queda, pico ou estabilidade operacional.";
+        return "Acompanhe o volume diário de entradas comerciais recentes para identificar queda, pico ou estabilidade operacional.";
     }
   }, [view]);
 

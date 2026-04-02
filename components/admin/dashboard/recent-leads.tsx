@@ -52,7 +52,7 @@ export function RecentLeads({
         <div>
           <h2 className="text-lg font-semibold text-primary">Leads recentes</h2>
           <p className="mt-1 text-sm text-secondary">
-            \u00daltimas conversas e entradas no funil comercial.
+            Ultimas conversas e entradas no funil comercial.
           </p>
         </div>
 
@@ -92,7 +92,7 @@ export function RecentLeads({
                       {lead.name}
                     </p>
                     <p className="truncate text-xs text-secondary">
-                      {lead.planName ?? "Plano n\u00e3o informado"}
+                      {lead.planName ?? "Plano não informado"}
                       {lead.city ? ` - ${lead.city}` : ""}
                     </p>
                   </div>
