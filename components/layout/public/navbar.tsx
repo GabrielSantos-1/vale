@@ -4,6 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
+import {
+  CUSTOMER_PORTAL_COMING_SOON_ITEMS,
+  whatsappSupportUrl,
+} from "@/lib/constants/contact";
 
 type NavItem = {
   href: string;
@@ -29,7 +33,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-sky-200/70 bg-[linear-gradient(180deg,rgba(243,249,255,0.94)_0%,rgba(232,243,255,0.9)_42%,rgba(220,238,255,0.88)_100%)] supports-[backdrop-filter]:bg-[linear-gradient(180deg,rgba(243,249,255,0.84)_0%,rgba(232,243,255,0.78)_42%,rgba(220,238,255,0.74)_100%)] backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 md:px-6 md:py-4">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 md:px-6 md:py-4">
         <Link
           href="/"
           aria-label="Ir para a pagina inicial da Verde Vale Connect"
@@ -68,12 +72,38 @@ export default function Navbar() {
           })}
         </nav>
 
-        <Link
-          href="/contratar#formulario-solicitacao"
-          className="hidden items-center justify-center rounded-full bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition duration-200 hover:brightness-95 md:inline-flex"
+        <div className="hidden items-center gap-2 md:flex">
+          <a
+            href={whatsappSupportUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-full border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800 transition duration-200 hover:bg-emerald-100"
+          >
+            WhatsApp rápido
+          </a>
+
+          <Link
+            href="/contratar#formulario-solicitacao"
+            className="inline-flex items-center justify-center rounded-full bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition duration-200 hover:brightness-95"
+          >
+            Contratar agora
+          </Link>
+        </div>
+
+        <div
+          aria-label="Servicos em breve"
+          className="hidden w-full items-center justify-end gap-2 md:flex"
         >
-          Contratar agora
-        </Link>
+          {CUSTOMER_PORTAL_COMING_SOON_ITEMS.map((label) => (
+            <span
+              key={label}
+              aria-disabled="true"
+              className="inline-flex cursor-default items-center rounded-full border border-sky-200/70 bg-white/65 px-3 py-1 text-xs font-medium text-slate-700"
+            >
+              {label} - Em breve
+            </span>
+          ))}
+        </div>
       </div>
     </header>
   );

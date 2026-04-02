@@ -12,6 +12,8 @@ import { Textarea } from "@/components/ui/forms/textarea";
 import { Label } from "@/components/ui/forms/label";
 import { StatusBanner } from "@/components/marketing/status-banner";
 import { Hero } from "@/components/marketing/hero";
+import { trackPublicEvent } from "@/lib/telemetry/public-events";
+import { extractApiErrorMessage } from "@/lib/utils/api-error-message";
 
 const initialForm = {
   name: "",
@@ -80,18 +82,34 @@ export default function ContatoPage() {
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        if (Array.isArray(result.error)) {
-          throw new Error(result.error[0]?.message || "Dados inválidos.");
-        }
-
-        throw new Error(result.error || "Falha ao enviar contato.");
+        throw new Error(
+          extractApiErrorMessage(
+            result as { success?: boolean; error?: unknown },
+            "Falha ao enviar contato."
+          )
+        );
       }
+
+      trackPublicEvent({
+        eventName: "contact_submit",
+        page: "/contato",
+        component: "contact_form",
+        target: "contact",
+        status: "success",
+      });
 
       setSuccess(
         "Mensagem enviada com sucesso. Nossa equipe poderá retornar em breve."
       );
       setForm(initialForm);
     } catch (err) {
+      trackPublicEvent({
+        eventName: "contact_submit",
+        page: "/contato",
+        component: "contact_form",
+        target: "contact",
+        status: "error",
+      });
       setError(err instanceof Error ? err.message : "Erro ao enviar contato.");
     } finally {
       setSubmitting(false);

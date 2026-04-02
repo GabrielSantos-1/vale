@@ -1,5 +1,6 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
+import { whatsappSupportUrl } from "@/lib/constants/contact";
 
 type NavItem = {
   href: string;
@@ -9,9 +10,17 @@ type NavItem = {
 const navItems: NavItem[] = [
   { href: "/planos", label: "Planos" },
   { href: "/cobertura", label: "Cobertura" },
-  { href: "/status", label: "Status" },
+  { href: "/status", label: "Status da rede" },
   { href: "/suporte", label: "Suporte" },
   { href: "/contato", label: "Contato" },
+];
+
+const institutionalItems: NavItem[] = [
+  { href: "/politica-de-privacidade", label: "Politica de privacidade" },
+  { href: "/termos", label: "Termos de uso" },
+  { href: "/cliente/login", label: "Central do Cliente" },
+  { href: "/suporte", label: "Atendimento e suporte" },
+  { href: "/contato#formulario-contato", label: "Canal oficial de contato" },
 ];
 
 export default function Footer() {
@@ -42,27 +51,89 @@ export default function Footer() {
             <p className="max-w-md text-sm leading-6 text-slate-700">
               Internet fibra com planos claros, cobertura regional e atendimento mais proximo.
             </p>
+
+            <div className="max-w-md rounded-2xl border border-cyan-200/70 bg-white/60 p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700">
+                Presenca institucional
+              </p>
+              <p className="mt-2 text-sm leading-6 text-slate-700">
+                Provedor regional com comunicacao operacional clara, canais oficiais de atendimento
+                e publicacao continua de status, cobertura e orientacoes ao assinante.
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700">
-              Navegacao
-            </p>
+          <div className="space-y-5">
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700">
+                Navegação
+              </p>
 
-            <nav
-              aria-label="Links do rodape"
-              className="flex flex-wrap gap-x-4 gap-y-3 text-sm text-slate-700"
-            >
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="transition-colors duration-200 hover:text-slate-950"
+              <nav
+                aria-label="Links de navegacao do rodape"
+                className="flex flex-wrap gap-x-4 gap-y-3 text-sm text-slate-700"
+              >
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="transition-colors duration-200 hover:text-slate-950"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700">
+                Institucional
+              </p>
+
+              <nav
+                aria-label="Links institucionais"
+                className="flex flex-wrap gap-x-4 gap-y-3 text-sm text-slate-700"
+              >
+                {institutionalItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="transition-colors duration-200 hover:text-slate-950"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700">
+                Acesso rapido
+              </p>
+
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href={whatsappSupportUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center rounded-full border border-emerald-300/70 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 transition duration-200 hover:bg-emerald-100"
                 >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
+                  Atendimento via WhatsApp
+                </a>
+
+                <span
+                  aria-disabled="true"
+                  className="inline-flex cursor-default items-center rounded-full border border-sky-200/80 bg-white/65 px-3 py-1 text-xs font-medium text-slate-700"
+                >
+                  2a via - Em preparação
+                </span>
+              </div>
+            </div>
+
+            <p className="text-xs leading-5 text-slate-600">
+              Dados cadastrais e informacoes regulatórias sao disponibilizados pelos canais oficiais
+              de atendimento, conforme atualizacao operacional.
+            </p>
           </div>
         </div>
 

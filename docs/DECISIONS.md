@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Registrar decisões arquiteturais e operacionais relevantes com histórico auditável.
+Registrar decisões arquiteturais e operacionais com histórico auditável.
 
 ---
 
@@ -32,9 +32,9 @@ Validação de entrada padronizada no servidor com schemas Zod.
 
 ## Decisão 004 — Arquitetura modular
 
-Separação entre UI, aplicação, segurança e persistência.
+Separação entre UI, validação, segurança e persistência.
 
-**Motivo:** evolução incremental com menor acoplamento e melhor manutenção.
+**Motivo:** evolução incremental com menor acoplamento.
 
 ---
 
@@ -46,65 +46,102 @@ Registrar checkpoints técnicos datados para continuidade e rastreabilidade.
 
 ---
 
-## Decisão 006 — Abandono do banco anterior inconsistente
+## Decisão 006 — Banco operacional consolidado em Supabase
 
-O banco anterior foi considerado inconsistente e substituído por novo projeto Supabase.
+Manter baseline em novo projeto Supabase após descarte do banco inconsistente.
 
-**Motivo:** recuperar previsibilidade operacional e alinhamento com produção.
-
----
-
-## Decisão 007 — Validação final de auth no domínio canônico
-
-A validação final de autenticação deve ser feita no domínio principal configurado em `NEXTAUTH_URL`, e não em preview.
-
-**Motivo:** evitar falso diagnóstico por divergência de domínio/cookie/sessão.
+**Motivo:** previsibilidade operacional e alinhamento de produção.
 
 ---
 
-## Decisão 008 — Fase pós-recovery prioriza hardening
+## Decisão 007 — Validação de auth no domínio canônico
 
-Após recuperação do deploy/admin, priorizar limpeza e endurecimento antes de expansão funcional ampla.
+Validação final de autenticação deve ocorrer no domínio principal (`NEXTAUTH_URL`).
 
-**Motivo:** reduzir risco estrutural e consolidar base segura.
-
----
-
-## Decisão 009 — Posicionamento verbal oficial (1.0.8)
-
-Adotar posicionamento verbal público:
-
-**“Provedor regional com identidade premium, operação transparente e atendimento próximo.”**
-
-**Motivo:** alinhar comunicação institucional/comercial em Home e páginas públicas internas.
+**Motivo:** evitar falso diagnóstico por divergência de domínio/cookie.
 
 ---
 
-## Decisão 010 — Refino textual sem alteração funcional
+## Decisão 008 — Prioridade de hardening pós-recovery
 
-Permitir ciclos de melhoria comercial/SEO on-page com escopo estrito em copy/headings/microcopy/CTAs, sem alterar lógica, dados, contratos ou comportamento.
+Após recuperação de deploy/admin, priorizar endurecimento antes de expansão ampla.
 
-**Motivo:** elevar conversão e percepção de marca preservando estabilidade operacional.
+**Motivo:** consolidar base segura.
 
 ---
 
-## Decisão 011 — Diretriz de SEO on-page semântico para páginas públicas
+## Decisão 009 — Posicionamento verbal oficial público
 
-Padronizar vocabulário semântico útil ao usuário e à busca, evitando repetição artificial e promessa técnica não sustentada.
+Adotar posicionamento: provedor regional com operação transparente e atendimento próximo.
 
-Eixo semântico prioritário:
+**Motivo:** consistência institucional e comercial.
 
-- internet fibra
-- planos de internet
-- cobertura / consultar disponibilidade
-- status da rede
-- atendimento / suporte
-- provedor regional
+---
 
-**Motivo:** melhorar legibilidade, intenção de busca e confiança sem inflar conteúdo.
+## Decisão 010 — Refino textual sem mudança funcional
+
+Permitir ciclos de copy/SEO on-page sem alterar lógica, contratos ou dados.
+
+**Motivo:** elevar conversão preservando estabilidade.
+
+---
+
+## Decisão 011 — SEO on-page semântico orientado a utilidade
+
+Padronizar vocabulário semântico útil (fibra, planos, cobertura, status, suporte).
+
+**Motivo:** melhorar intenção de busca e legibilidade.
+
+---
+
+## Decisão 012 — Hardening API-first com parser único de JSON
+
+Padronizar parse de body com limite real de bytes e erros consistentes (`INVALID_JSON`, `PAYLOAD_TOO_LARGE`, `UNSUPPORTED_MEDIA_TYPE`) nas APIs públicas críticas.
+
+**Motivo:** reduzir superfícies de abuso e inconsistência de tratamento.
+
+Impacto:
+- melhora previsibilidade de erro para frontend;
+- reduz risco de payload malicioso e parsing frágil.
+
+---
+
+## Decisão 013 — Telemetria first-party sem PII
+
+Instrumentar eventos de conversão via endpoint interno `POST /api/events`, com allowlist de eventos e propriedades, sem coleta de dados pessoais.
+
+**Motivo:** medir conversão com minimização de dados e menor risco LGPD.
+
+Impacto:
+- observabilidade comercial inicial sem provider externo;
+- menor superfície de vazamento de dados sensíveis.
+
+---
+
+## Decisão 014 — Separação explícita admin/cliente
+
+Criar rota pública de preparação `/cliente/login` sem autenticação real e sem reaproveitar sessão admin.
+
+**Motivo:** preservar fronteiras de segurança e evitar mistura de perfis.
+
+Impacto:
+- prepara evolução futura de RBAC/ABAC para cliente;
+- evita acoplamento inseguro com auth administrativa.
+
+---
+
+## Decisão 015 — Correção de leitura de sessão no proxy local
+
+No `proxy.ts`, remover forçamento de `secureCookie` em `getToken` para evitar mismatch de cookie em `npm run start` local HTTP.
+
+**Motivo:** resolver loop `/admin/login` ↔ `/admin/dashboard` sem alterar modelo de sessão.
+
+Impacto:
+- acesso admin local restabelecido;
+- mantém proteção de rota por token + role.
 
 ---
 
 ## Regra
 
-Toda decisão que altere segurança, deploy, banco, auth, fluxo administrativo ou padrão verbal institucional deve ser registrada aqui.
+Toda decisão que altere segurança, deploy, auth/session, API pública, banco ou governança documental deve ser registrada aqui.

@@ -1,5 +1,7 @@
 ﻿import { prisma } from "@/lib/db/prisma";
 import { Hero } from "@/components/marketing/hero";
+import { logger } from "@/lib/security/logger";
+import { sanitizeOptionalString } from "@/lib/security/sanitize";
 import CoberturaClient from "./cobertura-client";
 
 export const metadata = {
@@ -9,10 +11,34 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function CoberturaPage() {
-  const areas = await prisma.coverageArea.findMany({
-    where: { isAvailable: true },
-    orderBy: [{ city: "asc" }, { district: "asc" }],
-  });
+  const correlationId = crypto.randomUUID();
+  let areas: Awaited<ReturnType<typeof prisma.coverageArea.findMany>> = [];
+  let coverageListUnavailable = false;
+
+  try {
+    const dbAreas = await prisma.coverageArea.findMany({
+      where: { isAvailable: true },
+      orderBy: [{ city: "asc" }, { district: "asc" }],
+    });
+
+    areas = dbAreas.map((area) => ({
+      ...area,
+      notes: sanitizeOptionalString(area.notes, {
+        maxLength: 500,
+        collapseWhitespace: true,
+        removeAngleBrackets: true,
+        removeControlChars: true,
+      }),
+    }));
+  } catch (error) {
+    coverageListUnavailable = true;
+
+    logger.error("Failed to load public coverage areas", {
+      correlationId,
+      route: "/cobertura",
+      error,
+    });
+  }
 
   return (
     <>
@@ -27,7 +53,10 @@ export default async function CoberturaPage() {
           note="Processo simples para consultar disponibilidade e seguir com atendimento comercial quando houver cobertura."
           stats={[
             { label: "Áreas", value: `${areas.length}` },
-            { label: "Cidades", value: "Com cobertura publicada" },
+            {
+              label: "Cidades",
+              value: coverageListUnavailable ? "Lista em atualizacao" : "Com cobertura publicada",
+            },
             { label: "Regiões", value: "Em acompanhamento" },
             { label: "Consulta", value: "Rápida e objetiva" },
           ]}
@@ -37,6 +66,4 @@ export default async function CoberturaPage() {
     </>
   );
 }
-
-
 

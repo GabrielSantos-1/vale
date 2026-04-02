@@ -1,6 +1,10 @@
-import { ZodError, z } from 'zod';
+﻿import { ZodError, z } from 'zod';
 
 import { prisma } from '@/lib/db/prisma';
+import {
+  JsonBodyParseError,
+  parseJsonBodyWithLimit,
+} from '@/lib/security/json-body';
 import { logger } from '@/lib/security/logger';
 import {
   fail,
@@ -37,6 +41,43 @@ function formatValidationErrors(error: ZodError) {
   }));
 }
 
+function mapBodyParseError(
+  error: JsonBodyParseError,
+  correlationId: string,
+  rl: ReturnType<typeof rateLimit>,
+) {
+  if (error.code === 'UNSUPPORTED_MEDIA_TYPE') {
+    return withRequestMeta(
+      fail('Content-Type invalido.', {
+        status: 415,
+        code: 'UNSUPPORTED_MEDIA_TYPE',
+        correlationId,
+      }),
+      { correlationId, rl },
+    );
+  }
+
+  if (error.code === 'PAYLOAD_TOO_LARGE') {
+    return withRequestMeta(
+      fail('Payload excede o tamanho permitido.', {
+        status: 413,
+        code: 'PAYLOAD_TOO_LARGE',
+        correlationId,
+      }),
+      { correlationId, rl },
+    );
+  }
+
+  return withRequestMeta(
+    fail('JSON invalido.', {
+      status: 400,
+      code: 'INVALID_JSON',
+      correlationId,
+    }),
+    { correlationId, rl },
+  );
+}
+
 export async function POST(req: Request) {
   const correlationId = getCorrelationId(req);
 
@@ -56,7 +97,7 @@ export async function POST(req: Request) {
     });
 
     return withRequestMeta(
-      fail('Muitas requisições. Tente novamente em instantes.', {
+      fail('Muitas requisicoes. Tente novamente em instantes.', {
         status: 429,
         code: 'RATE_LIMITED',
         correlationId,
@@ -65,67 +106,34 @@ export async function POST(req: Request) {
     );
   }
 
-  const contentType = req.headers.get('content-type') ?? '';
-  if (!contentType.toLowerCase().includes('application/json')) {
-    logger.warn('Invalid content-type on coverage-check route', {
-      correlationId,
-      route: '/api/coverage-check',
-      contentType,
-    });
-
-    return withRequestMeta(
-      fail('Content-Type inválido.', {
-        status: 415,
-        code: 'UNSUPPORTED_MEDIA_TYPE',
-        correlationId,
-      }),
-      { correlationId, rl },
-    );
-  }
-
-  const contentLengthHeader = req.headers.get('content-length');
-  if (contentLengthHeader) {
-    const contentLength = Number(contentLengthHeader);
-
-    if (
-      !Number.isFinite(contentLength) ||
-      contentLength > MAX_BODY_SIZE_BYTES
-    ) {
-      logger.warn('Payload too large on coverage-check route', {
-        correlationId,
-        route: '/api/coverage-check',
-        contentLengthHeader,
-      });
-
-      return withRequestMeta(
-        fail('Payload excede o tamanho permitido.', {
-          status: 413,
-          code: 'PAYLOAD_TOO_LARGE',
-          correlationId,
-        }),
-        { correlationId, rl },
-      );
-    }
-  }
-
   let body: unknown;
 
   try {
-    body = await req.json();
-  } catch {
-    logger.warn('Invalid JSON on coverage-check route', {
+    body = await parseJsonBodyWithLimit(req, {
+      maxBytes: MAX_BODY_SIZE_BYTES,
+      requireJsonContentType: true,
+    });
+  } catch (error) {
+    if (error instanceof JsonBodyParseError) {
+      logger.warn('Invalid request body on coverage-check route', {
+        correlationId,
+        route: '/api/coverage-check',
+        category: error.code,
+      });
+
+      return mapBodyParseError(error, correlationId, rl);
+    }
+
+    logger.error('Unhandled body parse error on coverage-check route', {
       correlationId,
       route: '/api/coverage-check',
+      error,
     });
 
-    return withRequestMeta(
-      fail('JSON inválido.', {
-        status: 400,
-        code: 'INVALID_JSON',
-        correlationId,
-      }),
-      { correlationId, rl },
-    );
+    return withRequestMeta(internalError(correlationId), {
+      correlationId,
+      rl,
+    });
   }
 
   try {
@@ -213,9 +221,6 @@ export async function POST(req: Request) {
       logger.info('Coverage-check completed with unavailable result', {
         correlationId,
         route: '/api/coverage-check',
-        cep: cep || undefined,
-        city: city || undefined,
-        district: district || undefined,
       });
 
       return withRequestMeta(
@@ -227,18 +232,22 @@ export async function POST(req: Request) {
       );
     }
 
+    const safeNotes = sanitizeOptionalString(found.notes, {
+      maxLength: 500,
+      collapseWhitespace: true,
+      removeAngleBrackets: true,
+      removeControlChars: true,
+    });
+
     logger.info('Coverage-check completed with available result', {
       correlationId,
       route: '/api/coverage-check',
-      cep: cep || undefined,
-      city: city || undefined,
-      district: district || undefined,
     });
 
     return withRequestMeta(
       ok({
         available: found.isAvailable,
-        notes: found.notes,
+        notes: safeNotes,
       }),
       { correlationId, rl },
     );
@@ -268,3 +277,4 @@ export async function POST(req: Request) {
     });
   }
 }
+

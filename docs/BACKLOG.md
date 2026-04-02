@@ -2,153 +2,57 @@
 
 ## Objetivo
 
-Definir o backlog macro por fase/sprint, mantendo a evolução em ordem segura e auditável.
+Definir backlog macro por fases com execução incremental, auditável e segura.
 
 ---
 
-## Estrutura de desenvolvimento
+## Fase concluída — Baseline 1.1.0 (2026-04-01)
 
-O projeto evolui por sprints com escopo explícito, validação incremental e checkpoints datados.
+### Escopo consolidado
+- conversão e confiança em superfícies públicas;
+- cobertura pública resiliente e comercialmente útil;
+- recuperação de senha admin integrada com segurança;
+- separação de superfície cliente/admin com placeholder público;
+- hardening API-first em rotas públicas críticas;
+- telemetria first-party sem PII;
+- validação final e hotfix do loop de redirecionamento admin.
+
+### Resultado
+- baseline funcional e deployável consolidada em checkpoint v1.1.0.
 
 ---
 
-## Sprint 0 — Fundação do projeto
+## Próxima fase proposta — Fase 1.2 (hardening residual + observabilidade)
 
 ### Objetivo
-Criar base técnica segura e organizada.
-
-### Entregas
-- inicialização Next.js + TypeScript + Tailwind
-- setup de lint/format
-- setup Prisma + PostgreSQL
-- estrutura inicial de pastas
-- documentação de governança
-- setup Vitest + Playwright
-
----
-
-## Sprint 1 — Design System
-
-### Objetivo
-Criar base visual reutilizável para público e admin.
-
-### Entregas
-- layout base
-- Navbar, Footer e Mobile Tab Bar
-- componentes core de UI (Button/Card/Badge/Input/Textarea/Container/Section)
-- tokens visuais
-
----
-
-## Sprint 2 — Home Page
-
-### Objetivo
-Construir página principal com foco institucional e conversão.
-
-### Entregas
-- hero principal
-- blocos de valor
-- seção de planos
-- CTA de cobertura
-- preview de status e FAQ
-- metadata SEO base
-
----
-
-## Sprint 3 — Páginas públicas
-
-### Entregas
-- planos
-- cobertura
-- suporte
-- contato
-- status da rede
-- sobre
-- política de privacidade
-- termos de uso
-
----
-
-## Sprint 4 — Formulários e persistência
-
-### Entregas
-- contato
-- leads
-- consulta de cobertura
-- validação Zod
-- persistência com Prisma
-- rate limit básico
-
----
-
-## Sprint 5 — Autenticação admin
-
-### Entregas
-- login admin
-- sessão por cookie HttpOnly
-- middleware de autenticação
-- controle de autorização por role
-
----
-
-## Sprint 6 — Painel administrativo
-
-### Entregas
-- CRUD planos
-- CRUD cobertura
-- CRUD FAQ
-- CRUD status
-- gestão de leads
-- auditoria básica
-
----
-
-## Sprint 7 — Hardening e estabilização pós-deploy
-
-### Entregas
-- recuperação e estabilização de ambiente de produção
-- alinhamento de banco/migrations com produção
-- validação operacional de endpoints críticos
-- ajustes iniciais de CSP para liberar runtime/admin
-
-### Pendências abertas
-- hardening final de CSP/headers/rate-limit
-- higiene de repositório e artefatos temporários
-- revisão final de segurança operacional
-
----
-
-## Sprint 8 — Refino comercial + SEO on-page (concluída)
-
-### Objetivo
-Elevar percepção comercial/institucional das páginas públicas sem alteração funcional.
-
-### Entregas
-- refino de copy na Home
-- refino de copy nas páginas Planos, Cobertura, Status, Contato e Sobre
-- uniformização verbal de CTAs e microcopy
-- reforço semântico para SEO on-page com linguagem de serviço local
-- ajuste textual final no rodapé público
-- consolidação documental da versão 1.0.8
-
-### Regra aplicada
-- sem mudanças em API, banco, autenticação, rotas, contratos ou comportamento funcional
-
----
-
-## Próxima fase técnica (Sprint 9 proposta)
-
-### Objetivo
-Fechar hardening pendente com baixo risco de regressão.
+Fechar lacunas residuais sem regressão de produto.
 
 ### Entregas alvo
-- revisão fina de CSP e headers de segurança
-- validação final de rate-limit em rotas sensíveis
-- revisão de higiene operacional (`.gitignore`, scripts auxiliares, resíduos)
-- checklist de regressão pós-hardening
+- endurecimento progressivo de CSP global de páginas com validação controlada;
+- estratégia de rate limit distribuído para ambientes com múltiplas instâncias;
+- consolidação de observabilidade de eventos first-party (dashboards e alertas);
+- suíte mínima de regressão para fluxos públicos e admin críticos.
+
+### Restrições
+- sem mudança de schema Prisma sem necessidade comprovada;
+- sem enfraquecer auth/session/admin para ganhar velocidade;
+- sem alteração ampla de UI fora de objetivo de hardening/observabilidade.
 
 ---
 
-## Regra importante
+## Backlog contínuo de produto (não iniciado nesta baseline)
 
-Sempre evoluir por sprint, com checkpoint técnico ao final de cada lote relevante.
+- evolução da Central do Cliente com modelagem de autenticação própria;
+- expansão comercial de cobertura com fonte de dados oficial;
+- melhoria de UX orientada por telemetria agregada;
+- automação de validações de segurança em pipeline.
+
+---
+
+## Regra de governança
+
+Toda fase deve terminar com:
+1. validações técnicas obrigatórias;
+2. riscos residuais explícitos;
+3. checkpoint datado;
+4. decisão registrada quando houver mudança de segurança/arquitetura.

@@ -1,32 +1,38 @@
-﻿import { ZodError } from 'zod';
+import { z, ZodError } from 'zod';
 
-import { prisma } from '@/lib/db/prisma';
 import {
   JsonBodyParseError,
   parseJsonBodyWithLimit,
 } from '@/lib/security/json-body';
 import { logger } from '@/lib/security/logger';
-import {
-  created,
-  fail,
-  internalError,
-  validationError,
-} from '@/lib/security/response';
+import { fail, internalError, ok, validationError } from '@/lib/security/response';
 import { buildRateLimitKey, rateLimit } from '@/lib/security/rate-limit';
 import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
-import {
-  normalizeEmail,
-  normalizePhone,
-  sanitizeOptionalString,
-  sanitizeString,
-} from '@/lib/security/sanitize';
-import contactSchema from '@/lib/validations/contact';
+import { sanitizeOptionalString, sanitizeString } from '@/lib/security/sanitize';
 
-const MAX_BODY_SIZE_BYTES = 8 * 1024;
-const CONTACT_RATE_LIMIT = {
-  limit: 5,
-  windowMs: 15 * 60 * 1000,
+const MAX_BODY_SIZE_BYTES = 2 * 1024;
+const EVENTS_RATE_LIMIT = {
+  limit: 60,
+  windowMs: 60 * 1000,
 } as const;
+
+const publicEventSchema = z
+  .object({
+    eventName: z.enum([
+      'cta_click',
+      'coverage_check_submitted',
+      'coverage_check_result',
+      'contact_submit',
+      'plan_interest',
+    ]),
+    page: z.string().trim().min(1).max(120),
+    component: z.string().trim().min(1).max(80),
+    target: z.string().trim().max(120).optional(),
+    status: z
+      .enum(['click', 'submitted', 'success', 'error', 'available', 'unavailable'])
+      .optional(),
+  })
+  .strict();
 
 function formatValidationErrors(error: ZodError) {
   return error.issues.map((issue) => ({
@@ -76,15 +82,15 @@ export async function POST(req: Request) {
   const correlationId = getCorrelationId(req);
 
   const rl = rateLimit({
-    key: buildRateLimitKey('contact', req),
-    limit: CONTACT_RATE_LIMIT.limit,
-    windowMs: CONTACT_RATE_LIMIT.windowMs,
+    key: buildRateLimitKey('public-events', req),
+    limit: EVENTS_RATE_LIMIT.limit,
+    windowMs: EVENTS_RATE_LIMIT.windowMs,
   });
 
   if (!rl.ok) {
-    logger.warn('Rate limit hit on contact route', {
+    logger.warn('Rate limit hit on public events route', {
       correlationId,
-      route: '/api/contact',
+      route: '/api/events',
       limit: rl.limit,
       remaining: rl.remaining,
       resetAt: rl.resetAt,
@@ -109,18 +115,18 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     if (error instanceof JsonBodyParseError) {
-      logger.warn('Invalid request body on contact route', {
+      logger.warn('Invalid request body on public events route', {
         correlationId,
-        route: '/api/contact',
+        route: '/api/events',
         category: error.code,
       });
 
       return mapBodyParseError(error, correlationId, rl);
     }
 
-    logger.error('Unhandled body parse error on contact route', {
+    logger.error('Unhandled body parse error on public events route', {
       correlationId,
-      route: '/api/contact',
+      route: '/api/events',
       error,
     });
 
@@ -131,56 +137,32 @@ export async function POST(req: Request) {
   }
 
   try {
-    const parsed = contactSchema.parse(body);
+    const parsed = publicEventSchema.parse(body);
+    const timestamp = new Date().toISOString();
 
-    if (
-      'website' in parsed &&
-      typeof parsed.website === 'string' &&
-      parsed.website.trim()
-    ) {
-      logger.info('Honeypot triggered on contact route', {
-        correlationId,
-        route: '/api/contact',
-      });
-
-      return withRequestMeta(created({ success: true }), {
-        correlationId,
-        rl,
-      });
-    }
-
-    const data = {
-      name: sanitizeString(parsed.name, { maxLength: 120 }),
-      email: normalizeEmail(parsed.email),
-      phone: sanitizeOptionalString(parsed.phone, { maxLength: 20 }),
-      subject: sanitizeOptionalString(parsed.subject, { maxLength: 160 }),
-      message: sanitizeString(parsed.message, { maxLength: 2000 }),
-    };
-
-    await prisma.contactMessage.create({
-      data: {
-        name: data.name,
-        email: data.email,
-        phone: data.phone ? normalizePhone(data.phone) : null,
-        subject: data.subject,
-        message: data.message,
-      },
-    });
-
-    logger.info('Contact message created successfully', {
+    logger.info('Public conversion event tracked', {
       correlationId,
-      route: '/api/contact',
+      route: '/api/events',
+      eventName: parsed.eventName,
+      page: sanitizeString(parsed.page, { maxLength: 120 }),
+      component: sanitizeString(parsed.component, { maxLength: 80 }),
+      target: sanitizeOptionalString(parsed.target, { maxLength: 120 }),
+      status: parsed.status,
+      timestamp,
     });
 
-    return withRequestMeta(created({ success: true }), {
-      correlationId,
-      rl,
-    });
+    return withRequestMeta(
+      ok({
+        accepted: true,
+        timestamp,
+      }),
+      { correlationId, rl },
+    );
   } catch (error) {
     if (error instanceof ZodError) {
-      logger.warn('Validation failed on contact route', {
+      logger.warn('Validation failed on public events route', {
         correlationId,
-        route: '/api/contact',
+        route: '/api/events',
         issues: error.flatten(),
       });
 
@@ -190,9 +172,9 @@ export async function POST(req: Request) {
       );
     }
 
-    logger.error('Unhandled error on contact route', {
+    logger.error('Unhandled error on public events route', {
       correlationId,
-      route: '/api/contact',
+      route: '/api/events',
       error,
     });
 

@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/core/button";
 import { Input } from "@/components/ui/forms/input";
 import { Label } from "@/components/ui/forms/label";
 import { StatusBanner } from "@/components/marketing/status-banner";
+import { trackPublicEvent } from "@/lib/telemetry/public-events";
+import { extractApiErrorMessage } from "@/lib/utils/api-error-message";
 
 type CoverageArea = {
   id: string;
@@ -134,6 +136,13 @@ export default function CoberturaClient({ areas }: Props) {
     setLoading(true);
     setError(null);
     setResult(null);
+    trackPublicEvent({
+      eventName: "coverage_check_submitted",
+      page: "/cobertura",
+      component: "coverage_form",
+      target: "coverage_check",
+      status: "submitted",
+    });
 
     try {
       const response = await fetch("/api/coverage-check", {
@@ -152,19 +161,30 @@ export default function CoberturaClient({ areas }: Props) {
       const data: CoverageResponse = await response.json();
 
       if (!response.ok || !data.success) {
-        if (Array.isArray((data as { error?: unknown }).error)) {
-          const first = (data as { error: { message?: string }[] }).error[0];
-          throw new Error(first?.message || "Dados inválidos.");
-        }
-
         throw new Error(
-          (data as { error?: string }).error ||
+          extractApiErrorMessage(
+            data as { success?: boolean; error?: unknown },
             "Não foi possível consultar a cobertura."
+          )
         );
       }
 
       setResult(data.data);
+      trackPublicEvent({
+        eventName: "coverage_check_result",
+        page: "/cobertura",
+        component: "coverage_form",
+        target: "coverage_check",
+        status: data.data.available ? "available" : "unavailable",
+      });
     } catch (err) {
+      trackPublicEvent({
+        eventName: "coverage_check_result",
+        page: "/cobertura",
+        component: "coverage_form",
+        target: "coverage_check",
+        status: "error",
+      });
       setError(
         err instanceof Error ? err.message : "Erro ao consultar cobertura."
       );
@@ -403,8 +423,8 @@ export default function CoberturaClient({ areas }: Props) {
                               variant="outline"
                               className="w-full sm:w-auto"
                             >
-                              <Link href="/planos#comparacao-planos">
-                                Ver planos de internet
+                              <Link href="/contratar#formulario-solicitacao">
+                                Solicitar expansao
                               </Link>
                             </Button>
                           </>
@@ -500,8 +520,22 @@ export default function CoberturaClient({ areas }: Props) {
           <Card className="rounded-[28px] border-border">
             <CardContent className="p-5 sm:p-6">
               {areas.length === 0 ? (
-                <div className="rounded-2xl border border-border bg-background px-4 py-4 text-sm text-secondary">
-                  Ainda não há áreas com cobertura publicada no momento.
+                <div className="space-y-4 rounded-2xl border border-border bg-background px-4 py-4 text-sm text-secondary">
+                  <p className="font-medium text-primary">
+                    Estamos expandindo a cobertura para novas regiões.
+                  </p>
+                  <p>
+                    A lista pública de áreas será atualizada continuamente. Enquanto isso, use a
+                    consulta acima e fale com nosso atendimento para confirmar disponibilidade.
+                  </p>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                    <Button asChild variant="secondary" className="w-full sm:w-auto">
+                      <Link href="/contato#formulario-contato">Falar com atendimento</Link>
+                    </Button>
+                    <Button asChild variant="outline" className="w-full sm:w-auto">
+                      <Link href="/contratar#formulario-solicitacao">Solicitar prioridade</Link>
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

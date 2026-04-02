@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
@@ -15,6 +16,34 @@ type ResetState = {
   newPassword: string;
   confirmPassword: string;
 };
+
+function validateResetPassword(password: string) {
+  if (password.length < 12) {
+    return 'A nova senha deve ter no mínimo 12 caracteres.';
+  }
+
+  if (password.length > 128) {
+    return 'A nova senha deve ter no máximo 128 caracteres.';
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    return 'A nova senha deve conter ao menos uma letra maiúscula.';
+  }
+
+  if (!/[a-z]/.test(password)) {
+    return 'A nova senha deve conter ao menos uma letra minúscula.';
+  }
+
+  if (!/[0-9]/.test(password)) {
+    return 'A nova senha deve conter ao menos um número.';
+  }
+
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    return 'A nova senha deve conter ao menos um caractere especial.';
+  }
+
+  return null;
+}
 
 export default function AdminRecoveryForm() {
   const searchParams = useSearchParams();
@@ -99,8 +128,9 @@ export default function AdminRecoveryForm() {
       return;
     }
 
-    if (resetForm.newPassword.length < 8) {
-      setError('A nova senha deve ter pelo menos 8 caracteres.');
+    const passwordValidationError = validateResetPassword(resetForm.newPassword);
+    if (passwordValidationError) {
+      setError(passwordValidationError);
       setMessage(null);
       return;
     }
@@ -201,6 +231,10 @@ export default function AdminRecoveryForm() {
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? 'Redefinindo...' : 'Redefinir senha'}
           </Button>
+
+          <Button asChild type="button" variant="outline" className="w-full" disabled={isLoading}>
+            <Link href="/admin/login">Voltar para login</Link>
+          </Button>
         </form>
       ) : (
         <form className="space-y-5" onSubmit={submitRequest}>
@@ -219,6 +253,10 @@ export default function AdminRecoveryForm() {
 
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? 'Enviando...' : 'Solicitar recuperação'}
+          </Button>
+
+          <Button asChild type="button" variant="ghost" className="w-full" disabled={isLoading}>
+            <Link href="/admin/login">Voltar para login</Link>
           </Button>
         </form>
       )}

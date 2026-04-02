@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Registrar o status de execução por sprint e as próximas tarefas reais do projeto.
+Registrar status de execução por ciclo e próximas tarefas objetivas do projeto.
 
 ---
 
@@ -12,107 +12,78 @@ Registrar o status de execução por sprint e as próximas tarefas reais do proj
 
 ---
 
-## Sprint atual
+## Ciclo atual
 
-Sprint 8 — Refino comercial/SEO on-page concluído + continuidade de hardening técnico
-
----
-
-## Status por sprint
-
-## Sprint 0 — Fundação do projeto
-- [x] projeto Next.js criado
-- [x] TypeScript habilitado
-- [x] Tailwind configurado
-- [x] ESLint configurado
-- [x] Prettier configurado
-- [x] Prisma configurado com PostgreSQL
-- [x] estrutura inicial de pastas consolidada
-- [x] docs de governança criadas
-- [x] Vitest e Playwright configurados
-
-## Sprint 1 — Design System
-- [x] layout base público e admin estruturado
-- [x] Navbar e Footer públicos implementados
-- [x] Mobile Tab Bar implementada
-- [x] componentes base em uso
-- [x] tokens visuais aplicados
-
-## Sprint 2 — Home Page
-- [x] Hero principal implementada
-- [x] seções de valor e conversão presentes
-- [x] CTA de cobertura e previews de status/FAQ presentes
-- [x] metadata SEO base aplicada
-
-## Sprint 3 — Páginas públicas
-- [x] páginas públicas principais implementadas
-- [x] shell público consolidado
-- [x] módulo de atalhos no hero implementado
-- [x] botão flutuante de WhatsApp integrado
-
-## Sprint 4 — Formulários e persistência
-- [x] endpoints públicos principais implementados
-- [x] validação server-side com Zod em uso
-- [x] persistência com Prisma em operação
-- [~] hardening final de rate limit pendente
-- [~] revisão final de contratos/erros padronizados pendente
-
-## Sprint 5 — Autenticação admin
-- [x] login admin implementado
-- [x] sessão por cookie HttpOnly implementada
-- [x] controle de autorização por role em rotas admin
-- [x] acesso admin recuperado em produção
-- [x] produção validada com domínio final correto
-- [~] revisão final de segurança da sessão pendente
-- [ ] recuperação de senha/admin ainda pendente de fechamento final
-
-## Sprint 6 — Painel administrativo
-- [x] base do painel admin implementada
-- [x] dashboard e layout admin ativos
-- [x] gestão de planos/cobertura/FAQ/status/leads ativa
-- [x] bug do badge comercial corrigido no admin
-- [ ] revisão final de estados vazios/form feedback ainda pode ser aprofundada
-
-## Sprint 7 — Hardening e pós-deploy
-- [x] novo banco Supabase conectado
-- [x] migrations aplicadas com sucesso
-- [x] produção validada com `/api/plans`
-- [x] env principal da Vercel validada
-- [x] CSP ajustada para destravar login/admin
-- [~] revisão fina da CSP pendente
-- [ ] limpeza de arquivos temporários/sensíveis pendente
-- [ ] revisão de `.gitignore` pendente
-- [ ] revisão de scripts auxiliares pendente
-- [ ] rodada final de hardening de auth/headers/rate-limit pendente
-
-## Sprint 8 — Refino comercial e SEO on-page (páginas públicas)
-- [x] Home refinada (hero, blocos institucionais, planos, diferenciais, consistência verbal)
-- [x] Página Planos refinada para clareza comercial e decisão
-- [x] Página Cobertura refinada com foco em consulta de disponibilidade e próximos passos
-- [x] Página Status refinada para transparência operacional e comunicação útil
-- [x] Página Contato refinada para atendimento/suporte com linguagem objetiva
-- [x] Página Sobre refinada com posicionamento institucional de provedor regional
-- [x] Ajuste textual final no rodapé público
-- [x] Consolidação documental da versão 1.0.8
-- [x] Sem alterações funcionais em API/DB/auth/rotas/lógica
+Ciclo 1.1.0 — Conversão pública + hardening incremental + validação operacional final.
 
 ---
 
-## Próximas tarefas objetivas (execução imediata)
+## Status das etapas de execução
 
-1. finalizar hardening técnico pendente (CSP fina, headers e rate-limit);
-2. concluir revisão de higiene operacional do repositório;
-3. validar regressão mínima automatizada após fechamento do hardening;
-4. consolidar checkpoint pós-hardening para nova baseline operacional.
+## Etapa 1 — Quick wins de conversão e confiança
+- [x] Header/footer com reforço de acesso e confiança institucional
+- [x] WhatsApp oficial ajustado para checkpoint antigo (`5513996270950`)
+- [x] Central do Cliente e 2ª via tratadas como "Em breve"/preparação
+- [x] Sem mudança em auth/admin/API sensível
+
+## Etapa 2 — Cobertura mais crível e mais segura
+- [x] Página `/cobertura` resiliente à falha de leitura do banco
+- [x] Fallback comercial para estados sem áreas publicadas
+- [x] Mensagens sem reflexão insegura de input
+- [x] Contrato de `POST /api/coverage-check` preservado
+
+## Etapa 3 — Login admin com recuperação integrada
+- [x] Link "Esqueceu sua senha?" no login admin
+- [x] UX de recuperação/reset integrada ao fluxo existente
+- [x] Validação client-side de senha alinhada ao contrato server-side
+- [x] Respostas neutras e seguras mantidas no request de recovery
+
+## Etapa 4 — Estrutura futura da área do cliente
+- [x] Placeholder seguro criado em `/cliente/login`
+- [x] Separação explícita entre superfícies cliente e admin
+- [x] Sem reutilização insegura de sessão/role admin
+
+## Etapa 5 — Rodapé institucional
+- [x] Rodapé reforçado com links institucionais e presença operacional
+- [x] Central do Cliente apontando para rota pública de preparação
+- [x] Sem criação de informação jurídica/regulatória inventada
+
+## Etapa 6 — Hardening de superfície pública
+- [x] Parser único de JSON com limite real de payload em APIs públicas críticas
+- [x] Validação estrita e rejeição de campos inesperados
+- [x] Headers de segurança + `X-Correlation-Id` nas respostas hardenizadas
+- [x] Sanitização de saída textual pública (ex.: `notes` de cobertura)
+
+## Etapa 7 — Medição de conversão first-party
+- [x] Endpoint `POST /api/events` com allowlist e rate limit
+- [x] Instrumentação de eventos públicos sem PII
+- [x] Logs estruturados com metadados mínimos seguros
+
+## Etapa 8 — Pente-fino final de prontidão
+- [x] build/start e smoke checks executados no ciclo
+- [x] revisão final de links, fluxos críticos e segurança básica
+- [x] ausência de `dangerouslySetInnerHTML` no escopo revisado
+
+## Hotfix pós-etapas — loop de redirecionamento admin
+- [x] causa raiz identificada no gate de token do `proxy.ts`
+- [x] ajuste aplicado removendo forçamento de `secureCookie`
+- [x] comportamento esperado restabelecido para ambiente local
 
 ---
 
-## Regra
+## Próximas tarefas objetivas (deploy e verificação)
 
-Nenhuma etapa nova deve:
+1. preparar commit final da baseline 1.1.0 (código + docs);
+2. validar novamente login admin end-to-end em ambiente de release;
+3. executar deploy monitorado e checar rotas críticas pós-deploy;
+4. abrir ciclo de observabilidade e hardening residual (CSP global/rate limit distribuído).
 
-- quebrar o banco em produção;
-- quebrar o login admin;
-- quebrar o deploy atual;
-- misturar hardening sensível com refatoração ampla;
-- alterar múltiplas camadas críticas sem checkpoint intermediário.
+---
+
+## Regra de execução
+
+Nenhuma tarefa futura deve:
+- quebrar login/admin e proteção de rotas;
+- alterar schema sem decisão explícita e checkpoint;
+- expandir escopo além do ciclo definido;
+- reduzir controles de validação, rate limit ou tratamento seguro de erro.

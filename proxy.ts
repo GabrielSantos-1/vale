@@ -37,7 +37,6 @@ export async function proxy(req: NextRequest) {
   const token = await getToken({
     req,
     secret: authSecret,
-    secureCookie: process.env.NODE_ENV === 'production',
   });
 
   const role = (token as { role?: string } | null)?.role;

@@ -1,9 +1,12 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowUpRight, Headset, Radar, Wifi } from "lucide-react";
+import { Headset, MessageCircle, Radar, Wifi } from "lucide-react";
 import type { ComponentType } from "react";
 
-import { PUBLIC_CONTACT_ACTIONS } from "@/lib/constants/contact";
+import { PUBLIC_CONTACT_ACTIONS, whatsappSupportUrl } from "@/lib/constants/contact";
 import { cn } from "@/lib/cn";
+import { trackPublicEvent } from "@/lib/telemetry/public-events";
 
 type HeroQuickActionItem = {
   label: string;
@@ -34,9 +37,9 @@ const QUICK_ACTIONS: HeroQuickActionItem[] = [
     icon: Headset,
   },
   {
-    label: "Testar velocidade",
-    href: "https://www.speedtest.net",
-    icon: ArrowUpRight,
+    label: "WhatsApp rapido",
+    href: whatsappSupportUrl,
+    icon: MessageCircle,
     external: true,
   },
 ];
@@ -46,6 +49,16 @@ function QuickActionLink({ item }: { item: HeroQuickActionItem }) {
   const baseClassName =
     "group flex min-h-[92px] flex-col justify-between rounded-2xl border border-white/14 bg-white/10 p-3 shadow-[0_8px_20px_rgba(2,6,23,0.12)] backdrop-blur-md transition-all duration-200 hover:border-white/22 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/80";
 
+  function handleTrackClick() {
+    trackPublicEvent({
+      eventName: "cta_click",
+      page: "/",
+      component: "hero_quick_actions",
+      target: item.label,
+      status: "click",
+    });
+  }
+
   if (item.external) {
     return (
       <a
@@ -53,6 +66,7 @@ function QuickActionLink({ item }: { item: HeroQuickActionItem }) {
         target="_blank"
         rel="noopener noreferrer"
         className={baseClassName}
+        onClick={handleTrackClick}
       >
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/14 text-white/95">
           <Icon className="h-4 w-4" aria-hidden="true" />
@@ -63,7 +77,7 @@ function QuickActionLink({ item }: { item: HeroQuickActionItem }) {
   }
 
   return (
-    <Link href={item.href} className={baseClassName}>
+    <Link href={item.href} className={baseClassName} onClick={handleTrackClick}>
       <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-white/14 text-white/95">
         <Icon className="h-4 w-4" aria-hidden="true" />
       </span>
@@ -73,17 +87,17 @@ function QuickActionLink({ item }: { item: HeroQuickActionItem }) {
 }
 
 export function HeroQuickActions({
-  supportText = "Acesse os serviços essenciais sem sair da página inicial.",
+  supportText = "Acesse cobertura, status e atendimento rapido sem sair da pagina inicial.",
   className,
 }: HeroQuickActionsProps) {
   return (
     <div className={cn("relative z-10 space-y-4", className)}>
       <div className="space-y-1.5">
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/82">
-          Acesso rápido
+          Acesso rapido
         </p>
         <p className="text-xl font-semibold leading-6 tracking-tight text-white">
-          Serviços essenciais para cobertura, status, suporte e velocidade.
+          Servicos essenciais para cobertura, status, suporte e atendimento imediato.
         </p>
       </div>
 

@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Registrar o estado técnico oficial do projeto **Verde Vale 2** para continuidade segura, rastreabilidade e execução incremental sem regressão.
+Registrar o estado técnico oficial do projeto **Verde Vale Connect** para continuidade segura, rastreabilidade e execução incremental sem regressão.
 
 ---
 
@@ -14,98 +14,96 @@ Registrar o estado técnico oficial do projeto **Verde Vale 2** para continuidad
 
 ## Release documental
 
-### Versão: 1.0.8 (documental)
+### Versão: 1.1.0 (documental + validação operacional)
 
-Esta versão consolida documentação de refinamento comercial e SEO on-page das páginas públicas, sem alteração funcional de backend, autenticação, banco, rotas ou contratos.
+Esta versão consolida as entregas das etapas 1 a 8 do roadmap incremental e o hotfix de redirecionamento admin em ambiente local, com build/start e smoke checks de prontidão.
 
 ---
 
 ## Resumo executivo
 
-O sistema permanece funcional e estabilizado em produção, com foco recente em refinamento verbal/comercial das páginas públicas.
+O sistema está funcional e com baseline de segurança reforçada nas superfícies públicas críticas, preservando arquitetura, schema e contratos sensíveis.
 
-Consolidado em 1.0.8:
+Consolidado em 1.1.0:
+- reforço de conversão pública em header/footer/quick actions;
+- fallback resiliente em cobertura pública sem quebra quando a leitura do banco falha;
+- integração de recuperação de senha admin com UX e validações alinhadas ao server;
+- separação explícita de superfície cliente/admin com placeholder `/cliente/login`;
+- hardening API-first (`/api/contact`, `/api/leads`, `/api/coverage-check`, `/api/plans`);
+- telemetria first-party com allowlist e sem PII (`/api/events`);
+- correção de loop `/admin/login` ↔ `/admin/dashboard` via ajuste de leitura de cookie no `proxy.ts`.
 
-- refinamento de copy na Home;
-- refinamento de copy em `/planos`, `/cobertura`, `/status`, `/contato` e `/sobre`;
-- padronização verbal para posicionamento institucional de provedor regional;
-- ajuste textual final no rodapé público;
-- validações de build executadas durante o ciclo de refinamento.
-
-Sem mudança funcional:
-
-- sem alteração de API;
+Sem mudança estrutural:
 - sem alteração de schema Prisma;
-- sem alteração de lógica de autenticação/autorização;
-- sem alteração de fluxos de formulário e handlers;
-- sem alteração de rotas públicas e administrativas.
+- sem migrations novas;
+- sem mudança de contrato de sessão/cookies NextAuth;
+- sem criação de autenticação real de cliente.
 
 ---
 
 ## Estado funcional por domínio
 
 ### Público
+- páginas estratégicas operacionais: `/`, `/planos`, `/cobertura`, `/contato`, `/status`, `/cliente/login`;
+- CTAs de atendimento e conversão consistentes;
+- cobertura com fallback comercial quando áreas não estão disponíveis;
+- formulários públicos com tratamento de erro seguro.
 
-- páginas públicas principais operacionais: Home, Planos, Cobertura, Contato, Status, Sobre, Suporte, Políticas e Termos;
-- comunicação comercial mais clara para internet fibra, cobertura e contratação;
-- status da rede com linguagem mais operacional e transparente;
-- CTAs públicos mais consistentes entre páginas.
-
-### Administrativo
-
-- painel admin, login e gestão operacional mantidos;
-- sem alteração de comportamento ou contratos administrativos nesta versão documental.
+### Admin
+- login admin e dashboard protegidos por role;
+- fluxo "Esqueceu sua senha?" integrado ao login;
+- request/reset com proteção de enumeração e controles existentes.
 
 ### API e persistência
-
-- rotas públicas e administrativas mantidas;
-- Prisma e banco sem alterações em estrutura ou consultas por este release documental;
-- contratos e validações existentes preservados.
-
----
-
-## Evidências do ciclo refinado (1.0.8)
-
-Áreas refinadas de comunicação textual:
-
-- Home (`app/(public)/page.tsx`);
-- Planos (`app/(public)/planos/page.tsx`);
-- Cobertura (`app/(public)/cobertura/page.tsx`, `app/(public)/cobertura/cobertura-client.tsx`);
-- Status (`app/(public)/status/page.tsx`);
-- Contato (`app/(public)/contato/page.tsx`);
-- Sobre (`app/(public)/sobre/page.tsx`, constantes institucionais e blocos de apoio);
-- Rodapé (`components/layout/public/footer.tsx`).
-
-Documentação de rastreabilidade:
-
-- `docs/CHECKPOINT_2026-04-01_v1.0.8.md`;
-- `docs/checkpoints/2026-04-01-v1-0-8-refino-comercial-publico/*`.
+- contratos públicos preservados com robustez adicional de parsing/validação;
+- correlação e headers de segurança aplicados nas rotas públicas hardenizadas;
+- logs com contexto operacional mínimo, sem token/senha em payload de log.
 
 ---
 
-## Riscos ativos
+## Superfícies de ataque revisadas (resumo)
 
-1. hardening final de segurança ainda pendente (CSP fina, revisão de headers, revisão final de rate limit);
-2. higiene operacional contínua de repositório e artefatos temporários;
-3. manter disciplina de escopo para não misturar refino textual com alteração funcional sensível.
+- navegação pública e links externos (header/footer/CTAs);
+- formulários e handlers públicos (`contact`, `leads`, `coverage-check`);
+- endpoint de eventos (`/api/events`) com allowlist e rate limit;
+- gate de sessão/role em rotas admin via `proxy.ts`.
+
+---
+
+## Evidências da baseline 1.1.0
+
+- checkpoint principal: `docs/CHECKPOINT_2026-04-01_v1.1.0.md`;
+- checkpoint detalhado: `docs/checkpoints/2026-04-01-v1-1-0-hardening-conversao/`;
+- validações técnicas registradas no ciclo:
+  - `npm run build`;
+  - `npm run start`;
+  - smoke de rotas públicas, admin/auth e APIs críticas.
+
+---
+
+## Riscos residuais honestos
+
+1. rate limit permanece in-memory (eficácia reduzida em escala distribuída);
+2. CSP global de páginas não foi endurecida nesta rodada (estratégia API-first);
+3. monitoramento/alertas de eventos ainda dependem de observabilidade operacional posterior;
+4. documentação histórica antiga ainda contém arquivos legados com formatação inconsistente fora do escopo desta baseline.
 
 ---
 
 ## Próximos passos recomendados
 
-1. concluir pendências técnicas de hardening pós-estabilização;
-2. consolidar rodada mínima de testes automatizados por camada crítica;
-3. manter checkpoints datados por lote relevante;
-4. iniciar apenas melhorias funcionais após fechamento dos itens de segurança pendentes.
+1. consolidar estratégia distribuída de rate limit (Redis/edge-store);
+2. executar fase dedicada de hardening de CSP global de páginas com janela de regressão controlada;
+3. conectar telemetria first-party a painel operacional/alerta;
+4. rodar suíte automatizada mínima contínua em CI para fluxos críticos públicos e admin.
 
 ---
 
 ## Regra de manutenção
 
 Atualizar este arquivo sempre que houver mudança relevante em:
-
-- produção/deploy;
-- segurança, autenticação, sessão, CSP ou headers;
-- banco/schema/contratos;
-- escopo funcional administrativo;
-- mudanças documentais de release que afetem governança e rastreabilidade.
+- deploy/produção;
+- autenticação, sessão, autorização ou gate admin;
+- segurança pública (headers/CSP/validação/rate limit);
+- contratos de API pública;
+- baseline de checkpoint.

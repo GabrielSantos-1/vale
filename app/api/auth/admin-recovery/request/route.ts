@@ -147,8 +147,8 @@ export async function POST(req: Request) {
       route: '/api/auth/admin-recovery/request',
       error,
     });
-
-    return withRequestMeta(internalError(correlationId), { correlationId });
+    return withRequestMeta(ok({ message: GENERIC_RESPONSE_MESSAGE }), {
+      correlationId,
+    });
   }
 }
-

@@ -1,6 +1,7 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 import { prisma } from "@/lib/db/prisma";
+import { logger } from "@/lib/security/logger";
 import { Container } from "@/components/ui/core/container";
 import { Card, CardContent } from "@/components/ui/core/card";
 import { Button } from "@/components/ui/core/button";
@@ -14,28 +15,40 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 async function getPlansData() {
-  const plans = await prisma.plan.findMany({
-    where: { isActive: true },
-    orderBy: [
-      { featured: "desc" },
-      { priceCents: "asc" },
-      { createdAt: "desc" },
-    ],
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      priceCents: true,
-      featured: true,
-      badge: true,
-      downloadMbps: true,
-      uploadMbps: true,
-      latencyTarget: true,
-      benefitsJson: true,
-    },
-  });
+  const correlationId = crypto.randomUUID();
 
-  return { plans };
+  try {
+    const plans = await prisma.plan.findMany({
+      where: { isActive: true },
+      orderBy: [
+        { featured: "desc" },
+        { priceCents: "asc" },
+        { createdAt: "desc" },
+      ],
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        priceCents: true,
+        featured: true,
+        badge: true,
+        downloadMbps: true,
+        uploadMbps: true,
+        latencyTarget: true,
+        benefitsJson: true,
+      },
+    });
+
+    return { plans };
+  } catch (error) {
+    logger.error("Failed to load public plans", {
+      correlationId,
+      route: "/planos",
+      error,
+    });
+
+    return { plans: [] };
+  }
 }
 
 type PlansPageData = Awaited<ReturnType<typeof getPlansData>>;
@@ -141,6 +154,3 @@ export default async function PlanosPage() {
     </Container>
   );
 }
-
-
-

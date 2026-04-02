@@ -1,6 +1,10 @@
-import { ZodError, z } from 'zod';
+﻿import { ZodError, z } from 'zod';
 
 import { prisma } from '@/lib/db/prisma';
+import {
+  JsonBodyParseError,
+  parseJsonBodyWithLimit,
+} from '@/lib/security/json-body';
 import { logger } from '@/lib/security/logger';
 import {
   created,
@@ -54,18 +58,18 @@ const leadSchema = z
       if (typeof value !== 'string') return undefined;
       const trimmed = value.trim().toLowerCase();
       return trimmed.length > 0 ? trimmed : undefined;
-    }, z.string().email('E-mail inválido.').max(160, 'E-mail muito longo.').optional()),
+    }, z.string().email('E-mail invalido.').max(160, 'E-mail muito longo.').optional()),
     phone: z.preprocess((value) => {
       if (typeof value !== 'string') return value;
       return value.replace(/\D/g, '');
-    }, z.string().min(10, 'Telefone inválido.').max(11, 'Telefone inválido.').optional()),
+    }, z.string().min(10, 'Telefone invalido.').max(11, 'Telefone invalido.').optional()),
     city: optionalTrimmedString(80),
     district: optionalTrimmedString(80),
     cep: z.preprocess((value) => {
       if (typeof value !== 'string') return undefined;
       const digits = value.replace(/\D/g, '');
       return digits.length > 0 ? digits : undefined;
-    }, z.string().length(8, 'CEP inválido.').optional()),
+    }, z.string().length(8, 'CEP invalido.').optional()),
     message: optionalTrimmedString(1000),
     planSlug: optionalTrimmedString(120),
     website: optionalTrimmedString(255),
@@ -87,6 +91,43 @@ function formatValidationErrors(error: ZodError) {
   }
 
   return normalized;
+}
+
+function mapBodyParseError(
+  error: JsonBodyParseError,
+  correlationId: string,
+  rl: ReturnType<typeof rateLimit>,
+) {
+  if (error.code === 'UNSUPPORTED_MEDIA_TYPE') {
+    return withRequestMeta(
+      fail('Content-Type invalido.', {
+        status: 415,
+        code: 'UNSUPPORTED_MEDIA_TYPE',
+        correlationId,
+      }),
+      { correlationId, rl },
+    );
+  }
+
+  if (error.code === 'PAYLOAD_TOO_LARGE') {
+    return withRequestMeta(
+      fail('Payload muito grande.', {
+        status: 413,
+        code: 'PAYLOAD_TOO_LARGE',
+        correlationId,
+      }),
+      { correlationId, rl },
+    );
+  }
+
+  return withRequestMeta(
+    fail('JSON invalido.', {
+      status: 400,
+      code: 'INVALID_JSON',
+      correlationId,
+    }),
+    { correlationId, rl },
+  );
 }
 
 export async function POST(req: Request) {
@@ -117,67 +158,34 @@ export async function POST(req: Request) {
     );
   }
 
-  const contentType = req.headers.get('content-type') ?? '';
-  if (!contentType.toLowerCase().includes('application/json')) {
-    logger.warn('Invalid content-type on leads route', {
-      correlationId,
-      route: '/api/leads',
-      contentType,
-    });
-
-    return withRequestMeta(
-      fail('Content-Type inválido.', {
-        status: 415,
-        code: 'UNSUPPORTED_MEDIA_TYPE',
-        correlationId,
-      }),
-      { correlationId, rl },
-    );
-  }
-
-  const contentLengthHeader = req.headers.get('content-length');
-  if (contentLengthHeader) {
-    const contentLength = Number(contentLengthHeader);
-
-    if (
-      !Number.isFinite(contentLength) ||
-      contentLength > MAX_BODY_SIZE_BYTES
-    ) {
-      logger.warn('Payload too large on leads route', {
-        correlationId,
-        route: '/api/leads',
-        contentLengthHeader,
-      });
-
-      return withRequestMeta(
-        fail('Payload muito grande.', {
-          status: 413,
-          code: 'PAYLOAD_TOO_LARGE',
-          correlationId,
-        }),
-        { correlationId, rl },
-      );
-    }
-  }
-
   let body: unknown;
 
   try {
-    body = await req.json();
-  } catch {
-    logger.warn('Invalid JSON on leads route', {
+    body = await parseJsonBodyWithLimit(req, {
+      maxBytes: MAX_BODY_SIZE_BYTES,
+      requireJsonContentType: true,
+    });
+  } catch (error) {
+    if (error instanceof JsonBodyParseError) {
+      logger.warn('Invalid request body on leads route', {
+        correlationId,
+        route: '/api/leads',
+        category: error.code,
+      });
+
+      return mapBodyParseError(error, correlationId, rl);
+    }
+
+    logger.error('Unhandled body parse error on leads route', {
       correlationId,
       route: '/api/leads',
+      error,
     });
 
-    return withRequestMeta(
-      fail('JSON inválido.', {
-        status: 400,
-        code: 'INVALID_JSON',
-        correlationId,
-      }),
-      { correlationId, rl },
-    );
+    return withRequestMeta(internalError(correlationId), {
+      correlationId,
+      rl,
+    });
   }
 
   try {
@@ -192,7 +200,7 @@ export async function POST(req: Request) {
       return withRequestMeta(
         created({
           success: true,
-          message: 'Solicitação recebida com sucesso.',
+          message: 'Solicitacao recebida com sucesso.',
           correlationId,
         }),
         { correlationId, rl },
@@ -227,16 +235,15 @@ export async function POST(req: Request) {
         logger.warn('Invalid plan slug on leads route', {
           correlationId,
           route: '/api/leads',
-          planSlug: sanitized.planSlug,
         });
 
         return withRequestMeta(
-          fail('Plano inválido.', {
+          fail('Plano invalido.', {
             status: 400,
             code: 'INVALID_PLAN',
             details: {
               fieldErrors: {
-                planSlug: 'Selecione um plano válido.',
+                planSlug: 'Selecione um plano valido.',
               },
             },
             correlationId,
@@ -316,3 +323,4 @@ export async function POST(req: Request) {
     });
   }
 }
+

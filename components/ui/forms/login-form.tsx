@@ -1,5 +1,6 @@
-﻿'use client'
+'use client'
 
+import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -70,17 +71,17 @@ export default function LoginForm({
     const password = form.password
 
     if (!email) {
-      nextErrors.email = 'E-mail Ã© obrigatÃ³rio.'
+      nextErrors.email = 'E-mail é obrigatório.'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      nextErrors.email = 'Informe um e-mail vÃ¡lido.'
+      nextErrors.email = 'Informe um e-mail válido.'
     } else if (email.length > 160) {
-      nextErrors.email = 'E-mail invÃ¡lido.'
+      nextErrors.email = 'E-mail inválido.'
     }
 
     if (!password.trim()) {
-      nextErrors.password = 'Senha Ã© obrigatÃ³ria.'
+      nextErrors.password = 'Senha é obrigatória.'
     } else if (password.length > 255) {
-      nextErrors.password = 'Senha invÃ¡lida.'
+      nextErrors.password = 'Senha inválida.'
     }
 
     return nextErrors
@@ -111,11 +112,11 @@ export default function LoginForm({
       })
 
       if (!result) {
-        throw new Error('NÃ£o foi possÃ­vel iniciar a autenticaÃ§Ã£o.')
+        throw new Error('Não foi possível iniciar a autenticação.')
       }
 
       if (result.error) {
-        throw new Error('Credenciais invÃ¡lidas.')
+        throw new Error('Credenciais inválidas.')
       }
 
       const nextUrl =
@@ -174,7 +175,7 @@ export default function LoginForm({
       >
         <Input
           type="password"
-          placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+          placeholder="••••••••"
           value={form.password}
           onChange={(e) => updateField('password', e.target.value)}
           autoComplete="current-password"
@@ -182,6 +183,15 @@ export default function LoginForm({
           disabled={loading}
         />
       </FormField>
+
+      <div className="flex justify-end">
+        <Link
+          href="/recuperar-admin"
+          className="text-sm text-secondary underline decoration-secondary/40 underline-offset-4 transition-colors hover:text-primary"
+        >
+          Esqueceu sua senha?
+        </Link>
+      </div>
 
       <Button type="submit" className="w-full" disabled={loading}>
         {loading ? 'Entrando...' : 'Entrar'}
