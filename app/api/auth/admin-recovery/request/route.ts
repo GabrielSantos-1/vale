@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     const parsed = adminRecoveryRequestSchema.parse(body);
     const normalizedEmail = normalizeEmail(parsed.email);
 
-    const rl = rateLimit({
+    const rl = await rateLimit({
       key: `${buildRateLimitKey('admin-recovery-request', req)}:${hashForRateLimit(normalizedEmail)}`,
       limit: REQUEST_RATE_LIMIT.limit,
       windowMs: REQUEST_RATE_LIMIT.windowMs,

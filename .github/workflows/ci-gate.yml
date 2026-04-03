@@ -1,0 +1,49 @@
+name: CI Gate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-and-build:
+    name: Test and Build
+    runs-on: ubuntu-latest
+    env:
+      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Prepare auth secrets for CI build
+        run: |
+          secret="${NEXTAUTH_SECRET:-ci-fallback-nextauth-secret-change-me-32chars}"
+          auth_secret="${AUTH_SECRET:-$secret}"
+          echo "NEXTAUTH_SECRET=$secret" >> "$GITHUB_ENV"
+          echo "AUTH_SECRET=$auth_secret" >> "$GITHUB_ENV"
+
+      - name: Validate required env for build
+        run: |
+          if [ -z "${DATABASE_URL:-}" ]; then
+            echo "DATABASE_URL secret is required for CI build (Next.js prerender reads Prisma)." >&2
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit and integration tests
+        run: npm test
+
+      - name: Run production build
+        run: npm run build

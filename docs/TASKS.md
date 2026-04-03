@@ -87,3 +87,36 @@ Nenhuma tarefa futura deve:
 - alterar schema sem decisão explícita e checkpoint;
 - expandir escopo além do ciclo definido;
 - reduzir controles de validação, rate limit ou tratamento seguro de erro.
+---
+
+## Ciclo 1.2 - Etapa 2 (rate limit distribuido)
+
+- [x] Driver distribuido com Upstash Redis implementado em `lib/security/rate-limit.ts`
+- [x] Fallback controlado por flag (`RATE_LIMIT_FAILOVER_TO_MEMORY`) com fail-open monitorado
+- [x] Integracao mantida nas rotas publicas e auth sem quebra de contrato
+- [x] Testes unitarios do core de rate limit adicionados
+- [x] Validacao de integracao com retorno `429` + headers de rate limit
+
+## Ciclo 1.2 - Etapa 3 (CSP global com rollout seguro)
+
+- [x] Politica CSP centralizada por ambiente com `CSP_MODE=report-only|enforce`
+- [x] Aplicacao global mantida no `proxy.ts` via `securityHeaders`
+- [x] Consistencia de diretivas entre camada global e APIs hardenizadas
+- [x] Validacao funcional em modo `report-only` e `enforce`
+- [x] Regressao tecnica validada com testes e build
+
+## Ciclo 1.2 - Etapa 4 (observabilidade first-party)
+
+- [x] Ingestao operacional em `AuditLog` para eventos, rate-limit e erros sem PII
+- [x] Endpoint admin de metricas operacionais (`/api/admin/metrics/observability`)
+- [x] Alertas por webhook com cooldown e thresholds configuraveis
+- [x] Painel de observabilidade integrado no `/admin/dashboard`
+- [x] Validacao tecnica com testes, build e smoke de fluxo critico
+
+## Ciclo 1.2 - Etapa 5 (regressao continua e fechamento oficial)
+
+- [x] Workflow de gate em PR/push criado com `npm ci`, `npm test`, `npm run build`
+- [x] Workflow e2e separado com `workflow_dispatch` + `schedule` diario
+- [x] Atualizacao de estado oficial em `docs/PROJECT_STATE.md`
+- [x] Contrato interno admin de observabilidade documentado em `docs/API_CONTRACTS.md`
+- [x] Checkpoint completo de fechamento 1.2.0 criado em `docs/checkpoints/2026-04-03-v1-2-0-hardening-observabilidade-ci/`

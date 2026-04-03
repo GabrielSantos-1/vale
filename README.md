@@ -44,6 +44,27 @@ Referências:
 - Vitest
 - Playwright
 
+## Configuracao de ambiente (rate limit e CSP)
+
+Use `.env.example` como base e configure:
+
+- `RATE_LIMIT_DRIVER=memory|upstash`
+- `RATE_LIMIT_FAILOVER_TO_MEMORY=true|false`
+- `UPSTASH_REDIS_REST_URL` (obrigatorio quando `upstash`)
+- `UPSTASH_REDIS_REST_TOKEN` (obrigatorio quando `upstash`)
+- `CSP_MODE=report-only|enforce`
+- `CSP_REPORT_URI` (opcional)
+- `OBS_ALERT_ENABLED=true|false`
+- `OBS_ALERT_WEBHOOK_URL` (opcional)
+- `OBS_ALERT_COOLDOWN_SECONDS`
+- `OBS_ALERT_RATE_LIMIT_THRESHOLD`
+- `OBS_ALERT_ERROR_THRESHOLD`
+
+Matriz operacional recomendada:
+- `dev`: `RATE_LIMIT_DRIVER=memory`
+- `staging`: `RATE_LIMIT_DRIVER=upstash` e `RATE_LIMIT_FAILOVER_TO_MEMORY=true`
+- `prod`: `RATE_LIMIT_DRIVER=upstash` e `RATE_LIMIT_FAILOVER_TO_MEMORY=true`
+
 ## Documentação obrigatória
 
 Antes de qualquer alteração, seguir:

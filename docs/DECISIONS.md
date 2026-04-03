@@ -142,6 +142,72 @@ Impacto:
 
 ---
 
+
+## Decisao 016 - Rate limit distribuido com Upstash e fallback controlado
+
+Adotar driver distribuido de rate limit via Upstash Redis (`RATE_LIMIT_DRIVER=upstash`) mantendo o driver in-memory como fallback de contingencia controlada por flag (`RATE_LIMIT_FAILOVER_TO_MEMORY`).
+
+**Motivo:** preservar protecao contra abuso em ambiente com multiplas instancias sem quebrar contratos de API.
+
+Impacto:
+- preserva headers `X-RateLimit-*` e `Retry-After`;
+- reduz risco de bypass de limite por distribuicao horizontal;
+- mantem fail-open monitorado em indisponibilidade do backend distribuido.
+
+---
+
 ## Regra
 
-Toda decisão que altere segurança, deploy, auth/session, API pública, banco ou governança documental deve ser registrada aqui.
+Toda decisao que altere seguranca, deploy, auth/session, API publica, banco ou governanca documental deve ser registrada aqui.
+
+---
+
+## Decisao 017 - Rollout de CSP global em modo progressivo
+
+Centralizar a politica CSP em `lib/security/headers.ts` com chaveamento por ambiente e modo de rollout (`CSP_MODE=report-only|enforce`).
+
+**Motivo:** endurecer superficie de frontend sem regressao abrupta em paginas publicas e administrativas.
+
+Impacto:
+- permite fase de observacao com `Content-Security-Policy-Report-Only`;
+- habilita enforcement controlado com `Content-Security-Policy`;
+- unifica diretivas de CSP entre middleware global e respostas de API via `request-meta`.
+
+---
+
+## Decisao 018 - Observabilidade first-party com AuditLog e alerta por webhook
+
+Consolidar observabilidade operacional reaproveitando `AuditLog` (sem migration), com agregacao no painel admin e alertas por webhook para picos de `RATE_LIMITED` e erros.
+
+**Motivo:** detectar anomalias em rotas publicas criticas com baixo acoplamento e sem dependencia obrigatoria de provider externo.
+
+Impacto:
+- cria trilha operacional segura sem PII para eventos/erros/rate-limit;
+- adiciona visao executiva em `/admin/dashboard` para resposta rapida;
+- preserva contratos publicos existentes e evita mudanca de schema Prisma.
+
+---
+
+## Decisao 019 - Governanca CI minima com e2e desacoplado do gate de PR
+
+Adotar gate obrigatorio de PR/push com `test + build` e manter e2e Playwright em workflow separado manual/scheduled.
+
+**Motivo:** reduzir risco de regressao funcional/compilacao no merge sem tornar o ciclo de PR instavel por flakiness de e2e.
+
+Impacto:
+- cria bloqueio tecnico objetivo para merge;
+- preserva validacao end-to-end em trilha controlada;
+- melhora rastreabilidade de qualidade no fechamento do ciclo 1.2.
+
+---
+
+## Decisao 020 - Segredo de auth no CI com fallback controlado
+
+Nos workflows de CI (`CI Gate` e `E2E Playwright`), injetar `NEXTAUTH_SECRET` (e `AUTH_SECRET`) via `secrets.NEXTAUTH_SECRET` com fallback controlado para evitar falha de build por ausencia de segredo em contextos restritos.
+
+**Motivo:** `auth-options.ts` valida segredo em tempo de import durante `npm run build`, e a falta da variavel quebra checks remotos mesmo sem execucao de login real.
+
+Impacto:
+- elimina falha estrutural de build nos checks de PR;
+- preserva governanca por segredo em ambientes com configuracao completa;
+- mantem compatibilidade sem alterar contrato de API ou fluxo de autenticacao.

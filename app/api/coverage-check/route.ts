@@ -12,8 +12,16 @@ import {
   ok,
   validationError,
 } from '@/lib/security/response';
-import { buildRateLimitKey, rateLimit } from '@/lib/security/rate-limit';
+import {
+  buildRateLimitKey,
+  rateLimit,
+  type RateLimitResult,
+} from '@/lib/security/rate-limit';
 import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
+import {
+  recordPublicApiError,
+  recordPublicApiRateLimited,
+} from '@/lib/observability/audit';
 import {
   normalizeCep,
   sanitizeOptionalString,
@@ -44,7 +52,7 @@ function formatValidationErrors(error: ZodError) {
 function mapBodyParseError(
   error: JsonBodyParseError,
   correlationId: string,
-  rl: ReturnType<typeof rateLimit>,
+  rl: RateLimitResult,
 ) {
   if (error.code === 'UNSUPPORTED_MEDIA_TYPE') {
     return withRequestMeta(
@@ -81,13 +89,18 @@ function mapBodyParseError(
 export async function POST(req: Request) {
   const correlationId = getCorrelationId(req);
 
-  const rl = rateLimit({
+  const rl = await rateLimit({
     key: buildRateLimitKey('coverage-check', req),
     limit: COVERAGE_RATE_LIMIT.limit,
     windowMs: COVERAGE_RATE_LIMIT.windowMs,
   });
 
   if (!rl.ok) {
+    await recordPublicApiRateLimited({
+      route: '/api/coverage-check',
+      correlationId,
+    });
+
     logger.warn('Rate limit hit on coverage-check route', {
       correlationId,
       route: '/api/coverage-check',
@@ -128,6 +141,12 @@ export async function POST(req: Request) {
       correlationId,
       route: '/api/coverage-check',
       error,
+    });
+
+    await recordPublicApiError({
+      route: '/api/coverage-check',
+      correlationId,
+      category: 'body_parse_error',
     });
 
     return withRequestMeta(internalError(correlationId), {
@@ -271,10 +290,15 @@ export async function POST(req: Request) {
       error,
     });
 
+    await recordPublicApiError({
+      route: '/api/coverage-check',
+      correlationId,
+      category: 'unhandled_error',
+    });
+
     return withRequestMeta(internalError(correlationId), {
       correlationId,
       rl,
     });
   }
 }
-

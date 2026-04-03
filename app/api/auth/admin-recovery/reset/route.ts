@@ -25,7 +25,7 @@ function formatValidationErrors(error: ZodError) {
 export async function POST(req: Request) {
   const correlationId = getCorrelationId(req);
 
-  const rl = rateLimit({
+  const rl = await rateLimit({
     key: buildRateLimitKey('admin-recovery-reset', req),
     limit: RESET_RATE_LIMIT.limit,
     windowMs: RESET_RATE_LIMIT.windowMs,

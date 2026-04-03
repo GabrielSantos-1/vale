@@ -2,108 +2,87 @@
 
 ## Objetivo
 
-Registrar o estado técnico oficial do projeto **Verde Vale Connect** para continuidade segura, rastreabilidade e execução incremental sem regressão.
+Registrar o estado tecnico oficial do projeto **Verde Vale Connect** para continuidade segura, rastreabilidade e execucao incremental sem regressao.
 
 ---
 
-## Data de referência
+## Data de referencia
 
-2026-04-01
+2026-04-03
 
 ---
 
 ## Release documental
 
-### Versão: 1.1.0 (documental + validação operacional)
+### Versao: 1.2.0 (hardening residual + observabilidade + governanca CI)
 
-Esta versão consolida as entregas das etapas 1 a 8 do roadmap incremental e o hotfix de redirecionamento admin em ambiente local, com build/start e smoke checks de prontidão.
+Esta versao consolida o fechamento das etapas 2, 3, 4 e 5 do ciclo 1.2:
+- rate limit distribuido com fallback controlado;
+- CSP global com rollout `report-only` e `enforce`;
+- observabilidade first-party em `AuditLog`, dashboard admin e alerta por webhook;
+- pipeline CI minimo em PR (`test + build`) e e2e separado manual/scheduled.
 
 ---
 
 ## Resumo executivo
 
-O sistema está funcional e com baseline de segurança reforçada nas superfícies públicas críticas, preservando arquitetura, schema e contratos sensíveis.
+O sistema permanece funcional, com contratos publicos preservados e ganho de maturidade operacional para deteccao de anomalias e prevencao de regressao.
 
-Consolidado em 1.1.0:
-- reforço de conversão pública em header/footer/quick actions;
-- fallback resiliente em cobertura pública sem quebra quando a leitura do banco falha;
-- integração de recuperação de senha admin com UX e validações alinhadas ao server;
-- separação explícita de superfície cliente/admin com placeholder `/cliente/login`;
-- hardening API-first (`/api/contact`, `/api/leads`, `/api/coverage-check`, `/api/plans`);
-- telemetria first-party com allowlist e sem PII (`/api/events`);
-- correção de loop `/admin/login` ↔ `/admin/dashboard` via ajuste de leitura de cookie no `proxy.ts`.
+Consolidado em 1.2.0:
+- rotas publicas e auth com rate limit compativel em ambiente distribuido;
+- headers de seguranca e CSP unificados por modo de rollout;
+- trilha operacional segura sem PII para eventos, rate-limit e erros;
+- novo endpoint interno admin de observabilidade: `GET /api/admin/metrics/observability`;
+- painel de observabilidade integrado ao dashboard admin;
+- governanca de entrega com workflows GitHub Actions para gate e e2e controlado.
 
-Sem mudança estrutural:
-- sem alteração de schema Prisma;
+Sem mudanca estrutural:
+- sem alteracao de schema Prisma;
 - sem migrations novas;
-- sem mudança de contrato de sessão/cookies NextAuth;
-- sem criação de autenticação real de cliente.
+- sem quebra de contrato de API publica;
+- sem alteracao do modelo de sessao NextAuth.
 
 ---
 
-## Estado funcional por domínio
+## Evidencias da baseline 1.2.0
 
-### Público
-- páginas estratégicas operacionais: `/`, `/planos`, `/cobertura`, `/contato`, `/status`, `/cliente/login`;
-- CTAs de atendimento e conversão consistentes;
-- cobertura com fallback comercial quando áreas não estão disponíveis;
-- formulários públicos com tratamento de erro seguro.
-
-### Admin
-- login admin e dashboard protegidos por role;
-- fluxo "Esqueceu sua senha?" integrado ao login;
-- request/reset com proteção de enumeração e controles existentes.
-
-### API e persistência
-- contratos públicos preservados com robustez adicional de parsing/validação;
-- correlação e headers de segurança aplicados nas rotas públicas hardenizadas;
-- logs com contexto operacional mínimo, sem token/senha em payload de log.
-
----
-
-## Superfícies de ataque revisadas (resumo)
-
-- navegação pública e links externos (header/footer/CTAs);
-- formulários e handlers públicos (`contact`, `leads`, `coverage-check`);
-- endpoint de eventos (`/api/events`) com allowlist e rate limit;
-- gate de sessão/role em rotas admin via `proxy.ts`.
-
----
-
-## Evidências da baseline 1.1.0
-
-- checkpoint principal: `docs/CHECKPOINT_2026-04-01_v1.1.0.md`;
-- checkpoint detalhado: `docs/checkpoints/2026-04-01-v1-1-0-hardening-conversao/`;
-- validações técnicas registradas no ciclo:
-  - `npm run build`;
-  - `npm run start`;
-  - smoke de rotas públicas, admin/auth e APIs críticas.
+- validacoes tecnicas locais:
+  - `npm test`
+  - `npm run build`
+  - smoke de rotas criticas publicas e admin
+- validacoes de seguranca/headers:
+  - `X-Correlation-Id`, `X-RateLimit-*`, `Retry-After` preservados
+  - `CSP_MODE=report-only` e `CSP_MODE=enforce` validados
+- governanca CI:
+  - `.github/workflows/ci-gate.yml`
+  - `.github/workflows/e2e-playwright.yml`
+- checkpoint detalhado:
+  - `docs/checkpoints/2026-04-03-v1-2-0-hardening-observabilidade-ci/`
 
 ---
 
 ## Riscos residuais honestos
 
-1. rate limit permanece in-memory (eficácia reduzida em escala distribuída);
-2. CSP global de páginas não foi endurecida nesta rodada (estratégia API-first);
-3. monitoramento/alertas de eventos ainda dependem de observabilidade operacional posterior;
-4. documentação histórica antiga ainda contém arquivos legados com formatação inconsistente fora do escopo desta baseline.
+1. endpoint `GET /api/plans` depende de conectividade com banco externo no ambiente local;
+2. alertas de webhook exigem configuracao operacional (`OBS_ALERT_*`) para efetiva notificacao;
+3. e2e permanece fora do gate de PR por decisao de custo/estabilidade, podendo detectar regressao mais tarde que unit/integration.
 
 ---
 
-## Próximos passos recomendados
+## Proximos passos recomendados
 
-1. consolidar estratégia distribuída de rate limit (Redis/edge-store);
-2. executar fase dedicada de hardening de CSP global de páginas com janela de regressão controlada;
-3. conectar telemetria first-party a painel operacional/alerta;
-4. rodar suíte automatizada mínima contínua em CI para fluxos críticos públicos e admin.
+1. executar e monitorar workflows no repositorio remoto apos push;
+2. ajustar thresholds de alerta com base em trafego real;
+3. evoluir cobertura e2e para fluxos publicos e admin mais criticos;
+4. preparar proxima fase de produto (central do cliente e melhorias orientadas por telemetria agregada).
 
 ---
 
-## Regra de manutenção
+## Regra de manutencao
 
-Atualizar este arquivo sempre que houver mudança relevante em:
-- deploy/produção;
-- autenticação, sessão, autorização ou gate admin;
-- segurança pública (headers/CSP/validação/rate limit);
-- contratos de API pública;
+Atualizar este arquivo sempre que houver mudanca relevante em:
+- deploy/producao;
+- autenticacao, sessao, autorizacao ou gate admin;
+- seguranca publica (headers/CSP/validacao/rate limit);
+- contratos de API publica;
 - baseline de checkpoint.

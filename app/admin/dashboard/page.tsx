@@ -1,6 +1,7 @@
 ﻿import { prisma } from "@/lib/db/prisma";
 import { StatCard } from "@/components/ui/core/stat-card";
 import { LeadsMetricsPanel } from "@/components/admin/dashboard/leads-metrics-panel";
+import { ObservabilityMetricsPanel } from "@/components/admin/dashboard/observability-metrics-panel";
 import { AdminHero } from "@/components/admin/layout/admin-hero";
 
 export const metadata = {
@@ -127,6 +128,7 @@ export default async function DashboardPage() {
 
       <section className="grid gap-6">
         <LeadsMetricsPanel />
+        <ObservabilityMetricsPanel />
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2">
@@ -143,4 +145,3 @@ export default async function DashboardPage() {
     </div>
   );
 }
-
