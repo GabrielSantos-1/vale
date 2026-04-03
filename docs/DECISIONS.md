@@ -211,3 +211,16 @@ Impacto:
 - elimina falha estrutural de build nos checks de PR;
 - preserva governanca por segredo em ambientes com configuracao completa;
 - mantem compatibilidade sem alterar contrato de API ou fluxo de autenticacao.
+
+---
+
+## Decisao 021 - Calibracao de alertas com severidade e anti-ruido
+
+Evoluir alertas operacionais para thresholds por severidade (`warning`/`critical`) com janela configuravel por ambiente e cooldown independente por chave (`kind + route + severity`).
+
+**Motivo:** reduzir falso positivo e alert storm em producao, mantendo deteccao rapida de degradacao real.
+
+Impacto:
+- thresholds passam a ser calibraveis por ambiente (`OBS_ALERT_*_WARNING` e `OBS_ALERT_*_CRITICAL`);
+- legado permanece compativel via fallback de `OBS_ALERT_RATE_LIMIT_THRESHOLD` e `OBS_ALERT_ERROR_THRESHOLD`;
+- painel admin recebe metadados de calibracao e saude de alertas para operacao guiada.

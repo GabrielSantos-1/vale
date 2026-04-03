@@ -242,6 +242,8 @@ Expor visao operacional de eventos first-party, rate limit e erros publicos para
 `200` com:
 - `data`: serie temporal de eventos aceitos no periodo;
 - `meta.summary`: totais, taxa de erro, status operacional, distribuicao por rota e ultimo evento critico.
+- `meta.calibration`: janela efetiva, cooldown e thresholds ativos de alerta.
+- `meta.alertHealth`: status consolidado por thresholds, contagem de alertas disparados/suprimidos e ultimo snapshot em memoria (quando disponivel).
 
 ### Erros
 - `401` `UNAUTHORIZED`

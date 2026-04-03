@@ -70,4 +70,7 @@ test('observability metrics returns aggregated payload for admin', async () => {
   expect(body.meta?.summary?.totalEvents).toBe(1);
   expect(body.meta?.summary?.totalRateLimited).toBe(1);
   expect(body.meta?.summary?.totalErrors).toBe(1);
+  expect(body.meta?.calibration?.windowMinutes).toBeDefined();
+  expect(body.meta?.calibration?.thresholds?.rateLimit?.critical).toBeDefined();
+  expect(body.meta?.alertHealth?.dispatched?.total).toBeDefined();
 });
