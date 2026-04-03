@@ -11,19 +11,25 @@ jobs:
     name: Test and Build
     runs-on: ubuntu-latest
     env:
-      # Required by NextAuth during production build import-time checks.
-      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'ci-fallback-nextauth-secret-change-me-32chars' }}
-      AUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'ci-fallback-nextauth-secret-change-me-32chars' }}
+      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: npm
+
+      - name: Prepare auth secrets for CI build
+        run: |
+          secret="${NEXTAUTH_SECRET:-ci-fallback-nextauth-secret-change-me-32chars}"
+          auth_secret="${AUTH_SECRET:-$secret}"
+          echo "NEXTAUTH_SECRET=$secret" >> "$GITHUB_ENV"
+          echo "AUTH_SECRET=$auth_secret" >> "$GITHUB_ENV"
 
       - name: Install dependencies
         run: npm ci
