@@ -14,13 +14,14 @@ Registrar o estado tecnico oficial do projeto **Verde Vale Connect** para contin
 
 ## Release documental
 
-### Versao: 1.2.0 (hardening residual + observabilidade + governanca CI)
+### Versao: 1.2.1 (calibracao operacional de alertas)
 
-Esta versao consolida o fechamento das etapas 2, 3, 4 e 5 do ciclo 1.2:
+Esta versao consolida o fechamento das etapas 2, 3, 4, 5 e 7 do ciclo 1.2:
 - rate limit distribuido com fallback controlado;
 - CSP global com rollout `report-only` e `enforce`;
 - observabilidade first-party em `AuditLog`, dashboard admin e alerta por webhook;
 - pipeline CI minimo em PR (`test + build`) e e2e separado manual/scheduled.
+- calibracao de alertas com severidade (`warning`/`critical`), janela configuravel e anti-ruido.
 
 ---
 
@@ -28,12 +29,13 @@ Esta versao consolida o fechamento das etapas 2, 3, 4 e 5 do ciclo 1.2:
 
 O sistema permanece funcional, com contratos publicos preservados e ganho de maturidade operacional para deteccao de anomalias e prevencao de regressao.
 
-Consolidado em 1.2.0:
+Consolidado em 1.2.1:
 - rotas publicas e auth com rate limit compativel em ambiente distribuido;
 - headers de seguranca e CSP unificados por modo de rollout;
 - trilha operacional segura sem PII para eventos, rate-limit e erros;
 - novo endpoint interno admin de observabilidade: `GET /api/admin/metrics/observability`;
 - painel de observabilidade integrado ao dashboard admin;
+- painel admin com metadados de calibracao e saude de alertas;
 - governanca de entrega com workflows GitHub Actions para gate e e2e controlado.
 
 Sem mudanca estrutural:
@@ -56,8 +58,13 @@ Sem mudanca estrutural:
 - governanca CI:
   - `.github/workflows/ci-gate.yml`
   - `.github/workflows/e2e-playwright.yml`
+- calibracao operacional:
+  - `OBS_ALERT_WINDOW_MINUTES`
+  - `OBS_ALERT_*_THRESHOLD_WARNING`
+  - `OBS_ALERT_*_THRESHOLD_CRITICAL`
 - checkpoint detalhado:
   - `docs/checkpoints/2026-04-03-v1-2-0-hardening-observabilidade-ci/`
+  - `docs/checkpoints/2026-04-03-v1-2-1-calibracao-alertas/`
 
 ---
 

@@ -3,6 +3,7 @@ import { requireAdmin } from '@/lib/api/admin';
 import { logger } from '@/lib/security/logger';
 import { fail, internalError, ok } from '@/lib/security/response';
 import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
+import { getAlertConfig, getAlertRuntimeSnapshot } from '@/lib/observability/alerts';
 import {
   aggregateObservabilityMetrics,
   parseMetricsView,
@@ -14,6 +15,31 @@ const OBSERVABILITY_ACTIONS = [
   'PUBLIC_API_RATE_LIMITED',
   'PUBLIC_API_ERROR',
 ] as const;
+
+function deriveAlertHealthStatus(params: {
+  totalRateLimited: number;
+  totalErrors: number;
+  rateLimitWarning: number;
+  rateLimitCritical: number;
+  errorWarning: number;
+  errorCritical: number;
+}) {
+  if (
+    params.totalRateLimited >= params.rateLimitCritical ||
+    params.totalErrors >= params.errorCritical
+  ) {
+    return 'critical' as const;
+  }
+
+  if (
+    params.totalRateLimited >= params.rateLimitWarning ||
+    params.totalErrors >= params.errorWarning
+  ) {
+    return 'warning' as const;
+  }
+
+  return 'stable' as const;
+}
 
 export async function GET(request: Request) {
   const correlationId = getCorrelationId(request);
@@ -70,6 +96,16 @@ export async function GET(request: Request) {
       view,
       now,
     });
+    const alertConfig = getAlertConfig();
+    const alertRuntime = getAlertRuntimeSnapshot();
+    const alertHealthStatus = deriveAlertHealthStatus({
+      totalRateLimited: aggregated.summary.totalRateLimited,
+      totalErrors: aggregated.summary.totalErrors,
+      rateLimitWarning: alertConfig.thresholds.rateLimit.warning,
+      rateLimitCritical: alertConfig.thresholds.rateLimit.critical,
+      errorWarning: alertConfig.thresholds.error.warning,
+      errorCritical: alertConfig.thresholds.error.critical,
+    });
 
     logger.info('Admin observability metrics fetched successfully', {
       correlationId,
@@ -83,6 +119,20 @@ export async function GET(request: Request) {
     return withRequestMeta(
       ok(aggregated.points, {
         summary: aggregated.summary,
+        calibration: {
+          windowMinutes: alertConfig.windowMinutes,
+          cooldownSeconds: alertConfig.cooldownSeconds,
+          enabled: alertConfig.enabled,
+          hasWebhookUrl: alertConfig.hasWebhookUrl,
+          thresholds: alertConfig.thresholds,
+        },
+        alertHealth: {
+          status: alertHealthStatus,
+          dispatched: alertRuntime.dispatched,
+          suppressed: alertRuntime.suppressed,
+          lastDispatchedByKey: alertRuntime.lastDispatchedByKey,
+          lastSuppressedByKey: alertRuntime.lastSuppressedByKey,
+        },
       }),
       { correlationId },
     );

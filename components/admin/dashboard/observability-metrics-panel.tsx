@@ -10,6 +10,17 @@ type MetricsView = "daily" | "weekly" | "monthly";
 
 type SummaryStatus = "stable" | "warning" | "critical";
 
+type AlertThreshold = {
+  warning: number;
+  critical: number;
+};
+
+type AlertRuntimeCounters = {
+  total: number;
+  warning: number;
+  critical: number;
+};
+
 type ObservabilitySummary = {
   view: MetricsView;
   rangeLabel: string;
@@ -27,11 +38,30 @@ type ObservabilitySummary = {
   } | null;
 };
 
+type AlertCalibration = {
+  windowMinutes: number;
+  cooldownSeconds: number;
+  enabled: boolean;
+  hasWebhookUrl: boolean;
+  thresholds: {
+    rateLimit: AlertThreshold;
+    error: AlertThreshold;
+  };
+};
+
+type AlertHealth = {
+  status: SummaryStatus;
+  dispatched: AlertRuntimeCounters;
+  suppressed: AlertRuntimeCounters;
+};
+
 type MetricsResponse = {
   success: boolean;
   data?: Array<ChartPoint & { date: string }>;
   meta?: {
     summary?: ObservabilitySummary;
+    calibration?: AlertCalibration;
+    alertHealth?: AlertHealth;
   };
   error?: {
     message?: string;
@@ -66,6 +96,8 @@ export function ObservabilityMetricsPanel() {
   const [view, setView] = useState<MetricsView>("daily");
   const [data, setData] = useState<ChartPoint[]>([]);
   const [summary, setSummary] = useState<ObservabilitySummary | undefined>();
+  const [calibration, setCalibration] = useState<AlertCalibration | undefined>();
+  const [alertHealth, setAlertHealth] = useState<AlertHealth | undefined>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -88,16 +120,22 @@ export function ObservabilityMetricsPanel() {
         setError(payload.error?.message ?? "Erro ao carregar observabilidade.");
         setData([]);
         setSummary(undefined);
+        setCalibration(undefined);
+        setAlertHealth(undefined);
         return;
       }
 
       setData(payload.data ?? []);
       setSummary(payload.meta?.summary);
+      setCalibration(payload.meta?.calibration);
+      setAlertHealth(payload.meta?.alertHealth);
     } catch (err) {
       logClientError(err);
       setError("Erro ao carregar observabilidade.");
       setData([]);
       setSummary(undefined);
+      setCalibration(undefined);
+      setAlertHealth(undefined);
     } finally {
       setLoading(false);
     }
@@ -161,8 +199,11 @@ export function ObservabilityMetricsPanel() {
           data={data}
           className="border-0 bg-transparent shadow-none"
           rightSlot={
-            <Badge variant={statusBadgeVariant(summary?.status)} className="whitespace-nowrap">
-              Status: {statusLabel(summary?.status)}
+            <Badge
+              variant={statusBadgeVariant(alertHealth?.status ?? summary?.status)}
+              className="whitespace-nowrap"
+            >
+              Status: {statusLabel(alertHealth?.status ?? summary?.status)}
             </Badge>
           }
         />
@@ -182,9 +223,9 @@ export function ObservabilityMetricsPanel() {
             label="Taxa de erro"
             value={`${summary?.errorRate ?? 0}%`}
             accent={
-              summary?.status === "critical"
+              (alertHealth?.status ?? summary?.status) === "critical"
                 ? "danger"
-                : summary?.status === "warning"
+                : (alertHealth?.status ?? summary?.status) === "warning"
                   ? "warning"
                   : "success"
             }
@@ -196,6 +237,49 @@ export function ObservabilityMetricsPanel() {
                 ? `${summary.lastCriticalEvent.route} (${new Date(summary.lastCriticalEvent.timestamp).toLocaleString("pt-BR")})`
                 : "Nenhum"
             }
+          />
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <NumberCard
+            label="Alertas disparados"
+            value={alertHealth?.dispatched.total ?? 0}
+          />
+          <NumberCard
+            label="Alertas suprimidos"
+            value={alertHealth?.suppressed.total ?? 0}
+          />
+          <InfoCard
+            label="Janela / Cooldown"
+            value={`${calibration?.windowMinutes ?? 5}m / ${calibration?.cooldownSeconds ?? 300}s`}
+          />
+          <InfoCard
+            label="Webhook"
+            value={
+              calibration?.enabled
+                ? calibration?.hasWebhookUrl
+                  ? "Configurado"
+                  : "Ativado sem URL"
+                : "Desativado"
+            }
+            accent={
+              calibration?.enabled
+                ? calibration?.hasWebhookUrl
+                  ? "success"
+                  : "warning"
+                : "default"
+            }
+          />
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <InfoCard
+            label="Thresholds - Rate limit"
+            value={`warning ${calibration?.thresholds?.rateLimit?.warning ?? "-"} | critical ${calibration?.thresholds?.rateLimit?.critical ?? "-"}`}
+          />
+          <InfoCard
+            label="Thresholds - Erro"
+            value={`warning ${calibration?.thresholds?.error?.warning ?? "-"} | critical ${calibration?.thresholds?.error?.critical ?? "-"}`}
           />
         </div>
 

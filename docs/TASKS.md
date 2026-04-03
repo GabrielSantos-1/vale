@@ -120,3 +120,12 @@ Nenhuma tarefa futura deve:
 - [x] Atualizacao de estado oficial em `docs/PROJECT_STATE.md`
 - [x] Contrato interno admin de observabilidade documentado em `docs/API_CONTRACTS.md`
 - [x] Checkpoint completo de fechamento 1.2.0 criado em `docs/checkpoints/2026-04-03-v1-2-0-hardening-observabilidade-ci/`
+
+## Ciclo 1.2 - Etapa 7 (calibracao operacional de alertas)
+
+- [x] Janela de alerta configuravel por ambiente (`OBS_ALERT_WINDOW_MINUTES`)
+- [x] Thresholds por severidade (`warning`/`critical`) com fallback legado
+- [x] Cooldown por chave com severidade e trilha de supressao anti-ruido
+- [x] Endpoint admin com metadados de calibracao e saude de alertas
+- [x] Dashboard admin com visao de saude de alertas e thresholds ativos
+- [x] Runbook operacional curto registrado em checkpoint datado

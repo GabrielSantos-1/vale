@@ -2,7 +2,10 @@ import { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/security/logger';
-import { sendOperationalAlert } from '@/lib/observability/alerts';
+import {
+  getAlertConfig,
+  sendOperationalAlert,
+} from '@/lib/observability/alerts';
 
 type AuditAction =
   | 'PUBLIC_EVENT_TRACKED'
@@ -61,22 +64,6 @@ async function persistOperationalAudit(params: {
       error,
     });
   }
-}
-
-function getRateLimitThreshold() {
-  const raw = process.env.OBS_ALERT_RATE_LIMIT_THRESHOLD?.trim();
-  const parsed = raw ? Number(raw) : 20;
-  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 20;
-}
-
-function getErrorThreshold() {
-  const raw = process.env.OBS_ALERT_ERROR_THRESHOLD?.trim();
-  const parsed = raw ? Number(raw) : 10;
-  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 10;
-}
-
-function getAlertWindowMinutes() {
-  return 5;
 }
 
 async function countRecentActionByRoute(params: {
@@ -149,24 +136,20 @@ export async function recordPublicApiRateLimited(params: {
     },
   });
 
-  const windowMinutes = getAlertWindowMinutes();
+  const config = getAlertConfig();
+  const windowMinutes = config.windowMinutes;
   const total = await countRecentActionByRoute({
     action: 'PUBLIC_API_RATE_LIMITED',
     route,
     windowMinutes,
   });
-  const threshold = getRateLimitThreshold();
 
-  if (total >= threshold) {
-    await sendOperationalAlert({
-      kind: 'rate_limit_spike',
-      route,
-      count: total,
-      threshold,
-      windowMinutes,
-      correlationId: params.correlationId,
-    });
-  }
+  await sendOperationalAlert({
+    kind: 'rate_limit_spike',
+    route,
+    count: total,
+    correlationId: params.correlationId,
+  });
 }
 
 export async function recordPublicApiError(params: {
@@ -189,22 +172,18 @@ export async function recordPublicApiError(params: {
     },
   });
 
-  const windowMinutes = getAlertWindowMinutes();
+  const config = getAlertConfig();
+  const windowMinutes = config.windowMinutes;
   const total = await countRecentActionByRoute({
     action: 'PUBLIC_API_ERROR',
     route,
     windowMinutes,
   });
-  const threshold = getErrorThreshold();
 
-  if (total >= threshold) {
-    await sendOperationalAlert({
-      kind: 'error_spike',
-      route,
-      count: total,
-      threshold,
-      windowMinutes,
-      correlationId: params.correlationId,
-    });
-  }
+  await sendOperationalAlert({
+    kind: 'error_spike',
+    route,
+    count: total,
+    correlationId: params.correlationId,
+  });
 }
