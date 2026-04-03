@@ -1,3 +1,5 @@
+import { getCspHeaderValue } from '@/lib/security/headers';
+
 type RateLimitMeta = {
   limit: number;
   remaining: number;
@@ -11,9 +13,6 @@ type SecurityHeadersOptions = {
   csp?: string;
 };
 
-const DEFAULT_CSP =
-  "default-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'";
-
 export function getCorrelationId(req: Request): string {
   return (
     req.headers.get('x-correlation-id') ||
@@ -26,7 +25,7 @@ export function applySecurityHeaders(
   response: Response,
   options: SecurityHeadersOptions,
 ): Response {
-  const { correlationId, rateLimitMeta, csp = DEFAULT_CSP } = options;
+  const { correlationId, rateLimitMeta, csp } = options;
 
   response.headers.set('X-Correlation-Id', correlationId);
   response.headers.set('X-Frame-Options', 'DENY');
@@ -36,7 +35,10 @@ export function applySecurityHeaders(
     'Permissions-Policy',
     'camera=(), microphone=(), geolocation=()',
   );
-  response.headers.set('Content-Security-Policy', csp);
+  const cspHeader = getCspHeaderValue(csp);
+  response.headers.delete('Content-Security-Policy');
+  response.headers.delete('Content-Security-Policy-Report-Only');
+  response.headers.set(cspHeader.name, cspHeader.value);
 
   if (rateLimitMeta) {
     response.headers.set('X-RateLimit-Limit', String(rateLimitMeta.limit));

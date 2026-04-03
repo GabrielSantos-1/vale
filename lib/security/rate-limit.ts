@@ -1,15 +1,17 @@
+import { logger } from '@/lib/security/logger';
+
 type RateLimitEntry = {
   count: number;
   resetAt: number;
 };
 
-type RateLimitOptions = {
+export type RateLimitOptions = {
   key: string;
   limit: number;
   windowMs: number;
 };
 
-type RateLimitResult = {
+export type RateLimitResult = {
   ok: boolean;
   remaining: number;
   limit: number;
@@ -18,6 +20,7 @@ type RateLimitResult = {
 };
 
 const store = new Map<string, RateLimitEntry>();
+const RATE_LIMIT_KEY_PREFIX = 'rl';
 
 function now() {
   return Date.now();
@@ -36,7 +39,64 @@ function cleanupIfExpired(key: string, currentTime: number) {
   return entry;
 }
 
-export function rateLimit({
+function resolveDriver() {
+  const configuredDriver = process.env.RATE_LIMIT_DRIVER?.trim().toLowerCase();
+
+  if (configuredDriver === 'upstash') return 'upstash';
+  return 'memory';
+}
+
+function isFailoverToMemoryEnabled() {
+  const raw = process.env.RATE_LIMIT_FAILOVER_TO_MEMORY;
+  if (!raw) return true;
+
+  return raw.trim().toLowerCase() === 'true';
+}
+
+function safeNumber(value: unknown) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function normalizeTtlMs(ttlMs: number | null, windowMs: number) {
+  if (ttlMs === null || ttlMs <= 0) return windowMs;
+  return ttlMs;
+}
+
+function asRateLimitResult({
+  limit,
+  count,
+  windowMs,
+  ttlMs,
+}: {
+  limit: number;
+  count: number;
+  windowMs: number;
+  ttlMs: number | null;
+}): RateLimitResult {
+  const effectiveTtlMs = normalizeTtlMs(ttlMs, windowMs);
+  const resetAt = now() + effectiveTtlMs;
+  const retryAfter = Math.max(1, Math.ceil(effectiveTtlMs / 1000));
+
+  if (count > limit) {
+    return {
+      ok: false,
+      remaining: 0,
+      limit,
+      resetAt,
+      retryAfter,
+    };
+  }
+
+  return {
+    ok: true,
+    remaining: Math.max(0, limit - count),
+    limit,
+    resetAt,
+    retryAfter,
+  };
+}
+
+function rateLimitMemory({
   key,
   limit,
   windowMs,
@@ -84,6 +144,98 @@ export function rateLimit({
     resetAt: existing.resetAt,
     retryAfter: Math.max(1, Math.ceil((existing.resetAt - currentTime) / 1000)),
   };
+}
+
+async function rateLimitUpstash({
+  key,
+  limit,
+  windowMs,
+}: RateLimitOptions): Promise<RateLimitResult> {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) {
+    throw new Error(
+      'Upstash driver configured but UPSTASH_REDIS_REST_URL/TOKEN is missing.',
+    );
+  }
+
+  const redisKey = `${RATE_LIMIT_KEY_PREFIX}:${key}`;
+  const endpoint = `${url.replace(/\/+$/, '')}/pipeline`;
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify([
+      ['INCR', redisKey],
+      ['PTTL', redisKey],
+      ['PEXPIRE', redisKey, String(windowMs), 'NX'],
+    ]),
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Upstash request failed with status ${response.status}.`);
+  }
+
+  const payload = (await response.json()) as
+    | Array<{ result?: unknown; error?: unknown }>
+    | undefined;
+
+  if (!Array.isArray(payload) || payload.length < 2) {
+    throw new Error('Unexpected Upstash response payload.');
+  }
+
+  const firstError = payload.find((entry) => entry?.error);
+  if (firstError) {
+    throw new Error('Upstash pipeline returned command error.');
+  }
+
+  const count = safeNumber(payload[0]?.result);
+  const ttlMs = safeNumber(payload[1]?.result);
+
+  if (count === null) {
+    throw new Error('Upstash response missing INCR result.');
+  }
+
+  return asRateLimitResult({
+    limit,
+    count,
+    windowMs,
+    ttlMs,
+  });
+}
+
+export async function rateLimit(options: RateLimitOptions): Promise<RateLimitResult> {
+  const driver = resolveDriver();
+
+  if (driver === 'memory') {
+    return rateLimitMemory(options);
+  }
+
+  try {
+    return await rateLimitUpstash(options);
+  } catch (error) {
+    logger.warn('Distributed rate limit unavailable; applying fail-open policy', {
+      driver,
+      fallbackToMemory: isFailoverToMemoryEnabled(),
+      error,
+    });
+
+    if (isFailoverToMemoryEnabled()) {
+      return rateLimitMemory(options);
+    }
+
+    return asRateLimitResult({
+      limit: options.limit,
+      count: 1,
+      windowMs: options.windowMs,
+      ttlMs: options.windowMs,
+    });
+  }
 }
 
 function normalizeIp(value: string | null | undefined) {

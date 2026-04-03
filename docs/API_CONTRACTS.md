@@ -222,3 +222,27 @@ Receber eventos de conversão first-party sem PII.
 - sem mudança de schema Prisma nesta baseline;
 - sem alteração do contrato de autenticação/sessão NextAuth;
 - mudanças de contrato público exigem decisão em `docs/DECISIONS.md` e checkpoint.
+---
+
+## Contrato interno admin (observabilidade)
+
+## `GET /api/admin/metrics/observability`
+
+### Objetivo
+Expor visao operacional de eventos first-party, rate limit e erros publicos para uso no dashboard admin.
+
+### Autenticacao
+- exige sessao administrativa valida;
+- sem sessao: `401` `UNAUTHORIZED`.
+
+### Query params
+- `view`: `daily` | `weekly` | `monthly` (opcional, default `daily`).
+
+### Resposta de sucesso
+`200` com:
+- `data`: serie temporal de eventos aceitos no periodo;
+- `meta.summary`: totais, taxa de erro, status operacional, distribuicao por rota e ultimo evento critico.
+
+### Erros
+- `401` `UNAUTHORIZED`
+- `500` `INTERNAL_SERVER_ERROR`

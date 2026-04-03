@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import type { NextRequest } from 'next/server';
 
 import { authOptions } from '@/lib/auth/auth-options';
+import { recordPublicApiRateLimited } from '@/lib/observability/audit';
 import { logger } from '@/lib/security/logger';
 import { fail } from '@/lib/security/response';
 import { buildRateLimitKey, rateLimit } from '@/lib/security/rate-limit';
@@ -22,13 +23,18 @@ export async function GET(req: NextRequest, ctx: RouteContext) {
 export async function POST(req: NextRequest, ctx: RouteContext) {
   const correlationId = getCorrelationId(req);
 
-  const rl = rateLimit({
+  const rl = await rateLimit({
     key: buildRateLimitKey('auth-login', req),
     limit: 5,
     windowMs: 10 * 60 * 1000,
   });
 
   if (!rl.ok) {
+    await recordPublicApiRateLimited({
+      route: '/api/auth/[...nextauth]',
+      correlationId,
+    });
+
     logger.warn('Rate limit hit on auth route', {
       correlationId,
       route: '/api/auth/[...nextauth]',

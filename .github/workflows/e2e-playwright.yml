@@ -1,0 +1,67 @@
+name: E2E Playwright
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * *"
+
+jobs:
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build app
+        run: npm run build
+
+      - name: Start app
+        run: |
+          nohup npm run start -- --port 3000 > e2e-app.log 2>&1 &
+          echo $! > e2e-app.pid
+
+      - name: Wait for app readiness
+        run: |
+          for i in {1..40}; do
+            if curl -fsS http://127.0.0.1:3000 > /dev/null; then
+              echo "App is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "App did not become ready in time"
+          exit 1
+
+      - name: Run Playwright tests
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+        run: npm run e2e
+
+      - name: Stop app
+        if: always()
+        run: |
+          if [ -f e2e-app.pid ]; then
+            kill "$(cat e2e-app.pid)" || true
+          fi
+
+      - name: Upload app log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-app-log
+          path: e2e-app.log

@@ -12,8 +12,16 @@ import {
   internalError,
   validationError,
 } from '@/lib/security/response';
-import { buildRateLimitKey, rateLimit } from '@/lib/security/rate-limit';
+import {
+  buildRateLimitKey,
+  rateLimit,
+  type RateLimitResult,
+} from '@/lib/security/rate-limit';
 import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
+import {
+  recordPublicApiError,
+  recordPublicApiRateLimited,
+} from '@/lib/observability/audit';
 import {
   normalizeCep,
   normalizeEmail,
@@ -96,7 +104,7 @@ function formatValidationErrors(error: ZodError) {
 function mapBodyParseError(
   error: JsonBodyParseError,
   correlationId: string,
-  rl: ReturnType<typeof rateLimit>,
+  rl: RateLimitResult,
 ) {
   if (error.code === 'UNSUPPORTED_MEDIA_TYPE') {
     return withRequestMeta(
@@ -133,13 +141,18 @@ function mapBodyParseError(
 export async function POST(req: Request) {
   const correlationId = getCorrelationId(req);
 
-  const rl = rateLimit({
+  const rl = await rateLimit({
     key: buildRateLimitKey('leads', req),
     limit: LEADS_RATE_LIMIT.limit,
     windowMs: LEADS_RATE_LIMIT.windowMs,
   });
 
   if (!rl.ok) {
+    await recordPublicApiRateLimited({
+      route: '/api/leads',
+      correlationId,
+    });
+
     logger.warn('Rate limit hit on leads route', {
       correlationId,
       route: '/api/leads',
@@ -180,6 +193,12 @@ export async function POST(req: Request) {
       correlationId,
       route: '/api/leads',
       error,
+    });
+
+    await recordPublicApiError({
+      route: '/api/leads',
+      correlationId,
+      category: 'body_parse_error',
     });
 
     return withRequestMeta(internalError(correlationId), {
@@ -317,10 +336,15 @@ export async function POST(req: Request) {
       error,
     });
 
+    await recordPublicApiError({
+      route: '/api/leads',
+      correlationId,
+      category: 'unhandled_error',
+    });
+
     return withRequestMeta(internalError(correlationId), {
       correlationId,
       rl,
     });
   }
 }
-

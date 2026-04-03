@@ -6,9 +6,18 @@ import {
 } from '@/lib/security/json-body';
 import { logger } from '@/lib/security/logger';
 import { fail, internalError, ok, validationError } from '@/lib/security/response';
-import { buildRateLimitKey, rateLimit } from '@/lib/security/rate-limit';
+import {
+  buildRateLimitKey,
+  rateLimit,
+  type RateLimitResult,
+} from '@/lib/security/rate-limit';
 import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
 import { sanitizeOptionalString, sanitizeString } from '@/lib/security/sanitize';
+import {
+  recordPublicApiError,
+  recordPublicApiRateLimited,
+  recordPublicEventTracked,
+} from '@/lib/observability/audit';
 
 const MAX_BODY_SIZE_BYTES = 2 * 1024;
 const EVENTS_RATE_LIMIT = {
@@ -44,7 +53,7 @@ function formatValidationErrors(error: ZodError) {
 function mapBodyParseError(
   error: JsonBodyParseError,
   correlationId: string,
-  rl: ReturnType<typeof rateLimit>,
+  rl: RateLimitResult,
 ) {
   if (error.code === 'UNSUPPORTED_MEDIA_TYPE') {
     return withRequestMeta(
@@ -81,13 +90,18 @@ function mapBodyParseError(
 export async function POST(req: Request) {
   const correlationId = getCorrelationId(req);
 
-  const rl = rateLimit({
+  const rl = await rateLimit({
     key: buildRateLimitKey('public-events', req),
     limit: EVENTS_RATE_LIMIT.limit,
     windowMs: EVENTS_RATE_LIMIT.windowMs,
   });
 
   if (!rl.ok) {
+    await recordPublicApiRateLimited({
+      route: '/api/events',
+      correlationId,
+    });
+
     logger.warn('Rate limit hit on public events route', {
       correlationId,
       route: '/api/events',
@@ -130,6 +144,12 @@ export async function POST(req: Request) {
       error,
     });
 
+    await recordPublicApiError({
+      route: '/api/events',
+      correlationId,
+      category: 'body_parse_error',
+    });
+
     return withRequestMeta(internalError(correlationId), {
       correlationId,
       rl,
@@ -139,15 +159,28 @@ export async function POST(req: Request) {
   try {
     const parsed = publicEventSchema.parse(body);
     const timestamp = new Date().toISOString();
+    const eventName = sanitizeString(parsed.eventName, { maxLength: 80 });
+    const page = sanitizeString(parsed.page, { maxLength: 120 });
+    const component = sanitizeString(parsed.component, { maxLength: 80 });
+    const target = sanitizeOptionalString(parsed.target, { maxLength: 120 });
 
     logger.info('Public conversion event tracked', {
       correlationId,
       route: '/api/events',
-      eventName: parsed.eventName,
-      page: sanitizeString(parsed.page, { maxLength: 120 }),
-      component: sanitizeString(parsed.component, { maxLength: 80 }),
-      target: sanitizeOptionalString(parsed.target, { maxLength: 120 }),
+      eventName,
+      page,
+      component,
+      target,
       status: parsed.status,
+      timestamp,
+    });
+
+    await recordPublicEventTracked({
+      eventName,
+      page,
+      component,
+      status: parsed.status,
+      correlationId,
       timestamp,
     });
 
@@ -178,10 +211,15 @@ export async function POST(req: Request) {
       error,
     });
 
+    await recordPublicApiError({
+      route: '/api/events',
+      correlationId,
+      category: 'unhandled_error',
+    });
+
     return withRequestMeta(internalError(correlationId), {
       correlationId,
       rl,
     });
   }
 }
-
