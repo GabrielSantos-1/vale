@@ -10,6 +10,10 @@ jobs:
     name: Playwright E2E
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      # Keep auth runtime aligned with CI build requirements.
+      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'ci-fallback-nextauth-secret-change-me-32chars' }}
+      AUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'ci-fallback-nextauth-secret-change-me-32chars' }}
 
     steps:
       - name: Checkout

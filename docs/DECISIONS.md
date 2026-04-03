@@ -198,3 +198,16 @@ Impacto:
 - cria bloqueio tecnico objetivo para merge;
 - preserva validacao end-to-end em trilha controlada;
 - melhora rastreabilidade de qualidade no fechamento do ciclo 1.2.
+
+---
+
+## Decisao 020 - Segredo de auth no CI com fallback controlado
+
+Nos workflows de CI (`CI Gate` e `E2E Playwright`), injetar `NEXTAUTH_SECRET` (e `AUTH_SECRET`) via `secrets.NEXTAUTH_SECRET` com fallback controlado para evitar falha de build por ausencia de segredo em contextos restritos.
+
+**Motivo:** `auth-options.ts` valida segredo em tempo de import durante `npm run build`, e a falta da variavel quebra checks remotos mesmo sem execucao de login real.
+
+Impacto:
+- elimina falha estrutural de build nos checks de PR;
+- preserva governanca por segredo em ambientes com configuracao completa;
+- mantem compatibilidade sem alterar contrato de API ou fluxo de autenticacao.
