@@ -23,6 +23,7 @@ Esta versao consolida o fechamento das etapas 2, 3, 4, 5 e 7 do ciclo 1.2:
 - pipeline CI minimo em PR (`test + build`) e e2e separado manual/scheduled.
 - calibracao de alertas com severidade (`warning`/`critical`), janela configuravel e anti-ruido.
 - fechamento oficial da Etapa 4 Visual Publica com padrao premium escuro transluzido consolidado.
+- inicio da Etapa de produto 1.2.2 com foco em fluxos publicos criticos guiados por observabilidade.
 
 ---
 
@@ -40,6 +41,7 @@ Consolidado em 1.2.1:
 - governanca de entrega com workflows GitHub Actions para gate e e2e controlado.
 - separacao de incidentes de auth admin vs APIs publicas no painel de observabilidade (campos aditivos no resumo, sem quebra de contrato interno).
 - consistencia visual publica consolidada entre home e componentes base (cards/transparencia/contraste) sem alterar comportamento funcional.
+- telemetria first-party expandida de forma aditiva para cliques de CTA criticos em planos, cobertura, contato e status.
 
 Sem mudanca estrutural:
 - sem alteracao de schema Prisma;
@@ -69,6 +71,32 @@ Sem mudanca estrutural:
   - `docs/checkpoints/2026-04-03-v1-2-0-hardening-observabilidade-ci/`
   - `docs/checkpoints/2026-04-03-v1-2-1-calibracao-alertas/`
   - `docs/checkpoints/2026-04-04-v1-2-1-etapa-4-polimento-visual-publico/`
+  - `docs/checkpoints/2026-04-04-v1-2-2-fluxos-publicos-observabilidade/`
+
+---
+
+## Etapa 1.2.2 - Baseline T0 e metas operacionais (2026-04-04)
+
+Janela T0 adotada:
+- referencia operacional de staging validada previamente em 24h (2026-04-03T12:52:00Z -> 2026-04-04T12:52:00Z), com ausencia de `PUBLIC_API_RATE_LIMITED` e `PUBLIC_API_ERROR`;
+- para continuidade da etapa, baseline funcional local validada em 2026-04-04 com `npm run build` e `npm test` aprovados.
+
+Metas objetivas da etapa:
+- reduzir friccao de submissao em cobertura/contato com feedback de estado mais claro;
+- melhorar clareza de CTA em planos com instrumentacao de clique por card;
+- manter status publico escaneavel sem ruido visual e com CTA rastreavel;
+- preservar estabilidade de erro/rate-limit em APIs publicas.
+
+Implementacao aplicada:
+- UX/copy/hierarquia revisados em fluxos publicos criticos (`/planos`, `/contato`, `/status`);
+- instrumentacao aditiva em eventos first-party sem PII:
+  - `cta_click` em CTAs criticos (plan cards, banner de status, links de apoio em contato e cobertura);
+  - `contact_submit` com status `submitted` alem de `success`/`error`.
+
+Compatibilidade preservada:
+- sem alteracao de contratos de API publica;
+- sem alteracao de auth/session, schema Prisma, migrations ou rotas;
+- sem mudanca de logica de negocio em formularios e handlers.
 
 ---
 

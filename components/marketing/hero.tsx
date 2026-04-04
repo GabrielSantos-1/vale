@@ -168,7 +168,7 @@ export function Hero({
               <HeroQuickActions
                 supportText={
                   note ??
-                  "Acesse cobertura, status, suporte e teste de velocidade em um Ãºnico painel."
+                  "Acesse cobertura, status, suporte e teste de velocidade em um unico painel."
                 }
               />
             </div>
@@ -204,4 +204,3 @@ export function Hero({
 }
 
 export default Hero;
-

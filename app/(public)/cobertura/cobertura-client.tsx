@@ -391,7 +391,18 @@ export default function CoberturaClient({ areas }: Props) {
                         {result.available ? (
                           <>
                             <Button asChild className="w-full sm:w-auto">
-                              <Link href="/contratar#formulario-solicitacao">
+                              <Link
+                                href="/contratar#formulario-solicitacao"
+                                onClick={() =>
+                                  trackPublicEvent({
+                                    eventName: "cta_click",
+                                    page: "/cobertura",
+                                    component: "coverage_result",
+                                    target: "/contratar#formulario-solicitacao",
+                                    status: "click",
+                                  })
+                                }
+                              >
                                 Ver disponibilidade
                               </Link>
                             </Button>
@@ -401,7 +412,18 @@ export default function CoberturaClient({ areas }: Props) {
                               variant="outline"
                               className="w-full sm:w-auto"
                             >
-                              <Link href="/contato#formulario-contato">
+                              <Link
+                                href="/contato#formulario-contato"
+                                onClick={() =>
+                                  trackPublicEvent({
+                                    eventName: "cta_click",
+                                    page: "/cobertura",
+                                    component: "coverage_result",
+                                    target: "/contato#formulario-contato",
+                                    status: "click",
+                                  })
+                                }
+                              >
                                 Solicitar atendimento
                               </Link>
                             </Button>
@@ -413,7 +435,18 @@ export default function CoberturaClient({ areas }: Props) {
                               variant="secondary"
                               className="w-full sm:w-auto"
                             >
-                              <Link href="/contato#formulario-contato">
+                              <Link
+                                href="/contato#formulario-contato"
+                                onClick={() =>
+                                  trackPublicEvent({
+                                    eventName: "cta_click",
+                                    page: "/cobertura",
+                                    component: "coverage_result",
+                                    target: "/contato#formulario-contato",
+                                    status: "click",
+                                  })
+                                }
+                              >
                                 Solicitar atendimento
                               </Link>
                             </Button>
@@ -423,7 +456,18 @@ export default function CoberturaClient({ areas }: Props) {
                               variant="outline"
                               className="w-full sm:w-auto"
                             >
-                              <Link href="/contratar#formulario-solicitacao">
+                              <Link
+                                href="/contratar#formulario-solicitacao"
+                                onClick={() =>
+                                  trackPublicEvent({
+                                    eventName: "cta_click",
+                                    page: "/cobertura",
+                                    component: "coverage_result",
+                                    target: "/contratar#formulario-solicitacao",
+                                    status: "click",
+                                  })
+                                }
+                              >
                                 Solicitar atendimento
                               </Link>
                             </Button>
@@ -488,13 +532,35 @@ export default function CoberturaClient({ areas }: Props) {
 
                 <div className="flex flex-col gap-3">
                   <Button asChild className="w-full">
-                    <Link href="/contratar#formulario-solicitacao">
+                    <Link
+                      href="/contratar#formulario-solicitacao"
+                      onClick={() =>
+                        trackPublicEvent({
+                          eventName: "cta_click",
+                          page: "/cobertura",
+                          component: "coverage_sidebar",
+                          target: "/contratar#formulario-solicitacao",
+                          status: "click",
+                        })
+                      }
+                    >
                       Contratar agora
                     </Link>
                   </Button>
 
                   <Button asChild variant="outline" className="w-full">
-                    <Link href="/contato#formulario-contato">
+                    <Link
+                      href="/contato#formulario-contato"
+                      onClick={() =>
+                        trackPublicEvent({
+                          eventName: "cta_click",
+                          page: "/cobertura",
+                          component: "coverage_sidebar",
+                          target: "/contato#formulario-contato",
+                          status: "click",
+                        })
+                      }
+                    >
                       Solicitar atendimento
                     </Link>
                   </Button>
@@ -530,10 +596,36 @@ export default function CoberturaClient({ areas }: Props) {
                   </p>
                   <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <Button asChild variant="secondary" className="w-full sm:w-auto">
-                      <Link href="/contato#formulario-contato">Solicitar atendimento</Link>
+                      <Link
+                        href="/contato#formulario-contato"
+                        onClick={() =>
+                          trackPublicEvent({
+                            eventName: "cta_click",
+                            page: "/cobertura",
+                            component: "coverage_list_empty",
+                            target: "/contato#formulario-contato",
+                            status: "click",
+                          })
+                        }
+                      >
+                        Solicitar atendimento
+                      </Link>
                     </Button>
                     <Button asChild variant="outline" className="w-full sm:w-auto">
-                      <Link href="/contratar#formulario-solicitacao">Solicitar prioridade</Link>
+                      <Link
+                        href="/contratar#formulario-solicitacao"
+                        onClick={() =>
+                          trackPublicEvent({
+                            eventName: "cta_click",
+                            page: "/cobertura",
+                            component: "coverage_list_empty",
+                            target: "/contratar#formulario-solicitacao",
+                            status: "click",
+                          })
+                        }
+                      >
+                        Solicitar prioridade
+                      </Link>
                     </Button>
                   </div>
                 </div>

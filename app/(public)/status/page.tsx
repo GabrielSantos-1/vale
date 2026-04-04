@@ -43,30 +43,30 @@ export default async function StatusPage() {
     <Container as="main" className="py-8 md:py-12">
       <div className="space-y-8 md:space-y-10">
         <Hero
-          eyebrow="Status da rede | manutenção | atualizações públicas"
+          eyebrow="Status da rede | manutencao | atualizacoes publicas"
           badge="Acompanhamento operacional"
-          title="Acompanhe o status da rede com transparência e informação clara"
-          description="Consulte incidentes, manutenções e normalizações em andamento para acompanhar o serviço com mais segurança."
+          title="Acompanhe o status da rede com transparencia e leitura rapida"
+          description="Consulte incidentes, manutencoes e normalizacoes em andamento com informacao clara."
           primaryCta={{ label: "Ver status da rede", href: "/status#status-lista" }}
-          secondaryCta={{ label: "Acompanhar atualização", href: "/status#status-lista" }}
-          note="Comunicados públicos para manter clientes informados sobre ocorrências e atualizações da rede."
+          secondaryCta={{ label: "Acompanhar atualizacao", href: "/status#status-lista" }}
+          note="Comunicados publicos para manter clientes informados sobre ocorrencias da rede."
           stats={[
             {
               label: "Incidentes ativos",
               value: `${summary.activeCount}`,
-              description: "Ocorrências em acompanhamento com atualização pública.",
+              description: "Ocorrencias em acompanhamento com atualizacao publica.",
             },
             {
-              label: "Ocorrências resolvidas",
+              label: "Ocorrencias resolvidas",
               value: `${summary.resolvedCount}`,
-              description: "Histórico recente com normalização registrada.",
+              description: "Historico recente com normalizacao registrada.",
             },
             {
-              label: "Última atualização pública",
+              label: "Ultima atualizacao publica",
               value: summary.latestUpdate
                 ? summary.latestUpdate.toLocaleString("pt-BR")
                 : "Sem registros",
-              description: "Painel operacional atualizado conforme visibilidade ativa.",
+              description: "Painel atualizado conforme visibilidade ativa.",
             },
           ]}
         />
@@ -80,7 +80,7 @@ export default async function StatusPage() {
                   {summary.activeCount}
                 </p>
                 <p className="text-sm leading-6 text-slate-200/90">
-                  Ocorrências em acompanhamento com atualização operacional pública.
+                  Ocorrencias em acompanhamento com atualizacao operacional publica.
                 </p>
               </div>
             </CardContent>
@@ -89,12 +89,12 @@ export default async function StatusPage() {
           <Card className="rounded-[24px] border-cyan-100/16 public-card">
             <CardContent className="p-5 sm:p-6">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-slate-300">Ocorrências resolvidas</p>
+                <p className="text-sm font-medium text-slate-300">Ocorrencias resolvidas</p>
                 <p className="text-3xl font-semibold tracking-tight text-primary">
                   {summary.resolvedCount}
                 </p>
                 <p className="text-sm leading-6 text-slate-200/90">
-                  Ocorrências finalizadas com histórico recente de normalização.
+                  Ocorrencias finalizadas com historico recente de normalizacao.
                 </p>
               </div>
             </CardContent>
@@ -103,14 +103,14 @@ export default async function StatusPage() {
           <Card className="rounded-[24px] border-cyan-100/16 public-card sm:col-span-2 xl:col-span-1">
             <CardContent className="p-5 sm:p-6">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-slate-300">Última atualização</p>
+                <p className="text-sm font-medium text-slate-300">Ultima atualizacao</p>
                 <p className="text-lg font-semibold tracking-tight text-primary md:text-xl">
                   {summary.latestUpdate
                     ? summary.latestUpdate.toLocaleString("pt-BR")
-                    : "Sem registros públicos recentes"}
+                    : "Sem registros publicos recentes"}
                 </p>
                 <p className="text-sm leading-6 text-slate-200/90">
-                  Esta página exibe as publicações operacionais conforme visibilidade ativa.
+                  Esta pagina exibe publicacoes operacionais conforme visibilidade ativa.
                 </p>
               </div>
             </CardContent>
@@ -119,8 +119,9 @@ export default async function StatusPage() {
 
         <StatusBanner
           status={bannerStatus}
-          title="Acompanhamento público do status da rede"
-          description="Atualizações operacionais ajudam você a acompanhar manutenção, incidentes e normalização com clareza."
+          title="Acompanhamento publico do status da rede"
+          description="Atualizacoes operacionais ajudam voce a acompanhar manutencao, incidentes e normalizacao com clareza."
+          telemetryComponent="status_page_banner"
         />
 
         {incidents.length === 0 ? (
@@ -128,16 +129,20 @@ export default async function StatusPage() {
             <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl space-y-2">
                 <h2 className="text-lg font-semibold text-primary md:text-xl">
-                  Sem incidentes ou manutenções públicas no momento
+                  Sem incidentes ou manutencoes publicas no momento
                 </h2>
                 <p className="text-sm leading-6 text-secondary">
-                  Quando houver manutenção programada, incidente ou nova atualização
-                  operacional, esta área será atualizada para consulta.
+                  Quando houver manutencao programada, incidente ou nova atualizacao operacional,
+                  esta area sera atualizada para consulta.
                 </p>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Button asChild variant="secondary" className="w-full border-cyan-100/18 bg-slate-950/30 text-slate-100 hover:bg-slate-900/45 sm:w-auto">
+                <Button
+                  asChild
+                  variant="secondary"
+                  className="w-full border-cyan-100/18 bg-slate-950/30 text-slate-100 hover:bg-slate-900/45 sm:w-auto"
+                >
                   <Link href="/cobertura#consulta-cobertura">Consultar cobertura</Link>
                 </Button>
 
@@ -186,20 +191,16 @@ export default async function StatusPage() {
 
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 p-4 backdrop-blur-sm">
-                        <p className="text-xs uppercase tracking-[0.16em] text-muted">
-                          Início
-                        </p>
+                        <p className="text-xs uppercase tracking-[0.16em] text-muted">Inicio</p>
                         <p className="mt-2 text-sm font-medium text-primary md:text-base">
                           {item.startedAt
                             ? item.startedAt.toLocaleString("pt-BR")
-                            : "Não informado"}
+                            : "Nao informado"}
                         </p>
                       </div>
 
                       <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 p-4 backdrop-blur-sm">
-                        <p className="text-xs uppercase tracking-[0.16em] text-muted">
-                          Resolução
-                        </p>
+                        <p className="text-xs uppercase tracking-[0.16em] text-muted">Resolucao</p>
                         <p className="mt-2 text-sm font-medium text-primary md:text-base">
                           {item.resolvedAt
                             ? item.resolvedAt.toLocaleString("pt-BR")

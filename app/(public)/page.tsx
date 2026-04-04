@@ -164,6 +164,7 @@ export default async function Home() {
                   plan={plan}
                   compact
                   ctaLabel="Falar sobre este plano"
+                  telemetryPage="/"
                 />
               ))}
             </div>

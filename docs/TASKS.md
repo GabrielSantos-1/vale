@@ -130,6 +130,15 @@ Ciclo 1.2.1 - Hardening residual + observabilidade first-party + governanca oper
 - [x] Validacao tecnica de nao regressao executada no fechamento (`npm run build` + `npm test`)
 - [x] Evidencia documental registrada em `docs/PROJECT_STATE.md` e checkpoint datado de fechamento visual
 
+## Ciclo 1.2.2 - Etapa de produto (fluxos publicos criticos guiados por observabilidade)
+
+- [x] Refino de UX e hierarquia visual aplicado em `/planos`, `/contato` e `/status` sem alterar fluxo funcional
+- [x] Cobertura com telemetria adicional de CTA em blocos criticos (`resultado`, `resumo` e `lista vazia`)
+- [x] Telemetria aditiva de clique em CTA principal de planos (`plan_card`) e CTA de banner operacional (`status_banner`)
+- [x] Telemetria de submissao em contato reforcada com status `submitted` (alem de `success`/`error`)
+- [x] Validacao tecnica da etapa executada (`npm run build` + `npm test`)
+- [x] Baseline T0 e metas operacionais registradas em `docs/PROJECT_STATE.md` e checkpoint datado da etapa
+
 ---
 
 ## Proximas tarefas objetivas
@@ -138,7 +147,8 @@ Ciclo 1.2.1 - Hardening residual + observabilidade first-party + governanca oper
    Evidencia: execucao manual concluida em 2026-04-04T09:44:35-03:00 no commit `25365bd8f306c32efe9bf635e624977c262e03d3` com `npm run e2e` -> `1 passed` (`tests/e2e/home.spec.ts`).
 2. [x] Monitorar calibracao de alertas em staging por 24h e ajustar thresholds se necessario.
    Evidencia: janela operacional completa de 24h (2026-04-03T12:52:00Z -> 2026-04-04T12:52:00Z) via runtime logs Vercel (`preview` + `production`), sem ocorrencias de `PUBLIC_API_RATE_LIMITED`/`PUBLIC_API_ERROR`; calibracao mantida sem ajuste de thresholds/cooldown.
-3. [ ] Iniciar proxima etapa de produto com base no runbook e sinais reais de observabilidade (apos fechamento oficial da Etapa 4 visual publica).
+3. [x] Iniciar proxima etapa de produto com base no runbook e sinais reais de observabilidade (apos fechamento oficial da Etapa 4 visual publica).
+4. [ ] Monitorar janela pos-implementacao (T+24h / T+72h) e registrar tendencia das metricas dos fluxos publicos criticos.
 
 ---
 

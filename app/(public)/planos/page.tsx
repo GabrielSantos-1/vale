@@ -20,11 +20,7 @@ async function getPlansData() {
   try {
     const plans = await prisma.plan.findMany({
       where: { isActive: true },
-      orderBy: [
-        { featured: "desc" },
-        { priceCents: "asc" },
-        { createdAt: "desc" },
-      ],
+      orderBy: [{ featured: "desc" }, { priceCents: "asc" }, { createdAt: "desc" }],
       select: {
         id: true,
         name: true,
@@ -55,13 +51,8 @@ type PlansPageData = Awaited<ReturnType<typeof getPlansData>>;
 type PublicPlan = PlansPageData["plans"][number];
 
 function mapBenefits(plan: PublicPlan): string[] {
-  const rawBenefits = Array.isArray(plan.benefitsJson)
-    ? (plan.benefitsJson as unknown[])
-    : [];
-
-  return rawBenefits.filter(
-    (item: unknown): item is string => typeof item === "string"
-  );
+  const rawBenefits = Array.isArray(plan.benefitsJson) ? (plan.benefitsJson as unknown[]) : [];
+  return rawBenefits.filter((item: unknown): item is string => typeof item === "string");
 }
 
 export default async function PlanosPage() {
@@ -73,26 +64,26 @@ export default async function PlanosPage() {
         <Hero
           eyebrow="Internet fibra | planos para casa e empresa | cobertura regional"
           badge="Planos de internet fibra"
-          title="Planos de internet fibra para casa e empresa, com velocidade estável e contratação simples"
-          description="Compare opções com clareza, escolha o plano ideal para seu perfil e avance com atendimento próximo desde a contratação."
+          title="Planos de internet fibra com leitura clara e contratacao sem atrito"
+          description="Compare opcoes por velocidade, preco e latencia para escolher o plano ideal com mais seguranca."
           primaryCta={{ label: "Contratar agora", href: "/contratar#formulario-solicitacao" }}
           secondaryCta={{ label: "Consultar cobertura", href: "/cobertura#consulta-cobertura" }}
-          note="Consulte cobertura, compare velocidade e finalize sua contratação com informação clara e suporte comercial."
+          note="Fluxo comercial direto do comparativo para contratacao, com suporte regional."
           stats={[
             {
               label: "Plano principal",
-              value: "Destaque com clareza",
-              description: "Comparativo objetivo para decidir sem ruído visual.",
+              value: "Destaque equilibrado",
+              description: "A leitura comparativa prioriza clareza e decisao rapida.",
             },
             {
-              label: "Instalação",
-              value: "Agendamento rápido",
-              description: "Fluxo comercial direto após validar cobertura.",
+              label: "Instalacao",
+              value: "Agendamento agil",
+              description: "Da escolha do plano ao contato comercial sem ruído.",
             },
             {
-              label: "Operação local",
-              value: "Atendimento próximo",
-              description: "Equipe regional no pré e pós-contratação.",
+              label: "Operacao local",
+              value: "Atendimento proximo",
+              description: "Equipe regional no pre e pos-contratacao.",
             },
           ]}
         />
@@ -102,16 +93,20 @@ export default async function PlanosPage() {
             <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl space-y-2">
                 <h2 className="text-lg font-semibold text-primary md:text-xl">
-                  Nenhum plano disponível no momento
+                  Nenhum plano disponivel no momento
                 </h2>
                 <p className="text-sm leading-6 text-secondary">
-                  Estamos atualizando nossa grade comercial de planos de internet.
-                  Enquanto isso, consulte cobertura ou fale com nosso atendimento.
+                  Estamos atualizando a grade comercial. Enquanto isso, consulte cobertura ou fale
+                  com nosso atendimento.
                 </p>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Button asChild variant="secondary" className="w-full border-cyan-100/18 bg-slate-950/30 text-slate-100 hover:bg-slate-900/45 sm:w-auto">
+                <Button
+                  asChild
+                  variant="secondary"
+                  className="w-full border-cyan-100/18 bg-slate-950/30 text-slate-100 hover:bg-slate-900/45 sm:w-auto"
+                >
                   <Link href="/cobertura#consulta-cobertura">Consultar cobertura</Link>
                 </Button>
 
@@ -123,20 +118,24 @@ export default async function PlanosPage() {
           </Card>
         ) : (
           <section id="comparacao-planos" className="space-y-6 scroll-mt-24 md:scroll-mt-28">
-            <div className="flex flex-col gap-4 rounded-[24px] border border-cyan-100/20 bg-slate-950/12 p-5 backdrop-blur-sm md:flex-row md:items-end md:justify-between">
-              <div className="space-y-2">
-                <h2 className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">
-                  Compare os planos de internet disponíveis na sua região
-                </h2>
-                <p className="max-w-2xl text-sm leading-6 text-secondary md:text-base">
-                  Analise velocidade, latência e benefícios para escolher com
-                  segurança o melhor plano para sua rotina.
+            <div className="public-card rounded-[24px] border-cyan-100/20 p-5">
+              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">
+                    Compare os planos disponiveis na sua regiao
+                  </h2>
+                  <p className="max-w-2xl text-sm leading-6 text-secondary md:text-base">
+                    Analise velocidade, latencia e beneficios para contratar com mais confianca.
+                  </p>
+                </div>
+
+                <p className="text-sm text-muted">
+                  {plans.length}{" "}
+                  {plans.length === 1
+                    ? "opcao pronta para contratacao"
+                    : "opcoes prontas para contratacao"}
                 </p>
               </div>
-
-              <p className="text-sm text-muted">
-                {plans.length} {plans.length === 1 ? "opção para contratação" : "opções para contratação"}
-              </p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -156,6 +155,7 @@ export default async function PlanosPage() {
                     benefits: mapBenefits(plan),
                   }}
                   ctaLabel="Contratar agora"
+                  telemetryPage="/planos"
                 />
               ))}
             </div>

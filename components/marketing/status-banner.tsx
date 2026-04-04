@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/core/button";
 import { cn } from "@/lib/cn";
 import { resolveStatusTone } from "@/components/marketing/status-tone";
+import { trackPublicEvent } from "@/lib/telemetry/public-events";
 
 type StatusBannerProps = {
   status?: string;
@@ -11,18 +12,26 @@ type StatusBannerProps = {
   description?: string;
   ctaLabel?: string;
   ctaHref?: string;
+  telemetryPage?: string;
+  telemetryComponent?: string;
   className?: string;
 };
 
 export function StatusBanner({
   status,
   title = "Visibilidade operacional da rede",
-  description = "Atualizações públicas ajudam a reduzir dúvidas e melhorar a comunicação com clientes.",
+  description = "Atualizacoes publicas ajudam a reduzir duvidas e melhorar a comunicacao com clientes.",
   ctaLabel = "Ver status da rede",
   ctaHref = "/status#status-lista",
+  telemetryPage,
+  telemetryComponent = "status_banner",
   className,
 }: StatusBannerProps) {
   const tone = resolveStatusTone(status);
+
+  const resolvedTelemetryPage =
+    telemetryPage ||
+    (typeof window !== "undefined" ? window.location.pathname : "/status");
 
   return (
     <section
@@ -53,7 +62,20 @@ export function StatusBanner({
 
         <div className="shrink-0">
           <Button asChild variant="secondary" size="lg" className="w-full sm:w-auto">
-            <Link href={ctaHref}>{ctaLabel}</Link>
+            <Link
+              href={ctaHref}
+              onClick={() =>
+                trackPublicEvent({
+                  eventName: "cta_click",
+                  page: resolvedTelemetryPage,
+                  component: telemetryComponent,
+                  target: ctaHref,
+                  status: "click",
+                })
+              }
+            >
+              {ctaLabel}
+            </Link>
           </Button>
         </div>
       </div>

@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 
 import { Button } from "@/components/ui/core/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/core/card";
 import { cn } from "@/lib/cn";
+import { trackPublicEvent } from "@/lib/telemetry/public-events";
 
 export type PlanCardData = {
   id: string;
@@ -22,6 +25,7 @@ type PlanCardProps = {
   ctaLabel?: string;
   compact?: boolean;
   className?: string;
+  telemetryPage?: string;
 };
 
 function formatPrice(priceCents: number) {
@@ -32,11 +36,11 @@ function formatPrice(priceCents: number) {
 }
 
 function getPlanHint(plan: PlanCardData) {
-  if (plan.featured) return "Mais escolhido para uso diário";
+  if (plan.featured) return "Mais escolhido para uso diario";
   if (plan.downloadMbps >= 500) {
-    return "Ideal para streaming, trabalho e múltiplos dispositivos";
+    return "Ideal para streaming, trabalho e multiplos dispositivos";
   }
-  return "Boa opção para navegação, estudo e uso residencial";
+  return "Boa opcao para navegacao, estudo e uso residencial";
 }
 
 function getPlanEyebrow(plan: PlanCardData) {
@@ -50,6 +54,7 @@ export function PlanCard({
   ctaLabel = "Contratar plano",
   compact = false,
   className,
+  telemetryPage = "/planos",
 }: PlanCardProps) {
   const commercialBadge =
     typeof plan.badge === "string" && plan.badge.trim().length > 0
@@ -94,13 +99,13 @@ export function PlanCard({
 
         <div className="rounded-[24px] border border-cyan-100/20 bg-slate-950/12 p-4 sm:p-5 backdrop-blur-sm">
           <div className="space-y-2">
-            <p className="text-sm font-medium text-slate-300">Preço mensal</p>
+            <p className="text-sm font-medium text-slate-300">Preco mensal</p>
 
             <div className="flex flex-wrap items-end gap-2">
               <p className="text-4xl font-bold leading-none tracking-tight text-primary">
                 {formatPrice(plan.priceCents)}
               </p>
-              <span className="pb-1 text-sm font-medium text-slate-300">/mês</span>
+              <span className="pb-1 text-sm font-medium text-slate-300">/mes</span>
             </div>
 
             <p className="text-xs leading-5 text-slate-200/90">{getPlanHint(plan)}</p>
@@ -129,7 +134,7 @@ export function PlanCard({
 
             <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/12 p-3.5 backdrop-blur-sm">
               <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-300">
-                Latência alvo
+                Latencia alvo
               </p>
               <p className="mt-2 break-words text-base font-semibold text-slate-50">
                 {plan.latencyTarget} ms
@@ -142,7 +147,7 @@ export function PlanCard({
       <CardContent className="flex flex-1 flex-col gap-5 p-5 sm:p-6">
         {!compact && plan.benefits && plan.benefits.length > 0 ? (
           <div className="space-y-3">
-            <p className="text-sm font-semibold text-primary">Benefícios incluídos</p>
+            <p className="text-sm font-semibold text-primary">Beneficios incluidos</p>
 
             <ul className="space-y-2.5 text-sm leading-6 text-slate-200/90">
               {plan.benefits.map((benefit, index) => (
@@ -156,10 +161,10 @@ export function PlanCard({
         ) : (
           <div className="rounded-2xl border border-dashed border-cyan-100/20 bg-slate-950/12 p-4 backdrop-blur-sm">
             <p className="text-sm leading-6 text-slate-200/90">
-              Ideal para quem busca velocidade, estabilidade e contratação com informações claras.
+              Ideal para quem busca velocidade, estabilidade e contratacao com informacoes claras.
             </p>
             <p className="mt-2 text-xs leading-5 text-slate-300">
-              Sujeito à disponibilidade de cobertura na região.
+              Sujeito a disponibilidade de cobertura na regiao.
             </p>
           </div>
         )}
@@ -172,13 +177,22 @@ export function PlanCard({
                 query: { plano: plan.slug },
                 hash: "formulario-solicitacao",
               }}
+              onClick={() =>
+                trackPublicEvent({
+                  eventName: "cta_click",
+                  page: telemetryPage,
+                  component: "plan_card",
+                  target: `contratar_${plan.slug}`,
+                  status: "click",
+                })
+              }
             >
               {ctaLabel}
             </Link>
           </Button>
 
           <p className="text-center text-xs text-muted">
-            Instalação rápida • Atendimento comercial
+            Instalacao rapida | Atendimento comercial
           </p>
         </div>
       </CardContent>
