@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 import { prisma } from "@/lib/db/prisma";
 import { Container } from "@/components/ui/core/container";
@@ -51,57 +51,65 @@ export default async function StatusPage() {
           secondaryCta={{ label: "Acompanhar atualização", href: "/status#status-lista" }}
           note="Comunicados públicos para manter clientes informados sobre ocorrências e atualizações da rede."
           stats={[
-            { label: "Ativos", value: `${summary.activeCount}` },
-            { label: "Resolvidos", value: `${summary.resolvedCount}` },
             {
-              label: "Última atualização",
+              label: "Incidentes ativos",
+              value: `${summary.activeCount}`,
+              description: "Ocorrências em acompanhamento com atualização pública.",
+            },
+            {
+              label: "Ocorrências resolvidas",
+              value: `${summary.resolvedCount}`,
+              description: "Histórico recente com normalização registrada.",
+            },
+            {
+              label: "Última atualização pública",
               value: summary.latestUpdate
                 ? summary.latestUpdate.toLocaleString("pt-BR")
                 : "Sem registros",
+              description: "Painel operacional atualizado conforme visibilidade ativa.",
             },
-            { label: "Transparência", value: "Atualização pública" },
           ]}
         />
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <Card className="rounded-[24px] border-border public-card">
+          <Card className="rounded-[24px] border-cyan-100/16 public-card">
             <CardContent className="p-5 sm:p-6">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted">Incidentes ativos</p>
+                <p className="text-sm font-medium text-slate-300">Incidentes ativos</p>
                 <p className="text-3xl font-semibold tracking-tight text-primary">
                   {summary.activeCount}
                 </p>
-                <p className="text-sm leading-6 text-secondary">
+                <p className="text-sm leading-6 text-slate-200/90">
                   Ocorrências em acompanhamento com atualização operacional pública.
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="rounded-[24px] border-border public-card">
+          <Card className="rounded-[24px] border-cyan-100/16 public-card">
             <CardContent className="p-5 sm:p-6">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted">Ocorrências resolvidas</p>
+                <p className="text-sm font-medium text-slate-300">Ocorrências resolvidas</p>
                 <p className="text-3xl font-semibold tracking-tight text-primary">
                   {summary.resolvedCount}
                 </p>
-                <p className="text-sm leading-6 text-secondary">
+                <p className="text-sm leading-6 text-slate-200/90">
                   Ocorrências finalizadas com histórico recente de normalização.
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="rounded-[24px] border-border public-card sm:col-span-2 xl:col-span-1">
+          <Card className="rounded-[24px] border-cyan-100/16 public-card sm:col-span-2 xl:col-span-1">
             <CardContent className="p-5 sm:p-6">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted">Última atualização</p>
+                <p className="text-sm font-medium text-slate-300">Última atualização</p>
                 <p className="text-lg font-semibold tracking-tight text-primary md:text-xl">
                   {summary.latestUpdate
                     ? summary.latestUpdate.toLocaleString("pt-BR")
                     : "Sem registros públicos recentes"}
                 </p>
-                <p className="text-sm leading-6 text-secondary">
+                <p className="text-sm leading-6 text-slate-200/90">
                   Esta página exibe as publicações operacionais conforme visibilidade ativa.
                 </p>
               </div>
@@ -116,7 +124,7 @@ export default async function StatusPage() {
         />
 
         {incidents.length === 0 ? (
-          <Card className="rounded-[28px] border-border public-card">
+          <Card className="rounded-[28px] border-cyan-100/16 public-card">
             <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl space-y-2">
                 <h2 className="text-lg font-semibold text-primary md:text-xl">
@@ -129,7 +137,7 @@ export default async function StatusPage() {
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Button asChild variant="secondary" className="w-full sm:w-auto">
+                <Button asChild variant="secondary" className="w-full border-cyan-100/18 bg-slate-950/30 text-slate-100 hover:bg-slate-900/45 sm:w-auto">
                   <Link href="/cobertura#consulta-cobertura">Consultar cobertura</Link>
                 </Button>
 
@@ -145,11 +153,11 @@ export default async function StatusPage() {
               const tone = resolveStatusTone(item.status);
 
               return (
-                <Card key={item.id} className="rounded-[24px] border-border public-card">
+                <Card key={item.id} className="rounded-[24px] border-cyan-100/16 public-card">
                   <CardHeader className="space-y-4">
                     <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                       <div className="min-w-0 space-y-2">
-                        <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-border bg-surface-secondary/80 px-3 py-1 text-xs font-medium text-secondary">
+                        <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-cyan-100/24 bg-slate-950/14 px-3 py-1 text-xs font-medium text-slate-100/90 backdrop-blur-sm">
                           <span
                             className={`h-2 w-2 shrink-0 rounded-full ${tone.dotClassName}`}
                           />
@@ -177,7 +185,7 @@ export default async function StatusPage() {
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">
-                      <div className="rounded-2xl border border-border bg-surface-secondary p-4">
+                      <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 p-4 backdrop-blur-sm">
                         <p className="text-xs uppercase tracking-[0.16em] text-muted">
                           Início
                         </p>
@@ -188,7 +196,7 @@ export default async function StatusPage() {
                         </p>
                       </div>
 
-                      <div className="rounded-2xl border border-border bg-surface-secondary p-4">
+                      <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 p-4 backdrop-blur-sm">
                         <p className="text-xs uppercase tracking-[0.16em] text-muted">
                           Resolução
                         </p>
@@ -209,4 +217,3 @@ export default async function StatusPage() {
     </Container>
   );
 }
-

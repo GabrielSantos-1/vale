@@ -70,7 +70,42 @@ test('observability metrics returns aggregated payload for admin', async () => {
   expect(body.meta?.summary?.totalEvents).toBe(1);
   expect(body.meta?.summary?.totalRateLimited).toBe(1);
   expect(body.meta?.summary?.totalErrors).toBe(1);
+  expect(body.meta?.summary?.publicRateLimited).toBe(1);
+  expect(body.meta?.summary?.publicErrors).toBe(1);
+  expect(body.meta?.summary?.authRateLimited).toBe(0);
+  expect(body.meta?.summary?.authErrors).toBe(0);
+  expect(body.meta?.summary?.authNoiseDetected).toBe(false);
   expect(body.meta?.calibration?.windowMinutes).toBeDefined();
   expect(body.meta?.calibration?.thresholds?.rateLimit?.critical).toBeDefined();
   expect(body.meta?.alertHealth?.dispatched?.total).toBeDefined();
+});
+
+test('observability metrics keeps status stable when only auth rate-limit exists', async () => {
+  requireAdminMock.mockReset();
+  findManyMock.mockReset();
+  requireAdminMock.mockResolvedValueOnce({
+    user: { role: 'ADMIN' },
+  });
+
+  findManyMock.mockResolvedValueOnce([
+    {
+      action: 'PUBLIC_API_RATE_LIMITED',
+      createdAt: new Date('2026-04-03T10:10:00.000Z'),
+      metadataJson: { route: '/api/auth/[...nextauth]' },
+    },
+  ]);
+
+  const req = new Request(
+    'http://localhost/api/admin/metrics/observability?view=daily',
+  );
+  const res = await GET(req as any);
+  const body = await res.json();
+
+  expect(res.status).toBe(200);
+  expect(body.success).toBe(true);
+  expect(body.meta?.summary?.totalRateLimited).toBe(1);
+  expect(body.meta?.summary?.publicRateLimited).toBe(0);
+  expect(body.meta?.summary?.authRateLimited).toBe(1);
+  expect(body.meta?.summary?.status).toBe('stable');
+  expect(body.meta?.alertHealth?.status).toBe('stable');
 });

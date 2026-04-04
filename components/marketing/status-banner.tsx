@@ -35,7 +35,7 @@ export function StatusBanner({
     >
       <div className="flex flex-col gap-5 p-5 md:flex-row md:items-center md:justify-between md:p-6">
         <div className="max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-3 py-1 text-xs font-medium text-secondary backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-100/24 bg-slate-950/18 px-3 py-1 text-xs font-medium text-slate-100/90 backdrop-blur-sm">
             <span className={cn("h-2 w-2 rounded-full", tone.dotClassName)} />
             {tone.pillText}
           </div>

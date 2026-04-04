@@ -99,8 +99,8 @@ export async function GET(request: Request) {
     const alertConfig = getAlertConfig();
     const alertRuntime = getAlertRuntimeSnapshot();
     const alertHealthStatus = deriveAlertHealthStatus({
-      totalRateLimited: aggregated.summary.totalRateLimited,
-      totalErrors: aggregated.summary.totalErrors,
+      totalRateLimited: aggregated.summary.publicRateLimited,
+      totalErrors: aggregated.summary.publicErrors,
       rateLimitWarning: alertConfig.thresholds.rateLimit.warning,
       rateLimitCritical: alertConfig.thresholds.rateLimit.critical,
       errorWarning: alertConfig.thresholds.error.warning,

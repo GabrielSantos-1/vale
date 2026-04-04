@@ -1,12 +1,14 @@
 export const PUBLIC_VISUALS = {
-  heroFiber: "/images/public/fiber-hero-tunnel.png",
-  heroFiberAlt: "/images/public/fiber-hero-tunnel-alt.png",
-  monitoringDash: "/images/public/fiber-monitoring-dash.png",
-  monitoringOps: "/images/public/fiber-monitoring-ops.png",
-  statusWorldmap: "/images/public/fiber-status-worldmap.png",
-  supportTeam: "/images/public/fiber-support-team.png",
-  residentialValley: "/images/public/fiber-residential-valley.png",
-  officeGlass: "/images/public/fiber-office-glass.jpg",
-  contactPremium: "/images/public/fiber-contact-premium.jpg",
+  heroFiber: "/images/fiber-hero-tunnel.png",
+  heroFiberAlt: "/images/fiber-hero-tunnel-alt.png",
+  heroPremiumReference: "/images/verde-vale-connect-premium-hero.png",
+  monitoringDash: "/images/fiber-monitoring-dash.png",
+  monitoringOps: "/images/fiber-monitoring-ops.png",
+  statusWorldmap: "/images/fiber-status-worldmap.png",
+  supportTeam: "/images/fiber-support-team.png",
+  residentialValley: "/images/fiber-residential-valley.png",
+  officeGlass: "/images/fiber-office-glass.jpg",
+  contactPremium: "/images/fiber-contact-premium.jpg",
 } as const;
+
 

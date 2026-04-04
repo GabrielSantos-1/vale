@@ -8,7 +8,7 @@ Registrar o estado tecnico oficial do projeto **Verde Vale Connect** para contin
 
 ## Data de referencia
 
-2026-04-03
+2026-04-04
 
 ---
 
@@ -37,6 +37,7 @@ Consolidado em 1.2.1:
 - painel de observabilidade integrado ao dashboard admin;
 - painel admin com metadados de calibracao e saude de alertas;
 - governanca de entrega com workflows GitHub Actions para gate e e2e controlado.
+- separacao de incidentes de auth admin vs APIs publicas no painel de observabilidade (campos aditivos no resumo, sem quebra de contrato interno).
 
 Sem mudanca estrutural:
 - sem alteracao de schema Prisma;
@@ -46,7 +47,7 @@ Sem mudanca estrutural:
 
 ---
 
-## Evidencias da baseline 1.2.0
+## Evidencias da baseline 1.2.1
 
 - validacoes tecnicas locais:
   - `npm test`
@@ -65,6 +66,32 @@ Sem mudanca estrutural:
 - checkpoint detalhado:
   - `docs/checkpoints/2026-04-03-v1-2-0-hardening-observabilidade-ci/`
   - `docs/checkpoints/2026-04-03-v1-2-1-calibracao-alertas/`
+
+---
+
+## Resumo do dia (2026-04-03)
+
+### Entregas tecnicas consolidadas
+1. fechamento oficial do ciclo 1.2 em branch dedicada e PR remoto;
+2. correcao operacional de CI:
+   - fallback de `NEXTAUTH_SECRET`/`AUTH_SECRET` em runtime;
+   - padronizacao de actions para `checkout/setup-node` v5;
+   - validacao obrigatoria de `DATABASE_URL` para build/e2e;
+3. estabilizacao da suite e2e da home removendo acoplamento fragil ao copy;
+4. calibracao de alertas com severidade (`warning`/`critical`), anti-ruido e metadados operacionais no dashboard/admin API.
+
+### Evidencias de validacao
+- `npm test` (local) aprovado ao longo do ciclo com regressao coberta;
+- `npm run build` (local) aprovado apos ajustes de CI/observabilidade;
+- `npm run e2e` (manual) aprovado em 2026-04-04T09:44:35-03:00 no commit `25365bd8f306c32efe9bf635e624977c262e03d3` (`tests/e2e/home.spec.ts`: `1 passed`);
+- checks remotos de PR normalizados apos configuracao de segredos obrigatorios (`NEXTAUTH_SECRET`, `DATABASE_URL`).
+- monitoramento operacional de alertas por 24h concluido (2026-04-03T12:52:00Z -> 2026-04-04T12:52:00Z) no projeto Vercel `vale`.
+
+### Resultado operacional
+- baseline 1.2.1 consistente para continuidade;
+- contratos publicos preservados;
+- governanca de entrega e observabilidade calibrada para rollout staging/prod;
+- calibracao mantida sem ajuste de thresholds/cooldown apos janela de monitoramento (ausencia de eventos `PUBLIC_API_RATE_LIMITED` e `PUBLIC_API_ERROR` no periodo).
 
 ---
 

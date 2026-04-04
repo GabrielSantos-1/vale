@@ -19,16 +19,16 @@ export default function PageShell({ children }: PageShellProps) {
 
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <Image
-          src="/images/public/fiber-hero-speed-burst.png"
+          src="/images/fiber-hero-tunnel.png"
           alt=""
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center opacity-[0.42] saturate-165 contrast-105 brightness-125 scale-110"
+          className="object-cover object-center opacity-[0.58] saturate-120 contrast-104 brightness-98 scale-110"
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(90,60,255,0.1),transparent_22%),radial-gradient(circle_at_76%_16%,rgba(39,211,255,0.34),transparent_20%),radial-gradient(circle_at_50%_54%,rgba(255,255,255,0.12),transparent_34%),linear-gradient(180deg,rgba(22,65,123,0.08)_0%,rgba(30,89,163,0.11)_28%,rgba(54,129,219,0.14)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.03)_20%,rgba(255,255,255,0)_46%,rgba(255,255,255,0.03)_100%)]" />
-        <div className="absolute inset-0 bg-[repeating-linear-gradient(135deg,rgba(255,255,255,0.012)_0px,rgba(255,255,255,0.012)_1px,transparent_1px,transparent_58px)] opacity-35" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_18%,rgba(20,184,166,0.09),transparent_26%),radial-gradient(circle_at_84%_16%,rgba(34,197,94,0.08),transparent_28%),radial-gradient(circle_at_86%_42%,rgba(125,211,252,0.12),transparent_30%),linear-gradient(92deg,rgba(5,14,26,0.2)_0%,rgba(6,16,30,0.52)_36%,rgba(7,18,33,0.5)_58%,rgba(8,21,38,0.16)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,17,32,0.36)_0%,rgba(9,21,39,0.26)_24%,rgba(8,20,37,0.2)_56%,rgba(8,20,38,0.38)_100%)]" />
+        <div className="absolute inset-0 bg-[repeating-linear-gradient(135deg,rgba(186,230,253,0.014)_0px,rgba(186,230,253,0.014)_1px,transparent_1px,transparent_68px)] opacity-30" />
       </div>
 
       <div className="relative flex min-h-screen flex-col">
@@ -36,7 +36,7 @@ export default function PageShell({ children }: PageShellProps) {
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary focus:shadow-soft"
         >
-          Pular para o conteúdo
+          Pular para o conteÃºdo
         </a>
 
         <Navbar />
@@ -52,3 +52,5 @@ export default function PageShell({ children }: PageShellProps) {
     </div>
   );
 }
+
+

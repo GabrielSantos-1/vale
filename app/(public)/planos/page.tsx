@@ -79,15 +79,26 @@ export default async function PlanosPage() {
           secondaryCta={{ label: "Consultar cobertura", href: "/cobertura#consulta-cobertura" }}
           note="Consulte cobertura, compare velocidade e finalize sua contratação com informação clara e suporte comercial."
           stats={[
-            { label: "Instalação", value: "Até 24h" },
-            { label: "Atendimento", value: "Equipe próxima" },
-            { label: "Cobertura", value: "Consulte disponibilidade" },
-            { label: "Serviço", value: "Fibra para casa e empresa" },
+            {
+              label: "Plano principal",
+              value: "Destaque com clareza",
+              description: "Comparativo objetivo para decidir sem ruído visual.",
+            },
+            {
+              label: "Instalação",
+              value: "Agendamento rápido",
+              description: "Fluxo comercial direto após validar cobertura.",
+            },
+            {
+              label: "Operação local",
+              value: "Atendimento próximo",
+              description: "Equipe regional no pré e pós-contratação.",
+            },
           ]}
         />
 
         {plans.length === 0 ? (
-          <Card className="rounded-[28px] border-border public-card">
+          <Card className="rounded-[28px] border-cyan-100/16 public-card">
             <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl space-y-2">
                 <h2 className="text-lg font-semibold text-primary md:text-xl">
@@ -100,7 +111,7 @@ export default async function PlanosPage() {
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Button asChild variant="secondary" className="w-full sm:w-auto">
+                <Button asChild variant="secondary" className="w-full border-cyan-100/18 bg-slate-950/30 text-slate-100 hover:bg-slate-900/45 sm:w-auto">
                   <Link href="/cobertura#consulta-cobertura">Consultar cobertura</Link>
                 </Button>
 
@@ -112,7 +123,7 @@ export default async function PlanosPage() {
           </Card>
         ) : (
           <section id="comparacao-planos" className="space-y-6 scroll-mt-24 md:scroll-mt-28">
-            <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div className="flex flex-col gap-4 rounded-[24px] border border-cyan-100/20 bg-slate-950/12 p-5 backdrop-blur-sm md:flex-row md:items-end md:justify-between">
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">
                   Compare os planos de internet disponíveis na sua região

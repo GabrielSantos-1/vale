@@ -23,10 +23,21 @@ export default function SuportePage() {
           secondaryCta={{ label: "Ver status da rede", href: "/status#status-lista" }}
           note="Fluxo mais claro para triagem, operação e atendimento."
           stats={[
-            { label: "Fluxo", value: "Mais claro" },
-            { label: "Triagem", value: "Mais rápida" },
-            { label: "Operação", value: "Mais visível" },
-            { label: "Retorno", value: "Mais objetivo" },
+            {
+              label: "Triagem inicial",
+              value: "Encaminhamento claro",
+              description: "Separação entre demandas comerciais e técnicas.",
+            },
+            {
+              label: "Suporte técnico",
+              value: "Fluxo objetivo",
+              description: "Orientações práticas antes de abrir solicitação.",
+            },
+            {
+              label: "Atendimento regional",
+              value: "Contato próximo",
+              description: "Equipe local para reduzir atrito no atendimento.",
+            },
           ]}
         />
 
@@ -37,7 +48,7 @@ export default function SuportePage() {
         />
 
         <section className="grid items-stretch gap-6 md:grid-cols-2">
-          <Card className="flex h-full flex-col rounded-[28px] border-border public-card">
+          <Card className="flex h-full flex-col rounded-[28px] border-cyan-100/16 public-card">
             <CardHeader className="space-y-3">
               <CardTitle className="text-xl">Atendimento comercial</CardTitle>
               <p className="text-sm leading-6 text-secondary">
@@ -47,7 +58,7 @@ export default function SuportePage() {
 
             <CardContent className="flex flex-1 flex-col gap-6">
               <div className="space-y-4">
-                <div className="rounded-2xl border border-border bg-surface-secondary/70 p-4">
+                <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 p-4 backdrop-blur-sm">
                   <p className="text-sm font-medium text-primary">
                     Quando usar este canal
                   </p>
@@ -58,7 +69,7 @@ export default function SuportePage() {
                   </p>
                 </div>
 
-                <div className="space-y-2 text-sm text-secondary">
+                <div className="space-y-2 text-sm text-slate-200/90">
                   <p>Horário: segunda a sexta, das 8h às 18h</p>
                   <p>Canal principal: formulário de contato</p>
                 </div>
@@ -72,7 +83,7 @@ export default function SuportePage() {
             </CardContent>
           </Card>
 
-          <Card className="flex h-full flex-col rounded-[28px] border-border public-card">
+          <Card className="flex h-full flex-col rounded-[28px] border-cyan-100/16 public-card">
             <CardHeader className="space-y-3">
               <CardTitle className="text-xl">Suporte técnico</CardTitle>
               <p className="text-sm leading-6 text-secondary">
@@ -82,7 +93,7 @@ export default function SuportePage() {
 
             <CardContent className="flex flex-1 flex-col gap-6">
               <div className="space-y-4">
-                <div className="rounded-2xl border border-border bg-surface-secondary/70 p-4">
+                <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 p-4 backdrop-blur-sm">
                   <p className="text-sm font-medium text-primary">
                     Antes de abrir contato
                   </p>
@@ -92,18 +103,18 @@ export default function SuportePage() {
                   </p>
                 </div>
 
-                <div className="space-y-2 text-sm text-secondary">
+                <div className="space-y-2 text-sm text-slate-200/90">
                   <p>Atendimento conforme disponibilidade operacional</p>
                   <p>Priorize a página de status antes de abrir novo contato</p>
                 </div>
               </div>
 
               <div className="mt-auto flex flex-col gap-3 pt-2 sm:flex-row sm:flex-wrap">
-                <Button asChild variant="outline" className="w-full sm:w-auto">
+                <Button asChild variant="outline" className="w-full border-cyan-100/24 bg-slate-950/14 text-slate-100 hover:bg-slate-900/24 sm:w-auto">
                   <Link href="/status#status-lista">Ver status da rede</Link>
                 </Button>
 
-                <Button asChild variant="secondary" className="w-full sm:w-auto">
+                <Button asChild variant="secondary" className="w-full border-cyan-100/18 bg-slate-950/16 text-slate-100 hover:bg-slate-900/26 sm:w-auto">
                   <Link href="/contato#formulario-contato">Abrir solicitação</Link>
                 </Button>
               </div>

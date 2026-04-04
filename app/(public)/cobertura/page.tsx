@@ -52,13 +52,21 @@ export default async function CoberturaPage() {
           secondaryCta={{ label: "Falar com atendimento", href: "/contato#formulario-contato" }}
           note="Processo simples para consultar disponibilidade e seguir com atendimento comercial quando houver cobertura."
           stats={[
-            { label: "Áreas", value: `${areas.length}` },
             {
-              label: "Cidades",
-              value: coverageListUnavailable ? "Lista em atualizacao" : "Com cobertura publicada",
+              label: "Áreas publicadas",
+              value: `${areas.length}`,
+              description: "Base atualizada para consulta pública de cobertura.",
             },
-            { label: "Regiões", value: "Em acompanhamento" },
-            { label: "Consulta", value: "Rápida e objetiva" },
+            {
+              label: "Status operacional",
+              value: coverageListUnavailable ? "Lista em atualizacao" : "Com cobertura publicada",
+              description: "Consulta disponível com retorno rápido para decisão.",
+            },
+            {
+              label: "Fluxo comercial",
+              value: "Da consulta à contratação",
+              description: "Continuidade entre disponibilidade, suporte e venda.",
+            },
           ]}
         />
       </div>
@@ -66,4 +74,3 @@ export default async function CoberturaPage() {
     </>
   );
 }
-

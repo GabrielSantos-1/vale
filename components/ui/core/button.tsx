@@ -15,7 +15,7 @@ export interface ButtonProps
 
 const variantClasses: Record<ButtonVariant, string> = {
   default:
-    "border border-transparent bg-accent text-[var(--accent-foreground)] shadow-soft hover:brightness-[1.04] hover:shadow-soft-lg",
+    "border border-transparent bg-primary text-[var(--primary-foreground)] shadow-soft hover:brightness-[1.05] hover:shadow-soft-lg",
   secondary:
     "border border-border bg-surface-secondary text-primary hover:border-border-strong hover:bg-surface-tertiary",
   outline:

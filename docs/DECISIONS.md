@@ -211,6 +211,7 @@ Impacto:
 - elimina falha estrutural de build nos checks de PR;
 - preserva governanca por segredo em ambientes com configuracao completa;
 - mantem compatibilidade sem alterar contrato de API ou fluxo de autenticacao.
+- exige segredo `DATABASE_URL` no CI gate para prerender/build de rotas com Prisma.
 
 ---
 
@@ -224,3 +225,17 @@ Impacto:
 - thresholds passam a ser calibraveis por ambiente (`OBS_ALERT_*_WARNING` e `OBS_ALERT_*_CRITICAL`);
 - legado permanece compativel via fallback de `OBS_ALERT_RATE_LIMIT_THRESHOLD` e `OBS_ALERT_ERROR_THRESHOLD`;
 - painel admin recebe metadados de calibracao e saude de alertas para operacao guiada.
+
+---
+
+## Decisao 022 - Separacao de incidentes auth admin vs APIs publicas no painel
+
+Classificar incidentes de observabilidade entre superficie publica de conversao e superficie de autenticacao admin para reduzir falso "Atencao" em testes controlados de login.
+
+**Motivo:** tentativas invalidas de senha em `/api/auth/*` sao sinal de seguranca, mas nao devem distorcer o status operacional de conversao publica.
+
+Impacto:
+- agregacao passa a expor campos aditivos (`publicRateLimited`, `publicErrors`, `authRateLimited`, `authErrors`, `authNoiseDetected`);
+- status operacional do painel prioriza incidentes publicos;
+- contrato interno de observabilidade permanece compativel (sem remocao de campos existentes);
+- sem alteracao de schema Prisma, autenticacao/sessao ou contratos publicos.

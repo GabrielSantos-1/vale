@@ -59,29 +59,29 @@ export function PlanCard({
   return (
     <Card
       className={cn(
-        "group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[30px] border border-border public-card transition-all duration-300",
-        "hover:-translate-y-[3px] hover:shadow-soft-lg",
+        "public-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[30px] border border-cyan-100/16 transition-all duration-300",
+        "hover:-translate-y-[3px] hover:shadow-[0_30px_72px_rgba(2,6,23,0.44)]",
         plan.featured
-          ? "border-emerald-300/90 bg-[linear-gradient(180deg,rgba(255,255,255,1)_0%,rgba(243,255,247,0.96)_100%)] shadow-[0_18px_55px_rgba(47,158,68,0.12)]"
-          : "hover:border-border-strong",
+          ? "border-emerald-300/45 shadow-[0_24px_64px_rgba(6,78,59,0.28)]"
+          : "hover:border-cyan-100/28",
         className
       )}
     >
       {plan.featured ? (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,rgba(47,158,68,0.95),rgba(16,185,129,0.65),rgba(47,158,68,0.95))]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,rgba(16,185,129,0.85),rgba(34,211,238,0.58),rgba(16,185,129,0.85))]"
         />
       ) : null}
 
-      <CardHeader className="space-y-5 border-b border-border/70 p-5 sm:p-6">
+      <CardHeader className="space-y-5 border-b border-cyan-100/12 p-5 sm:p-6">
         <div className="min-w-0 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
               {getPlanEyebrow(plan)}
             </p>
             {commercialBadge ? (
-              <span className="rounded-full border border-border-strong bg-white/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
+              <span className="rounded-full border border-cyan-100/28 bg-slate-950/14 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-cyan-100/90 backdrop-blur-sm">
                 {commercialBadge}
               </span>
             ) : null}
@@ -92,46 +92,46 @@ export function PlanCard({
           </CardTitle>
         </div>
 
-        <div className="rounded-[24px] border border-border bg-surface-secondary/80 p-4 sm:p-5">
+        <div className="rounded-[24px] border border-cyan-100/20 bg-slate-950/12 p-4 sm:p-5 backdrop-blur-sm">
           <div className="space-y-2">
-            <p className="text-sm font-medium text-muted">Preço mensal</p>
+            <p className="text-sm font-medium text-slate-300">Preço mensal</p>
 
             <div className="flex flex-wrap items-end gap-2">
               <p className="text-4xl font-bold leading-none tracking-tight text-primary">
                 {formatPrice(plan.priceCents)}
               </p>
-              <span className="pb-1 text-sm font-medium text-muted">/mês</span>
+              <span className="pb-1 text-sm font-medium text-slate-300">/mês</span>
             </div>
 
-            <p className="text-xs leading-5 text-secondary">{getPlanHint(plan)}</p>
+            <p className="text-xs leading-5 text-slate-200/90">{getPlanHint(plan)}</p>
           </div>
 
           <div className="mt-5 space-y-3">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-border bg-surface p-3.5">
-                <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
+              <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/12 p-3.5 backdrop-blur-sm">
+                <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-300">
                   Download
                 </p>
-                <p className="mt-2 break-words text-base font-semibold text-primary sm:text-lg">
+                <p className="mt-2 break-words text-base font-semibold text-slate-50 sm:text-lg">
                   {plan.downloadMbps} Mbps
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-border bg-surface p-3.5">
-                <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
+              <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/12 p-3.5 backdrop-blur-sm">
+                <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-300">
                   Upload
                 </p>
-                <p className="mt-2 break-words text-base font-semibold text-primary sm:text-lg">
+                <p className="mt-2 break-words text-base font-semibold text-slate-50 sm:text-lg">
                   {plan.uploadMbps} Mbps
                 </p>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border bg-surface p-3.5">
-              <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
+            <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/12 p-3.5 backdrop-blur-sm">
+              <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-300">
                 Latência alvo
               </p>
-              <p className="mt-2 break-words text-base font-semibold text-primary">
+              <p className="mt-2 break-words text-base font-semibold text-slate-50">
                 {plan.latencyTarget} ms
               </p>
             </div>
@@ -144,7 +144,7 @@ export function PlanCard({
           <div className="space-y-3">
             <p className="text-sm font-semibold text-primary">Benefícios incluídos</p>
 
-            <ul className="space-y-2.5 text-sm leading-6 text-secondary">
+            <ul className="space-y-2.5 text-sm leading-6 text-slate-200/90">
               {plan.benefits.map((benefit, index) => (
                 <li key={`${plan.id}-${index}`} className="flex items-start gap-2.5">
                   <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
@@ -154,11 +154,11 @@ export function PlanCard({
             </ul>
           </div>
         ) : (
-          <div className="rounded-2xl border border-dashed border-border bg-surface-secondary/60 p-4">
-            <p className="text-sm leading-6 text-secondary">
+          <div className="rounded-2xl border border-dashed border-cyan-100/20 bg-slate-950/12 p-4 backdrop-blur-sm">
+            <p className="text-sm leading-6 text-slate-200/90">
               Ideal para quem busca velocidade, estabilidade e contratação com informações claras.
             </p>
-            <p className="mt-2 text-xs leading-5 text-muted">
+            <p className="mt-2 text-xs leading-5 text-slate-300">
               Sujeito à disponibilidade de cobertura na região.
             </p>
           </div>

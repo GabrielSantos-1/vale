@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -222,32 +222,32 @@ export default function CoberturaClient({ areas }: Props) {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <Card className="rounded-[24px] border-border bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)]">
+            <Card className="public-card rounded-[24px] border-cyan-100/16">
               <CardContent className="p-5 sm:p-6">
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted">
+                  <p className="text-sm font-medium text-slate-300">
                     Áreas disponíveis
                   </p>
                   <p className="text-3xl font-semibold tracking-tight text-primary">
                     {areas.length}
                   </p>
-                  <p className="text-sm leading-6 text-secondary">
+                  <p className="text-sm leading-6 text-slate-200/90">
                     Regiões com disponibilidade publicada para consulta pública.
                   </p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="rounded-[24px] border-border bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)]">
+            <Card className="public-card rounded-[24px] border-cyan-100/16">
               <CardContent className="p-5 sm:p-6">
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted">
+                  <p className="text-sm font-medium text-slate-300">
                     Cidades mapeadas
                   </p>
                   <p className="text-3xl font-semibold tracking-tight text-primary">
                     {uniqueCities}
                   </p>
-                  <p className="text-sm leading-6 text-secondary">
+                  <p className="text-sm leading-6 text-slate-200/90">
                     Cidades com cobertura cadastrada para facilitar a consulta
                     inicial.
                   </p>
@@ -255,16 +255,16 @@ export default function CoberturaClient({ areas }: Props) {
               </CardContent>
             </Card>
 
-            <Card className="rounded-[24px] border-border bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] sm:col-span-2 xl:col-span-1">
+            <Card className="public-card rounded-[24px] border-cyan-100/16 sm:col-span-2 xl:col-span-1">
               <CardContent className="p-5 sm:p-6">
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted">
+                  <p className="text-sm font-medium text-slate-300">
                     Regiões listadas
                   </p>
                   <p className="text-3xl font-semibold tracking-tight text-primary">
                     {uniqueDistricts}
                   </p>
-                  <p className="text-sm leading-6 text-secondary">
+                  <p className="text-sm leading-6 text-slate-200/90">
                     Bairros já listados para consulta de internet fibra na
                     região.
                   </p>
@@ -286,7 +286,7 @@ export default function CoberturaClient({ areas }: Props) {
             id="consulta-cobertura"
             className="scroll-mt-24"
           >
-            <Card className="rounded-[28px] border-border">
+            <Card className="public-card rounded-[28px] border-cyan-100/16">
               <CardHeader className="space-y-3">
                 <CardTitle className="text-xl">Consultar cobertura</CardTitle>
                 <p className="text-sm leading-6 text-secondary">
@@ -348,7 +348,7 @@ export default function CoberturaClient({ areas }: Props) {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-border bg-surface-secondary/70 p-4">
+                  <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 p-4 backdrop-blur-sm">
                     <p className="text-sm font-medium text-primary">
                       Como consultar disponibilidade
                     </p>
@@ -361,7 +361,7 @@ export default function CoberturaClient({ areas }: Props) {
 
                   {error ? (
                     <div
-                      className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                      className="rounded-2xl border border-red-400/45 bg-red-500/12 px-4 py-3 text-sm text-red-100"
                       role="alert"
                     >
                       {error}
@@ -372,8 +372,8 @@ export default function CoberturaClient({ areas }: Props) {
                     <div
                       className={
                         result.available
-                          ? "rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-700"
-                          : "rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-700"
+                          ? "rounded-2xl border border-emerald-300/45 bg-emerald-500/12 px-4 py-4 text-sm text-emerald-100"
+                          : "rounded-2xl border border-amber-300/45 bg-amber-500/12 px-4 py-4 text-sm text-amber-100"
                       }
                       role="status"
                     >
@@ -460,13 +460,13 @@ export default function CoberturaClient({ areas }: Props) {
           </div>
 
           <aside className="xl:sticky xl:top-24">
-            <Card className="rounded-[28px] border-border">
+            <Card className="public-card rounded-[28px] border-cyan-100/16">
               <CardHeader className="space-y-3">
                 <CardTitle className="text-lg">Resumo</CardTitle>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <div className="rounded-2xl border border-border bg-surface-secondary/70 p-4">
+                <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 p-4 backdrop-blur-sm">
                   <p className="text-sm font-medium text-primary">
                     Total de áreas disponíveis
                   </p>
@@ -517,10 +517,10 @@ export default function CoberturaClient({ areas }: Props) {
             </p>
           </div>
 
-          <Card className="rounded-[28px] border-border">
+          <Card className="public-card rounded-[28px] border-cyan-100/16">
             <CardContent className="p-5 sm:p-6">
               {areas.length === 0 ? (
-                <div className="space-y-4 rounded-2xl border border-border bg-background px-4 py-4 text-sm text-secondary">
+                <div className="space-y-4 rounded-2xl border border-cyan-100/20 bg-slate-950/14 px-4 py-4 text-sm text-slate-200/90 backdrop-blur-sm">
                   <p className="font-medium text-primary">
                     Estamos expandindo a cobertura para novas regiões.
                   </p>
@@ -542,7 +542,7 @@ export default function CoberturaClient({ areas }: Props) {
                   {areas.map((area) => (
                     <article
                       key={area.id}
-                      className="rounded-2xl border border-border bg-background p-4"
+                      className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 p-4 backdrop-blur-sm"
                     >
                       <h3 className="text-base font-semibold leading-6 text-primary">
                         {area.city} - {area.district}
