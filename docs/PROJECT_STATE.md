@@ -37,6 +37,7 @@ Consolidado em 1.2.1:
 - painel de observabilidade integrado ao dashboard admin;
 - painel admin com metadados de calibracao e saude de alertas;
 - governanca de entrega com workflows GitHub Actions para gate e e2e controlado.
+- separacao de incidentes de auth admin vs APIs publicas no painel de observabilidade (campos aditivos no resumo, sem quebra de contrato interno).
 
 Sem mudanca estrutural:
 - sem alteracao de schema Prisma;

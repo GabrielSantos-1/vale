@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import type { FormEvent } from "react";
 import Link from "next/link";
@@ -128,10 +128,21 @@ export default function ContatoPage() {
           secondaryCta={{ label: "Consultar cobertura", href: "/cobertura#consulta-cobertura" }}
           note="Canal direto para atendimento regional com comunicação objetiva do primeiro contato ao próximo passo."
           stats={[
-            { label: "Retorno", value: "Com orientação clara" },
-            { label: "Canais", value: "Organizados" },
-            { label: "Suporte", value: "Humano e próximo" },
-            { label: "Atendimento", value: "Regional" },
+            {
+              label: "Retorno inicial",
+              value: "Fluxo orientado",
+              description: "Solicitações com triagem clara para o canal certo.",
+            },
+            {
+              label: "Atendimento humano",
+              value: "Equipe regional",
+              description: "Comunicação próxima do primeiro contato ao encaminhamento.",
+            },
+            {
+              label: "Canal único",
+              value: "Comercial e suporte",
+              description: "Entrada padronizada para reduzir ruído na operação.",
+            },
           ]}
         />
 
@@ -143,7 +154,7 @@ export default function ContatoPage() {
 
         <Card
           id="formulario-contato"
-          className="scroll-mt-24 rounded-[28px] border-border public-card"
+          className="scroll-mt-24 rounded-[28px] border-cyan-100/16 public-card"
         >
           <CardHeader className="space-y-3">
             <CardTitle className="text-xl">Entrar em contato</CardTitle>
@@ -233,7 +244,7 @@ export default function ContatoPage() {
                 />
               </div>
 
-              <div className="rounded-2xl border border-border bg-surface-secondary/70 p-4">
+              <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 backdrop-blur-sm p-4">
                 <p className="text-sm font-medium text-primary">
                   Antes de enviar
                 </p>
@@ -246,7 +257,7 @@ export default function ContatoPage() {
 
               {error ? (
                 <div
-                  className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                  className="rounded-2xl border border-red-400/45 bg-red-500/12 px-4 py-3 text-sm text-red-100"
                   role="alert"
                 >
                   {error}
@@ -255,7 +266,7 @@ export default function ContatoPage() {
 
               {success ? (
                 <div
-                  className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
+                  className="rounded-2xl border border-emerald-300/45 bg-emerald-500/12 px-4 py-3 text-sm text-emerald-100"
                   role="status"
                 >
                   {success}

@@ -9,7 +9,7 @@ Checkpoint salvo para continuidade futura com foco na camada publica (hero, navb
 - Barra superior alinhada ao tema claro em `components/layout/public/navbar.tsx`.
 - Rodape migrado para tema claro e consistente em `components/layout/public/footer.tsx`.
 - Tokens/base visual ajustados em `app/globals.css`.
-- Assets de fundo ativos em `public/images/public/`.
+- Assets de fundo ativos em `public/images/`.
 
 ## Estrutura (alto nivel)
 - `app/(public)` para paginas publicas.

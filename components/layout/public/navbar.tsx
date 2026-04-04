@@ -32,7 +32,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-sky-200/70 bg-[linear-gradient(180deg,rgba(243,249,255,0.94)_0%,rgba(232,243,255,0.9)_42%,rgba(220,238,255,0.88)_100%)] supports-[backdrop-filter]:bg-[linear-gradient(180deg,rgba(243,249,255,0.84)_0%,rgba(232,243,255,0.78)_42%,rgba(220,238,255,0.74)_100%)] backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-cyan-100/18 bg-[linear-gradient(180deg,rgba(8,24,44,0.56)_0%,rgba(9,27,49,0.5)_42%,rgba(10,29,52,0.46)_100%)] supports-[backdrop-filter]:bg-[linear-gradient(180deg,rgba(8,24,44,0.4)_0%,rgba(9,27,49,0.34)_42%,rgba(10,29,52,0.3)_100%)] backdrop-blur-lg shadow-[0_6px_22px_rgba(2,6,23,0.14)]">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 md:px-6 md:py-4">
         <Link
           href="/"
@@ -62,8 +62,8 @@ export default function Navbar() {
                 className={cn(
                   "inline-flex items-center rounded-full px-3.5 py-2 text-sm font-medium transition-all duration-200",
                   active
-                    ? "bg-white/82 text-primary shadow-[0_10px_28px_rgba(15,23,42,0.08)]"
-                    : "text-secondary hover:bg-white/62 hover:text-primary"
+                    ? "bg-cyan-100/80 text-slate-950 shadow-[0_8px_18px_rgba(2,6,23,0.18)]"
+                    : "text-slate-100/95 hover:bg-cyan-100/14 hover:text-cyan-50"
                 )}
               >
                 {item.label}
@@ -77,14 +77,14 @@ export default function Navbar() {
             href={whatsappSupportUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-full border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800 transition duration-200 hover:bg-emerald-100"
+            className="inline-flex items-center justify-center rounded-full border border-emerald-300/45 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-100 transition duration-200 hover:bg-emerald-400/16"
           >
             Falar no WhatsApp
           </a>
 
           <Link
             href="/contratar#formulario-solicitacao"
-            className="inline-flex items-center justify-center rounded-full bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition duration-200 hover:brightness-95"
+            className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition duration-200 hover:brightness-95"
           >
             Contratar agora
           </Link>
@@ -98,7 +98,7 @@ export default function Navbar() {
             <span
               key={label}
               aria-disabled="true"
-              className="inline-flex cursor-default items-center rounded-full border border-sky-200/70 bg-white/65 px-3 py-1 text-xs font-medium text-slate-700"
+              className="inline-flex cursor-default items-center rounded-full border border-cyan-100/22 bg-slate-950/16 px-3 py-1 text-xs font-medium text-slate-100/90 backdrop-blur-sm"
             >
               {label}: em breve
             </span>

@@ -27,9 +27,15 @@ export type ObservabilityMetricsResult = {
     totalRateLimited: number;
     totalErrors: number;
     errorRate: number;
+    publicErrorRate: number;
     status: 'stable' | 'warning' | 'critical';
     rateLimitedByRoute: Record<string, number>;
     errorsByRoute: Record<string, number>;
+    publicRateLimited: number;
+    publicErrors: number;
+    authRateLimited: number;
+    authErrors: number;
+    authNoiseDetected: boolean;
     lastCriticalEvent: CriticalEvent | null;
   };
 };
@@ -188,6 +194,21 @@ function getBucketKey(view: MetricsView, date: Date) {
   return formatDateKey(date);
 }
 
+type IncidentSource = 'public' | 'auth_admin' | 'unknown';
+
+const PUBLIC_OBSERVABILITY_ROUTES = new Set([
+  '/api/contact',
+  '/api/leads',
+  '/api/coverage-check',
+  '/api/events',
+]);
+
+function classifyIncidentSource(route: string): IncidentSource {
+  if (route.startsWith('/api/auth/')) return 'auth_admin';
+  if (PUBLIC_OBSERVABILITY_ROUTES.has(route)) return 'public';
+  return 'unknown';
+}
+
 function deriveStatus(errorRate: number) {
   if (errorRate >= 15) return 'critical';
   if (errorRate >= 5) return 'warning';
@@ -207,6 +228,10 @@ export function aggregateObservabilityMetrics(params: {
   let totalEvents = 0;
   let totalRateLimited = 0;
   let totalErrors = 0;
+  let publicRateLimited = 0;
+  let publicErrors = 0;
+  let authRateLimited = 0;
+  let authErrors = 0;
   let lastCriticalEvent: CriticalEvent | null = null;
 
   for (const entry of params.entries) {
@@ -225,13 +250,24 @@ export function aggregateObservabilityMetrics(params: {
     }
 
     const route = getRouteFromMetadata(entry.metadataJson);
+    const source = classifyIncidentSource(route);
 
     if (entry.action === 'PUBLIC_API_RATE_LIMITED') {
       totalRateLimited += 1;
       rateLimitedByRoute[route] = (rateLimitedByRoute[route] ?? 0) + 1;
+      if (source === 'public') {
+        publicRateLimited += 1;
+      } else if (source === 'auth_admin') {
+        authRateLimited += 1;
+      }
     } else if (entry.action === 'PUBLIC_API_ERROR') {
       totalErrors += 1;
       errorsByRoute[route] = (errorsByRoute[route] ?? 0) + 1;
+      if (source === 'public') {
+        publicErrors += 1;
+      } else if (source === 'auth_admin') {
+        authErrors += 1;
+      }
       const timestamp = createdAt.toISOString();
       if (!lastCriticalEvent || timestamp > lastCriticalEvent.timestamp) {
         lastCriticalEvent = {
@@ -248,6 +284,15 @@ export function aggregateObservabilityMetrics(params: {
     relevantTotal > 0
       ? Number((((totalErrors + totalRateLimited) / relevantTotal) * 100).toFixed(1))
       : 0;
+  const publicRelevantTotal = totalEvents + publicRateLimited + publicErrors;
+  const publicErrorRate =
+    publicRelevantTotal > 0
+      ? Number(
+          (((publicErrors + publicRateLimited) / publicRelevantTotal) * 100).toFixed(
+            1,
+          ),
+        )
+      : 0;
 
   return {
     points: Array.from(buckets.values()),
@@ -258,9 +303,15 @@ export function aggregateObservabilityMetrics(params: {
       totalRateLimited,
       totalErrors,
       errorRate,
-      status: deriveStatus(errorRate),
+      publicErrorRate,
+      status: deriveStatus(publicErrorRate),
       rateLimitedByRoute,
       errorsByRoute,
+      publicRateLimited,
+      publicErrors,
+      authRateLimited,
+      authErrors,
+      authNoiseDetected: authRateLimited > 0 || authErrors > 0,
       lastCriticalEvent,
     },
   };

@@ -17,8 +17,8 @@ export function resolveStatusTone(status?: string): StatusTone {
       dotClassName: "bg-emerald-400",
       pillText: "Operando normalmente",
       panelClassName:
-        "border-emerald-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(243,255,248,0.95)_100%)]",
-      cardClassName: "border-emerald-200 bg-emerald-50/80 text-emerald-900",
+        "border-emerald-300/35 bg-[linear-gradient(180deg,rgba(6,28,24,0.28)_0%,rgba(7,32,28,0.22)_100%)] backdrop-blur-md",
+      cardClassName: "border-emerald-300/45 bg-emerald-500/12 text-emerald-100",
     };
   }
 
@@ -32,8 +32,8 @@ export function resolveStatusTone(status?: string): StatusTone {
       dotClassName: "bg-amber-400",
       pillText: "Monitoramento e manutenção",
       panelClassName:
-        "border-amber-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(255,250,240,0.96)_100%)]",
-      cardClassName: "border-amber-200 bg-amber-50/80 text-amber-900",
+        "border-amber-300/35 bg-[linear-gradient(180deg,rgba(37,27,8,0.3)_0%,rgba(43,30,8,0.24)_100%)] backdrop-blur-md",
+      cardClassName: "border-amber-300/45 bg-amber-500/12 text-amber-100",
     };
   }
 
@@ -46,8 +46,8 @@ export function resolveStatusTone(status?: string): StatusTone {
       dotClassName: "bg-red-400",
       pillText: "Incidentes em acompanhamento",
       panelClassName:
-        "border-red-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(255,245,245,0.96)_100%)]",
-      cardClassName: "border-red-200 bg-red-50/80 text-red-900",
+        "border-red-300/35 bg-[linear-gradient(180deg,rgba(43,14,14,0.32)_0%,rgba(51,15,15,0.24)_100%)] backdrop-blur-md",
+      cardClassName: "border-red-300/45 bg-red-500/12 text-red-100",
     };
   }
 
@@ -55,7 +55,7 @@ export function resolveStatusTone(status?: string): StatusTone {
     dotClassName: "bg-sky-400",
       pillText: "Status público disponível",
     panelClassName:
-      "border-border bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,251,255,0.96)_100%)]",
-    cardClassName: "border-sky-200 bg-sky-50/80 text-sky-900",
+      "border-cyan-300/30 bg-[linear-gradient(180deg,rgba(8,24,40,0.28)_0%,rgba(10,28,48,0.22)_100%)] backdrop-blur-md",
+    cardClassName: "border-sky-300/45 bg-sky-500/12 text-sky-100",
   };
 }

@@ -7,3 +7,4 @@ Arquivos:
 - 06-runbook-alertas.md
 - 07-entregas-do-dia.md
 - 08-monitoramento-alertas-24h.md
+- 09-separacao-observabilidade-auth-publico.md

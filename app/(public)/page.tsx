@@ -70,29 +70,6 @@ async function getHomeData(): Promise<HomeData> {
   return { plans, faqs, visibleStatus };
 }
 
-const metrics = [
-  {
-    label: "Clientes atendidos",
-    value: "+1.200",
-    description: "Base regional atendida com suporte próximo e resposta clara.",
-  },
-  {
-    label: "Instalação",
-    value: "Até 24h",
-    description: "Agendamento ágil para ativar sua fibra sem burocracia.",
-  },
-  {
-    label: "Disponibilidade",
-    value: "99.9%",
-    description: "Rede monitorada com comunicação transparente de status.",
-  },
-  {
-    label: "Velocidade",
-    value: "Máxima",
-    description: "Planos com desempenho estável para rotina, trabalho e streaming.",
-  },
-] as const;
-
 const fallbackStatusItems = [
   {
     id: "status-fallback",
@@ -120,36 +97,23 @@ export default async function Home() {
           secondaryCta={{ label: "Consultar cobertura", href: "/cobertura#consulta-cobertura" }}
           note="Contratação simples, suporte humano e comunicação clara do início ao pós-instalação."
           stats={[
-            { label: "Cobertura", value: "Consulta por endereço" },
-            { label: "Instalação", value: "Agendamento rápido" },
-            { label: "Status", value: "Atualizações em tempo real" },
-            { label: "Suporte", value: "Atendimento próximo" },
+            {
+              label: "Uptime",
+              value: "99.9%",
+              description: "Rede monitorada com alta disponibilidade.",
+            },
+            {
+              label: "Suporte local",
+              value: "Equipe regional",
+              description: "Atendimento humano próximo quando você precisa.",
+            },
+            {
+              label: "Operação transparente",
+              value: "Status em tempo real",
+              description: "Comunicação clara sobre manutenções e normalização.",
+            },
           ]}
         />
-
-        <section
-          aria-label="Indicadores principais"
-          className="rounded-[24px] border border-border bg-surface p-4 shadow-soft md:p-5"
-        >
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {metrics.map((metric) => (
-              <div
-                key={metric.label}
-                className="rounded-2xl border border-border/80 bg-surface px-4 py-3 shadow-soft"
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
-                    {metric.label}
-                  </p>
-                  <p className="text-sm font-semibold tracking-tight text-primary md:text-base">
-                    {metric.value}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
         <FeaturesGrid
           eyebrow="Diferenciais"
           title="Confiança para contratar e permanecer conectado"

@@ -23,7 +23,7 @@ export function MobileTabbar() {
   return (
     <nav
       aria-label="Navegação mobile"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-white/60 bg-[rgba(248,251,255,0.86)] supports-[backdrop-filter]:bg-[rgba(248,251,255,0.72)] backdrop-blur-xl md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-cyan-100/14 bg-[rgba(5,14,28,0.88)] supports-[backdrop-filter]:bg-[rgba(5,14,28,0.72)] backdrop-blur-xl md:hidden"
     >
       <div className="mx-auto grid max-w-6xl grid-cols-5 gap-1 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2">
         {mobileItems.map((item) => {
@@ -37,8 +37,8 @@ export function MobileTabbar() {
               className={cn(
                 "flex min-h-[56px] flex-col items-center justify-center rounded-2xl px-2 text-center text-[11px] font-medium transition-all duration-200",
                 active
-                  ? "bg-white text-primary shadow-[0_8px_24px_rgba(15,23,42,0.08)]"
-                  : "text-secondary hover:bg-white/70 hover:text-primary"
+                  ? "bg-cyan-100/90 text-slate-950 shadow-[0_8px_24px_rgba(2,6,23,0.3)]"
+                  : "text-slate-200 hover:bg-cyan-100/12 hover:text-cyan-50"
               )}
             >
               {item.label}

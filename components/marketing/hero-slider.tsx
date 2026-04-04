@@ -61,10 +61,10 @@ const SWIPE_THRESHOLD = 60;
 export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   {
     id: "fiber-transparency",
-    eyebrow: "Fibra óptica • cobertura • status em tempo real",
-    title: "Internet fibra com transparência, estabilidade e gestão moderna",
+    eyebrow: "Fibra Ã³ptica â€¢ cobertura â€¢ status em tempo real",
+    title: "Internet fibra com transparÃªncia, estabilidade e gestÃ£o moderna",
     description:
-      "Consulte planos, verifique cobertura, acompanhe o status da rede e entre em contato com rapidez em uma experiência clara e confiável.",
+      "Consulte planos, verifique cobertura, acompanhe o status da rede e entre em contato com rapidez em uma experiÃªncia clara e confiÃ¡vel.",
     primaryCta: {
       label: "Ver planos",
       href: "/planos",
@@ -77,12 +77,12 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
       eyebrow: "Cobertura",
       title: "Planos e disponibilidade com clareza",
       description:
-        "Mostre velocidade, disponibilidade e contato em uma vitrine mais confiável e objetiva.",
+        "Mostre velocidade, disponibilidade e contato em uma vitrine mais confiÃ¡vel e objetiva.",
       stats: [
-        { label: "Cobertura", value: "Consulta rápida" },
+        { label: "Cobertura", value: "Consulta rÃ¡pida" },
         { label: "Jornada", value: "Sem atrito" },
       ],
-      note: "Planos, cobertura e contato em uma experiência mais clara para conversão.",
+      note: "Planos, cobertura e contato em uma experiÃªncia mais clara para conversÃ£o.",
       noteClassName: "border-emerald-200 bg-emerald-50/80 text-emerald-700",
     },
     theme: {
@@ -98,10 +98,10 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: "network-visibility",
-    eyebrow: "Operação • status da rede • comunicação clara",
-    title: "Acompanhe a operação da rede com visibilidade e resposta rápida",
+    eyebrow: "OperaÃ§Ã£o â€¢ status da rede â€¢ comunicaÃ§Ã£o clara",
+    title: "Acompanhe a operaÃ§Ã£o da rede com visibilidade e resposta rÃ¡pida",
     description:
-      "Mantenha seus clientes informados com uma vitrine moderna para avisos de manutenção, incidentes e normalização da rede.",
+      "Mantenha seus clientes informados com uma vitrine moderna para avisos de manutenÃ§Ã£o, incidentes e normalizaÃ§Ã£o da rede.",
     primaryCta: {
       label: "Ver status",
       href: "/status",
@@ -111,15 +111,15 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
       href: "/cobertura",
     },
     panel: {
-      eyebrow: "Operação",
+      eyebrow: "OperaÃ§Ã£o",
       title: "Status da rede em destaque",
       description:
-        "Comunique incidentes, manutenção e normalização com mais confiança e leitura imediata.",
+        "Comunique incidentes, manutenÃ§Ã£o e normalizaÃ§Ã£o com mais confianÃ§a e leitura imediata.",
       stats: [
         { label: "Resposta", value: "Tempo real" },
-        { label: "Confiança", value: "Mais visível" },
+        { label: "ConfianÃ§a", value: "Mais visÃ­vel" },
       ],
-      note: "O fundo reage ao contexto do slide para reforçar operação e transparência.",
+      note: "O fundo reage ao contexto do slide para reforÃ§ar operaÃ§Ã£o e transparÃªncia.",
       noteClassName: "border-sky-200 bg-sky-50/80 text-sky-700",
     },
     theme: {
@@ -135,10 +135,10 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: "campaign-image-slide",
-    eyebrow: "Atendimento premium • experiência clara • contratação rápida",
-    title: "Conecte tecnologia, confiança e uma jornada visual mais forte",
+    eyebrow: "Atendimento premium â€¢ experiÃªncia clara â€¢ contrataÃ§Ã£o rÃ¡pida",
+    title: "Conecte tecnologia, confianÃ§a e uma jornada visual mais forte",
     description:
-      "Use slides visuais para destacar campanhas, atendimento, planos e diferenciais com clareza, profundidade e melhor percepção de produto.",
+      "Use slides visuais para destacar campanhas, atendimento, planos e diferenciais com clareza, profundidade e melhor percepÃ§Ã£o de produto.",
     primaryCta: {
       label: "Contratar agora",
       href: "/contratar",
@@ -147,9 +147,9 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
       label: "Conhecer a empresa",
       href: "/sobre",
     },
-    imageSrc: "/images/public/fiber-residential-valley.png",
+    imageSrc: "/images/fiber-residential-valley.png",
     imageAlt:
-      "Profissional trabalhando em ambiente externo com notebook, representando atendimento premium e experiência moderna.",
+      "Profissional trabalhando em ambiente externo com notebook, representando atendimento premium e experiÃªncia moderna.",
     imagePosition: "object-center",
     contentAlignment: "left",
     theme: {
@@ -276,7 +276,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
     : "mt-4 max-w-2xl text-[15px] leading-7 text-secondary sm:text-base md:text-lg";
 
   const secondaryButtonClassName = imageMode
-    ? "w-full border-white/45 bg-white/88 text-slate-900 shadow-[0_12px_30px_rgba(15,23,42,0.12)] backdrop-blur-md hover:bg-white sm:w-auto"
+    ? "w-full border-white/30 bg-white/[0.14] text-white shadow-[0_10px_26px_rgba(2,6,23,0.18)] backdrop-blur-md hover:bg-white/[0.2] sm:w-auto"
     : "w-full sm:w-auto";
 
   return (
@@ -302,7 +302,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
         className="relative"
       >
         <Card className="relative overflow-hidden rounded-[34px] border border-white/55 bg-transparent shadow-soft-lg">
-          <div className="absolute inset-0 rounded-[34px] bg-white/30 backdrop-blur-[64px]" />
+          <div className="absolute inset-0 rounded-[34px] bg-white/[0.14] backdrop-blur-[32px]" />
 
           {imageMode && activeSlide.imageSrc ? (
             <>
@@ -358,7 +358,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
               />
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-[10px] bottom-[10px] h-16 rounded-b-[30px] bg-white/20 blur-xl"
+                className="pointer-events-none absolute inset-x-[10px] bottom-[10px] h-16 rounded-b-[30px] bg-white/[0.1] blur-xl"
               />
             </>
           )}
@@ -420,9 +420,9 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
 
                   {!imageMode && activeSlide.panel ? (
                     <div className="mt-5 lg:hidden">
-                      <div className="rounded-[24px] border border-white/60 bg-white/70 p-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)] backdrop-blur-xl">
+                      <div className="rounded-[24px] border border-white/24 bg-white/[0.14] p-4 shadow-[0_14px_34px_rgba(2,6,23,0.16)] backdrop-blur-lg">
                         <div className="space-y-3">
-                          <div className="rounded-2xl border border-border bg-white/75 p-4">
+                          <div className="rounded-2xl border border-white/20 bg-white/[0.12] p-4 backdrop-blur-sm">
                             <p className="text-sm font-medium text-muted">
                               {activeSlide.panel.eyebrow}
                             </p>
@@ -438,7 +438,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                             {activeSlide.panel.stats.map((stat) => (
                               <div
                                 key={`${activeSlide.id}-${stat.label}-mobile`}
-                                className="rounded-2xl border border-border bg-white/75 p-3"
+                                className="rounded-2xl border border-white/20 bg-white/[0.12] p-3 backdrop-blur-sm"
                               >
                                 <p className="text-[11px] uppercase tracking-wide text-muted">
                                   {stat.label}
@@ -485,9 +485,9 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                         )}
                       />
 
-                      <div className="relative rounded-[28px] border border-white/60 bg-white/60 p-6 shadow-[0_22px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+                      <div className="relative rounded-[28px] border border-white/24 bg-white/[0.14] p-6 shadow-[0_18px_44px_rgba(2,6,23,0.2)] backdrop-blur-lg">
                         <div className="grid gap-4">
-                          <div className="rounded-2xl border border-border bg-white/62 p-4">
+                          <div className="rounded-2xl border border-white/20 bg-white/[0.12] p-4 backdrop-blur-sm">
                             <p className="text-sm font-medium text-muted">
                               {activeSlide.panel.eyebrow}
                             </p>
@@ -503,7 +503,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                             {activeSlide.panel.stats.map((stat) => (
                               <div
                                 key={`${activeSlide.id}-${stat.label}`}
-                                className="rounded-2xl border border-border bg-white/58 p-4"
+                                className="rounded-2xl border border-white/20 bg-white/[0.1] p-4 backdrop-blur-sm"
                               >
                                 <p className="text-xs uppercase tracking-wide text-muted">
                                   {stat.label}
@@ -559,3 +559,4 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
     </section>
   );
 }
+

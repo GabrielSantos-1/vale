@@ -28,9 +28,15 @@ type ObservabilitySummary = {
   totalRateLimited: number;
   totalErrors: number;
   errorRate: number;
+  publicErrorRate: number;
   status: SummaryStatus;
   rateLimitedByRoute: Record<string, number>;
   errorsByRoute: Record<string, number>;
+  publicRateLimited: number;
+  publicErrors: number;
+  authRateLimited: number;
+  authErrors: number;
+  authNoiseDetected: boolean;
   lastCriticalEvent: {
     action: string;
     route: string;
@@ -218,10 +224,29 @@ export function ObservabilityMetricsPanel() {
           <NumberCard label="Erros" value={summary?.totalErrors ?? 0} />
         </div>
 
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <NumberCard
+            label="Incidentes Publicos - Rate-limited"
+            value={summary?.publicRateLimited ?? 0}
+          />
+          <NumberCard
+            label="Incidentes Publicos - Erros"
+            value={summary?.publicErrors ?? 0}
+          />
+          <NumberCard
+            label="Auth Admin - Rate-limited"
+            value={summary?.authRateLimited ?? 0}
+          />
+          <NumberCard
+            label="Auth Admin - Erros"
+            value={summary?.authErrors ?? 0}
+          />
+        </div>
+
         <div className="grid gap-3 sm:grid-cols-2">
           <InfoCard
-            label="Taxa de erro"
-            value={`${summary?.errorRate ?? 0}%`}
+            label="Taxa de erro publica"
+            value={`${summary?.publicErrorRate ?? 0}%`}
             accent={
               (alertHealth?.status ?? summary?.status) === "critical"
                 ? "danger"
@@ -231,7 +256,7 @@ export function ObservabilityMetricsPanel() {
             }
           />
           <InfoCard
-            label="Ultimo evento critico"
+            label="Ultimo evento critico publico"
             value={
               summary?.lastCriticalEvent
                 ? `${summary.lastCriticalEvent.route} (${new Date(summary.lastCriticalEvent.timestamp).toLocaleString("pt-BR")})`
@@ -239,6 +264,16 @@ export function ObservabilityMetricsPanel() {
             }
           />
         </div>
+
+        <InfoCard
+          label="Auth Admin (seguranca)"
+          value={
+            summary?.authNoiseDetected
+              ? "Incidentes de auth detectados. Pode incluir teste controlado ou bloqueio de brute-force."
+              : "Sem ruido de autenticacao admin no periodo."
+          }
+          accent={summary?.authNoiseDetected ? "warning" : "success"}
+        />
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <NumberCard
