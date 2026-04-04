@@ -1,92 +1,76 @@
-# TASKS.md
+﻿# TASKS.md
 
 ## Objetivo
 
-Registrar status de execução por ciclo e próximas tarefas objetivas do projeto.
+Registrar status de execucao por ciclo e proximas tarefas objetivas do projeto.
 
 ---
 
-## Data de referência
+## Data de referencia
 
-2026-04-01
+2026-04-04
 
 ---
 
 ## Ciclo atual
 
-Ciclo 1.1.0 — Conversão pública + hardening incremental + validação operacional final.
+Ciclo 1.2.1 - Hardening residual + observabilidade first-party + governanca operacional.
 
 ---
 
-## Status das etapas de execução
+## Historico consolidado (legado)
 
-## Etapa 1 — Quick wins de conversão e confiança
-- [x] Header/footer com reforço de acesso e confiança institucional
+### Ciclo 1.1.0 - Conversao publica + hardening incremental + validacao operacional final.
+
+## Etapa 1 - Quick wins de conversao e confianca
+- [x] Header/footer com reforco de acesso e confianca institucional
 - [x] WhatsApp oficial ajustado para checkpoint antigo (`5513996270950`)
-- [x] Central do Cliente e 2ª via tratadas como "Em breve"/preparação
-- [x] Sem mudança em auth/admin/API sensível
+- [x] Central do Cliente e 2a via tratadas como "Em breve"/preparacao
+- [x] Sem mudanca em auth/admin/API sensivel
 
-## Etapa 2 — Cobertura mais crível e mais segura
-- [x] Página `/cobertura` resiliente à falha de leitura do banco
-- [x] Fallback comercial para estados sem áreas publicadas
-- [x] Mensagens sem reflexão insegura de input
+## Etapa 2 - Cobertura mais crivel e mais segura
+- [x] Pagina `/cobertura` resiliente a falha de leitura do banco
+- [x] Fallback comercial para estados sem areas publicadas
+- [x] Mensagens sem reflexao insegura de input
 - [x] Contrato de `POST /api/coverage-check` preservado
 
-## Etapa 3 — Login admin com recuperação integrada
+## Etapa 3 - Login admin com recuperacao integrada
 - [x] Link "Esqueceu sua senha?" no login admin
-- [x] UX de recuperação/reset integrada ao fluxo existente
-- [x] Validação client-side de senha alinhada ao contrato server-side
+- [x] UX de recuperacao/reset integrada ao fluxo existente
+- [x] Validacao client-side de senha alinhada ao contrato server-side
 - [x] Respostas neutras e seguras mantidas no request de recovery
 
-## Etapa 4 — Estrutura futura da área do cliente
+## Etapa 4 - Estrutura futura da area do cliente
 - [x] Placeholder seguro criado em `/cliente/login`
-- [x] Separação explícita entre superfícies cliente e admin
-- [x] Sem reutilização insegura de sessão/role admin
+- [x] Separacao explicita entre superficies cliente e admin
+- [x] Sem reutilizacao insegura de sessao/role admin
 
-## Etapa 5 — Rodapé institucional
-- [x] Rodapé reforçado com links institucionais e presença operacional
-- [x] Central do Cliente apontando para rota pública de preparação
-- [x] Sem criação de informação jurídica/regulatória inventada
+## Etapa 5 - Rodape institucional
+- [x] Rodape reforcado com links institucionais e presenca operacional
+- [x] Central do Cliente apontando para rota publica de preparacao
+- [x] Sem criacao de informacao juridica/regulatoria inventada
 
-## Etapa 6 — Hardening de superfície pública
-- [x] Parser único de JSON com limite real de payload em APIs públicas críticas
-- [x] Validação estrita e rejeição de campos inesperados
-- [x] Headers de segurança + `X-Correlation-Id` nas respostas hardenizadas
-- [x] Sanitização de saída textual pública (ex.: `notes` de cobertura)
+## Etapa 6 - Hardening de superficie publica
+- [x] Parser unico de JSON com limite real de payload em APIs publicas criticas
+- [x] Validacao estrita e rejeicao de campos inesperados
+- [x] Headers de seguranca + `X-Correlation-Id` nas respostas hardenizadas
+- [x] Sanitizacao de saida textual publica (ex.: `notes` de cobertura)
 
-## Etapa 7 — Medição de conversão first-party
+## Etapa 7 - Medicao de conversao first-party
 - [x] Endpoint `POST /api/events` com allowlist e rate limit
-- [x] Instrumentação de eventos públicos sem PII
-- [x] Logs estruturados com metadados mínimos seguros
+- [x] Instrumentacao de eventos publicos sem PII
+- [x] Logs estruturados com metadados minimos seguros
 
-## Etapa 8 — Pente-fino final de prontidão
+## Etapa 8 - Pente-fino final de prontidao
 - [x] build/start e smoke checks executados no ciclo
-- [x] revisão final de links, fluxos críticos e segurança básica
-- [x] ausência de `dangerouslySetInnerHTML` no escopo revisado
+- [x] revisao final de links, fluxos criticos e seguranca basica
+- [x] ausencia de `dangerouslySetInnerHTML` no escopo revisado
 
-## Hotfix pós-etapas — loop de redirecionamento admin
+## Hotfix pos-etapas - loop de redirecionamento admin
 - [x] causa raiz identificada no gate de token do `proxy.ts`
-- [x] ajuste aplicado removendo forçamento de `secureCookie`
+- [x] ajuste aplicado removendo forcemento de `secureCookie`
 - [x] comportamento esperado restabelecido para ambiente local
 
----
-
-## Próximas tarefas objetivas (deploy e verificação)
-
-1. preparar commit final da baseline 1.1.0 (código + docs);
-2. validar novamente login admin end-to-end em ambiente de release;
-3. executar deploy monitorado e checar rotas críticas pós-deploy;
-4. abrir ciclo de observabilidade e hardening residual (CSP global/rate limit distribuído).
-
----
-
-## Regra de execução
-
-Nenhuma tarefa futura deve:
-- quebrar login/admin e proteção de rotas;
-- alterar schema sem decisão explícita e checkpoint;
-- expandir escopo além do ciclo definido;
-- reduzir controles de validação, rate limit ou tratamento seguro de erro.
 ---
 
 ## Ciclo 1.2 - Etapa 2 (rate limit distribuido)
@@ -121,6 +105,14 @@ Nenhuma tarefa futura deve:
 - [x] Contrato interno admin de observabilidade documentado em `docs/API_CONTRACTS.md`
 - [x] Checkpoint completo de fechamento 1.2.0 criado em `docs/checkpoints/2026-04-03-v1-2-0-hardening-observabilidade-ci/`
 
+## Ciclo 1.2 - Etapa 6.1 (operacao remota de CI e checks)
+
+- [x] Correcao de secrets de auth no workflow (`NEXTAUTH_SECRET`/`AUTH_SECRET`) sem alterar contrato de API
+- [x] Correcao de dependencia de build com `DATABASE_URL` no CI gate e no e2e workflow
+- [x] Atualizacao de actions para `actions/checkout@v5` e `actions/setup-node@v5`
+- [x] Checks remotos normalizados apos configuracao de segredos obrigatorios no repositorio
+- [x] Evidencias operacionais registradas no PR de fechamento do ciclo
+
 ## Ciclo 1.2 - Etapa 7 (calibracao operacional de alertas)
 
 - [x] Janela de alerta configuravel por ambiente (`OBS_ALERT_WINDOW_MINUTES`)
@@ -129,3 +121,22 @@ Nenhuma tarefa futura deve:
 - [x] Endpoint admin com metadados de calibracao e saude de alertas
 - [x] Dashboard admin com visao de saude de alertas e thresholds ativos
 - [x] Runbook operacional curto registrado em checkpoint datado
+
+---
+
+## Proximas tarefas objetivas
+
+1. [x] Executar E2E Playwright manual no PR de fechamento e anexar evidencia final.
+   Evidencia: execucao manual concluida em 2026-04-04T09:44:35-03:00 no commit `25365bd8f306c32efe9bf635e624977c262e03d3` com `npm run e2e` -> `1 passed` (`tests/e2e/home.spec.ts`).
+2. Monitorar calibracao de alertas em staging por 24h e ajustar thresholds se necessario.
+3. Iniciar proxima etapa de produto com base no runbook e sinais reais de observabilidade.
+
+---
+
+## Regra de execucao
+
+Nenhuma tarefa futura deve:
+- quebrar login/admin e protecao de rotas;
+- alterar schema sem decisao explicita e checkpoint;
+- expandir escopo alem do ciclo definido;
+- reduzir controles de validacao, rate limit ou tratamento seguro de erro.
