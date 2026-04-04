@@ -22,6 +22,7 @@ Esta versao consolida o fechamento das etapas 2, 3, 4, 5 e 7 do ciclo 1.2:
 - observabilidade first-party em `AuditLog`, dashboard admin e alerta por webhook;
 - pipeline CI minimo em PR (`test + build`) e e2e separado manual/scheduled.
 - calibracao de alertas com severidade (`warning`/`critical`), janela configuravel e anti-ruido.
+- fechamento oficial da Etapa 4 Visual Publica com padrao premium escuro transluzido consolidado.
 
 ---
 
@@ -38,6 +39,7 @@ Consolidado em 1.2.1:
 - painel admin com metadados de calibracao e saude de alertas;
 - governanca de entrega com workflows GitHub Actions para gate e e2e controlado.
 - separacao de incidentes de auth admin vs APIs publicas no painel de observabilidade (campos aditivos no resumo, sem quebra de contrato interno).
+- consistencia visual publica consolidada entre home e componentes base (cards/transparencia/contraste) sem alterar comportamento funcional.
 
 Sem mudanca estrutural:
 - sem alteracao de schema Prisma;
@@ -66,6 +68,27 @@ Sem mudanca estrutural:
 - checkpoint detalhado:
   - `docs/checkpoints/2026-04-03-v1-2-0-hardening-observabilidade-ci/`
   - `docs/checkpoints/2026-04-03-v1-2-1-calibracao-alertas/`
+  - `docs/checkpoints/2026-04-04-v1-2-1-etapa-4-polimento-visual-publico/`
+
+---
+
+## Fechamento operacional da Etapa 4 Visual Publica (2026-04-04)
+
+Escopo aplicado:
+- consolidacao de estados visuais globais em `app/globals.css` para `public-card`/`public-card-strong`;
+- calibracao de contraste secundario em contexto publico (`.public-shell .text-secondary` e `.text-muted`);
+- normalizacao de bloco visual de status na home para o padrao translucido compartilhado.
+
+Evidencias auditaveis:
+- janela de fechamento: 2026-04-04T13:07:18-03:00 (America/Sao_Paulo);
+- validacao tecnica: `npm run build` aprovado;
+- validacao tecnica: `npm test` aprovado (27/27).
+
+Garantias de compatibilidade:
+- sem mudanca em API publica/interna;
+- sem mudanca de schema Prisma/migration;
+- sem mudanca de auth/session/rotas;
+- sem alteracao de fluxo funcional de formularios.
 
 ---
 

@@ -330,6 +330,11 @@ html {
   border: 1px solid rgba(186, 224, 255, 0.28);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  transition:
+    border-color 180ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease,
+    transform 220ms ease;
 }
 
 .public-card-strong {
@@ -341,6 +346,11 @@ html {
   border: 1px solid rgba(186, 224, 255, 0.32);
   backdrop-filter: blur(11px);
   -webkit-backdrop-filter: blur(11px);
+  transition:
+    border-color 180ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease,
+    transform 220ms ease;
 }
 
 .public-card::before,
@@ -385,6 +395,28 @@ html {
   background: rgba(14, 28, 48, 0.58);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+.public-card:hover,
+.public-card-strong:hover {
+  border-color: rgba(186, 224, 255, 0.4);
+  box-shadow: 0 24px 56px rgba(2, 6, 23, 0.32);
+}
+
+.public-card:focus-within,
+.public-card-strong:focus-within {
+  border-color: rgba(125, 211, 252, 0.52);
+  box-shadow:
+    0 24px 56px rgba(2, 6, 23, 0.34),
+    0 0 0 1px rgba(125, 211, 252, 0.24);
+}
+
+.public-shell .text-secondary {
+  color: #c7d8ec;
+}
+
+.public-shell .text-muted {
+  color: #9bb3cf;
 }
 
 .hero-fiber-bg {

@@ -122,6 +122,14 @@ Ciclo 1.2.1 - Hardening residual + observabilidade first-party + governanca oper
 - [x] Dashboard admin com visao de saude de alertas e thresholds ativos
 - [x] Runbook operacional curto registrado em checkpoint datado
 
+## Ciclo 1.2.1 - Etapa 4 Visual Publica (polimento final)
+
+- [x] Padrao visual publico consolidado em `app/globals.css` com estados consistentes de `public-card`/`public-card-strong` (hover/focus/borda/sombra/transicao)
+- [x] Contraste tipografico secundario calibrado em contexto publico (`.public-shell .text-secondary/.text-muted`)
+- [x] Bloco de status da home normalizado para o padrao `public-card` em `app/(public)/page.tsx`
+- [x] Validacao tecnica de nao regressao executada no fechamento (`npm run build` + `npm test`)
+- [x] Evidencia documental registrada em `docs/PROJECT_STATE.md` e checkpoint datado de fechamento visual
+
 ---
 
 ## Proximas tarefas objetivas
@@ -130,7 +138,7 @@ Ciclo 1.2.1 - Hardening residual + observabilidade first-party + governanca oper
    Evidencia: execucao manual concluida em 2026-04-04T09:44:35-03:00 no commit `25365bd8f306c32efe9bf635e624977c262e03d3` com `npm run e2e` -> `1 passed` (`tests/e2e/home.spec.ts`).
 2. [x] Monitorar calibracao de alertas em staging por 24h e ajustar thresholds se necessario.
    Evidencia: janela operacional completa de 24h (2026-04-03T12:52:00Z -> 2026-04-04T12:52:00Z) via runtime logs Vercel (`preview` + `production`), sem ocorrencias de `PUBLIC_API_RATE_LIMITED`/`PUBLIC_API_ERROR`; calibracao mantida sem ajuste de thresholds/cooldown.
-3. Iniciar proxima etapa de produto com base no runbook e sinais reais de observabilidade.
+3. [ ] Iniciar proxima etapa de produto com base no runbook e sinais reais de observabilidade (apos fechamento oficial da Etapa 4 visual publica).
 
 ---
 

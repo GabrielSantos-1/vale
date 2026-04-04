@@ -209,7 +209,7 @@ export default async function Home() {
               return (
                 <div
                   key={item.id}
-                  className="rounded-[24px] border border-border bg-surface p-5 shadow-soft sm:p-6"
+                  className="public-card rounded-[24px] border border-cyan-100/16 p-5 shadow-soft sm:p-6"
                 >
                   <div className="flex items-start gap-3">
                     <span
