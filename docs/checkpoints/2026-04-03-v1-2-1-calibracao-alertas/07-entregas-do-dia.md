@@ -35,6 +35,9 @@ Hoje foi consolidado o fechamento do ciclo 1.2 com estabilizacao operacional em 
 - `npm test` aprovado;
 - `npm run build` aprovado;
 - `npm run e2e` (manual) aprovado em 2026-04-04T09:44:35-03:00 no commit `25365bd8f306c32efe9bf635e624977c262e03d3` com `1 passed` em `tests/e2e/home.spec.ts`;
+- monitoramento de alertas por 24h concluido no Vercel (janela UTC: 2026-04-03T12:52:00Z -> 2026-04-04T12:52:00Z);
+- ausencia de ocorrencias `PUBLIC_API_RATE_LIMITED` e `PUBLIC_API_ERROR` no periodo monitorado;
+- calibracao mantida sem ajuste de thresholds/cooldown.
 - checks remotos de PR normalizados apos configuracao de segredos obrigatorios;
 - contratos publicos preservados, sem migration Prisma.
 

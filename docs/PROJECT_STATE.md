@@ -84,11 +84,13 @@ Sem mudanca estrutural:
 - `npm run build` (local) aprovado apos ajustes de CI/observabilidade;
 - `npm run e2e` (manual) aprovado em 2026-04-04T09:44:35-03:00 no commit `25365bd8f306c32efe9bf635e624977c262e03d3` (`tests/e2e/home.spec.ts`: `1 passed`);
 - checks remotos de PR normalizados apos configuracao de segredos obrigatorios (`NEXTAUTH_SECRET`, `DATABASE_URL`).
+- monitoramento operacional de alertas por 24h concluido (2026-04-03T12:52:00Z -> 2026-04-04T12:52:00Z) no projeto Vercel `vale`.
 
 ### Resultado operacional
 - baseline 1.2.1 consistente para continuidade;
 - contratos publicos preservados;
-- governanca de entrega e observabilidade calibrada para rollout staging/prod.
+- governanca de entrega e observabilidade calibrada para rollout staging/prod;
+- calibracao mantida sem ajuste de thresholds/cooldown apos janela de monitoramento (ausencia de eventos `PUBLIC_API_RATE_LIMITED` e `PUBLIC_API_ERROR` no periodo).
 
 ---
 

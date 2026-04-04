@@ -128,7 +128,8 @@ Ciclo 1.2.1 - Hardening residual + observabilidade first-party + governanca oper
 
 1. [x] Executar E2E Playwright manual no PR de fechamento e anexar evidencia final.
    Evidencia: execucao manual concluida em 2026-04-04T09:44:35-03:00 no commit `25365bd8f306c32efe9bf635e624977c262e03d3` com `npm run e2e` -> `1 passed` (`tests/e2e/home.spec.ts`).
-2. Monitorar calibracao de alertas em staging por 24h e ajustar thresholds se necessario.
+2. [x] Monitorar calibracao de alertas em staging por 24h e ajustar thresholds se necessario.
+   Evidencia: janela operacional completa de 24h (2026-04-03T12:52:00Z -> 2026-04-04T12:52:00Z) via runtime logs Vercel (`preview` + `production`), sem ocorrencias de `PUBLIC_API_RATE_LIMITED`/`PUBLIC_API_ERROR`; calibracao mantida sem ajuste de thresholds/cooldown.
 3. Iniciar proxima etapa de produto com base no runbook e sinais reais de observabilidade.
 
 ---
