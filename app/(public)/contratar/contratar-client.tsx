@@ -75,6 +75,9 @@ const conversionHighlights = [
   },
 ] as const;
 
+const CONTRACT_CARD_CLASS =
+  "public-card rounded-[28px] border-white/20 bg-surface/55 backdrop-blur-md";
+
 export default function ContratarClient({ plano, plans }: Props) {
   const [form, setForm] = useState<LeadForm>(initialForm);
   const [errors, setErrors] = useState<LeadFormErrors>({});
@@ -361,7 +364,7 @@ export default function ContratarClient({ plano, plans }: Props) {
             {conversionHighlights.map((item) => (
               <Card
                 key={item.label}
-                className="rounded-[24px] border-border bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)]"
+                className="public-card rounded-[24px] border-white/20 bg-surface/55 backdrop-blur-md"
               >
                 <CardContent className="p-5 sm:p-6">
                   <div className="space-y-2">
@@ -391,7 +394,7 @@ export default function ContratarClient({ plano, plans }: Props) {
             id="formulario-solicitacao"
             className="scroll-mt-24"
           >
-            <Card className="rounded-[28px] border-border">
+            <Card className={CONTRACT_CARD_CLASS}>
             <CardHeader className="space-y-3">
               <CardTitle className="text-xl">Solicitação comercial</CardTitle>
               <p className="text-sm leading-6 text-secondary">
@@ -402,11 +405,11 @@ export default function ContratarClient({ plano, plans }: Props) {
 
             <CardContent>
               {selectedPlan ? (
-                <div className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-700">
+                <div className="mb-5 rounded-2xl border border-emerald-300/40 bg-emerald-500/14 px-4 py-4 text-sm text-emerald-100 backdrop-blur-sm">
                   Plano selecionado: <strong>{selectedPlan.name}</strong>
                 </div>
               ) : (
-                <div className="mb-5 rounded-2xl border border-border bg-surface-secondary/70 px-4 py-4 text-sm text-secondary">
+                <div className="mb-5 rounded-2xl border border-white/15 bg-surface/45 px-4 py-4 text-sm text-secondary backdrop-blur-sm">
                   Você pode enviar a solicitação sem plano definido, mas selecionar
                   uma opção ajuda a equipe comercial a responder com mais precisão.
                 </div>
@@ -550,7 +553,7 @@ export default function ContratarClient({ plano, plans }: Props) {
                   />
                 </FormField>
 
-                <div className="rounded-2xl border border-border bg-surface-secondary/70 p-4">
+                <div className="rounded-2xl border border-white/15 bg-surface/45 p-4 backdrop-blur-sm">
                   <p className="text-sm font-medium text-primary">
                     Antes de enviar
                   </p>
@@ -562,7 +565,7 @@ export default function ContratarClient({ plano, plans }: Props) {
 
                 {error ? (
                   <div
-                    className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                    className="rounded-2xl border border-red-300/40 bg-red-500/14 px-4 py-3 text-sm text-red-100 backdrop-blur-sm"
                     role="alert"
                   >
                     {error}
@@ -571,7 +574,7 @@ export default function ContratarClient({ plano, plans }: Props) {
 
                 {success ? (
                   <div
-                    className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
+                    className="rounded-2xl border border-emerald-300/40 bg-emerald-500/14 px-4 py-3 text-sm text-emerald-100 backdrop-blur-sm"
                     role="status"
                   >
                     {success}
@@ -622,13 +625,13 @@ export default function ContratarClient({ plano, plans }: Props) {
           </div>
 
           <aside className="space-y-6">
-            <Card className="rounded-[28px] border-border">
+            <Card className={CONTRACT_CARD_CLASS}>
               <CardHeader className="space-y-3">
                 <CardTitle className="text-lg">Resumo da solicitação</CardTitle>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <div className="rounded-2xl border border-border bg-surface-secondary/70 p-4">
+                <div className="rounded-2xl border border-white/15 bg-surface/45 p-4 backdrop-blur-sm">
                   <p className="text-sm font-medium text-primary">
                     Plano selecionado
                   </p>
@@ -645,7 +648,7 @@ export default function ContratarClient({ plano, plans }: Props) {
               </CardContent>
             </Card>
 
-            <Card className="rounded-[28px] border-border">
+            <Card className={CONTRACT_CARD_CLASS}>
               <CardHeader className="space-y-3">
                 <CardTitle className="text-lg">Antes de contratar</CardTitle>
               </CardHeader>
@@ -672,4 +675,3 @@ export default function ContratarClient({ plano, plans }: Props) {
     </Container>
   );
 }
-

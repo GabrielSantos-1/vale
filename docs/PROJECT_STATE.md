@@ -8,7 +8,7 @@ Registrar o estado tecnico oficial do projeto **Verde Vale Connect** para contin
 
 ## Data de referencia
 
-2026-04-04
+2026-04-05
 
 ---
 
@@ -24,6 +24,7 @@ Esta versao consolida o fechamento das etapas 2, 3, 4, 5 e 7 do ciclo 1.2:
 - calibracao de alertas com severidade (`warning`/`critical`), janela configuravel e anti-ruido.
 - fechamento oficial da Etapa 4 Visual Publica com padrao premium escuro transluzido consolidado.
 - inicio da Etapa de produto 1.2.2 com foco em fluxos publicos criticos guiados por observabilidade.
+- hotfix de tipagem em telemetria de cobertura para restabelecer `build`/`start` em ambiente local sem alterar contratos ou comportamento.
 
 ---
 
@@ -97,6 +98,27 @@ Compatibilidade preservada:
 - sem alteracao de contratos de API publica;
 - sem alteracao de auth/session, schema Prisma, migrations ou rotas;
 - sem mudanca de logica de negocio em formularios e handlers.
+
+---
+
+## Ajuste tecnico de continuidade (2026-04-05)
+
+Contexto:
+- `npm run start` estava bloqueado por ausencia de `.next`, causada por falha de tipagem no `next build` em `app/(public)/cobertura/cobertura-client.tsx`.
+
+Correcao aplicada:
+- assinatura de `buildTrackingPayload` alinhada ao tipo permitido de status (`PublicEventStatus`);
+- retorno tipado explicitamente para o payload aceito por `trackPublicEvent`.
+
+Validacao:
+- `npm run build` aprovado;
+- `npm test` aprovado;
+- `npm run start` validado com resposta HTTP `200` em smoke local.
+
+Garantias:
+- sem alteracao de contratos/public API;
+- sem alteracao de backend, auth, schema Prisma ou rotas;
+- sem mudanca de comportamento funcional de telemetria/CTAs.
 
 ---
 

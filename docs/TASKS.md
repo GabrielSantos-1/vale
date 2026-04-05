@@ -8,7 +8,7 @@ Registrar status de execucao por ciclo e proximas tarefas objetivas do projeto.
 
 ## Data de referencia
 
-2026-04-04
+2026-04-05
 
 ---
 
@@ -138,6 +138,7 @@ Ciclo 1.2.1 - Hardening residual + observabilidade first-party + governanca oper
 - [x] Telemetria de submissao em contato reforcada com status `submitted` (alem de `success`/`error`)
 - [x] Validacao tecnica da etapa executada (`npm run build` + `npm test`)
 - [x] Baseline T0 e metas operacionais registradas em `docs/PROJECT_STATE.md` e checkpoint datado da etapa
+- [x] Hotfix de tipagem em telemetria de cobertura aplicado para restaurar `npm run build` e desbloquear `npm run start` sem mudanca funcional
 
 ---
 

@@ -3,18 +3,22 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Container } from "@/components/ui/core/container";
+import { Hero } from "@/components/marketing/hero";
+import { StatusBanner } from "@/components/marketing/status-banner";
+import { Button } from "@/components/ui/core/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/core/card";
-import { Button } from "@/components/ui/core/button";
+import { Container } from "@/components/ui/core/container";
 import { Input } from "@/components/ui/forms/input";
 import { Label } from "@/components/ui/forms/label";
-import { StatusBanner } from "@/components/marketing/status-banner";
-import { trackPublicEvent } from "@/lib/telemetry/public-events";
+import {
+  trackPublicEvent,
+  type PublicEventStatus,
+} from "@/lib/telemetry/public-events";
 import { extractApiErrorMessage } from "@/lib/utils/api-error-message";
 
 type CoverageArea = {
@@ -37,12 +41,6 @@ type CoverageForm = {
   district: string;
 };
 
-const initialForm: CoverageForm = {
-  cep: "",
-  city: "",
-  district: "",
-};
-
 type CoverageResponse =
   | {
       success: true;
@@ -56,8 +54,50 @@ type CoverageResponse =
       error: string | { message?: string }[];
     };
 
+const INITIAL_FORM: CoverageForm = {
+  cep: "",
+  city: "",
+  district: "",
+};
+
+const PUBLIC_CARD_CLASS =
+  "public-card rounded-[28px] border border-white/10 backdrop-blur-md";
+
+const SUBTLE_PANEL_CLASS =
+  "rounded-2xl border border-white/10 bg-surface/60 p-4 backdrop-blur-md";
+
+const INFO_STAT_CARD_CLASS =
+  "public-card rounded-[24px] border border-white/10";
+
+const AREA_ITEM_CLASS =
+  "rounded-2xl border border-white/10 bg-surface/60 p-4 backdrop-blur-md";
+
+function buildTrackingPayload(
+  component: string,
+  target: string,
+  status: PublicEventStatus = "click"
+): Parameters<typeof trackPublicEvent>[0] {
+  return {
+    eventName: "cta_click" as const,
+    page: "/cobertura",
+    component,
+    target,
+    status,
+  };
+}
+
+function formatCep(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+
+  if (!digits) return "";
+
+  return digits.length > 5
+    ? `${digits.slice(0, 5)}-${digits.slice(5)}`
+    : digits;
+}
+
 export default function CoberturaClient({ areas }: Props) {
-  const [form, setForm] = useState<CoverageForm>(initialForm);
+  const [form, setForm] = useState<CoverageForm>(INITIAL_FORM);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{
@@ -117,17 +157,7 @@ export default function CoberturaClient({ areas }: Props) {
   }
 
   function handleCepChange(value: string) {
-    const digits = value.replace(/\D/g, "").slice(0, 8);
-
-    if (!digits) {
-      updateField("cep", "");
-      return;
-    }
-
-    const formatted =
-      digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
-
-    updateField("cep", formatted);
+    updateField("cep", formatCep(value));
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -136,6 +166,7 @@ export default function CoberturaClient({ areas }: Props) {
     setLoading(true);
     setError(null);
     setResult(null);
+
     trackPublicEvent({
       eventName: "coverage_check_submitted",
       page: "/cobertura",
@@ -170,6 +201,7 @@ export default function CoberturaClient({ areas }: Props) {
       }
 
       setResult(data.data);
+
       trackPublicEvent({
         eventName: "coverage_check_result",
         page: "/cobertura",
@@ -185,6 +217,7 @@ export default function CoberturaClient({ areas }: Props) {
         target: "coverage_check",
         status: "error",
       });
+
       setError(
         err instanceof Error ? err.message : "Erro ao consultar cobertura."
       );
@@ -194,7 +227,7 @@ export default function CoberturaClient({ areas }: Props) {
   }
 
   function handleClearForm() {
-    setForm(initialForm);
+    setForm(INITIAL_FORM);
     setError(null);
     setResult(null);
   }
@@ -222,7 +255,7 @@ export default function CoberturaClient({ areas }: Props) {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <Card className="public-card rounded-[24px] border-cyan-100/16">
+            <Card className={INFO_STAT_CARD_CLASS}>
               <CardContent className="p-5 sm:p-6">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-slate-300">
@@ -238,7 +271,7 @@ export default function CoberturaClient({ areas }: Props) {
               </CardContent>
             </Card>
 
-            <Card className="public-card rounded-[24px] border-cyan-100/16">
+            <Card className={INFO_STAT_CARD_CLASS}>
               <CardContent className="p-5 sm:p-6">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-slate-300">
@@ -255,7 +288,7 @@ export default function CoberturaClient({ areas }: Props) {
               </CardContent>
             </Card>
 
-            <Card className="public-card rounded-[24px] border-cyan-100/16 sm:col-span-2 xl:col-span-1">
+            <Card className={`${INFO_STAT_CARD_CLASS} sm:col-span-2 xl:col-span-1`}>
               <CardContent className="p-5 sm:p-6">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-slate-300">
@@ -286,7 +319,7 @@ export default function CoberturaClient({ areas }: Props) {
             id="consulta-cobertura"
             className="scroll-mt-24"
           >
-            <Card className="public-card rounded-[28px] border-cyan-100/16">
+            <Card className={PUBLIC_CARD_CLASS}>
               <CardHeader className="space-y-3">
                 <CardTitle className="text-xl">Consultar cobertura</CardTitle>
                 <p className="text-sm leading-6 text-secondary">
@@ -348,7 +381,7 @@ export default function CoberturaClient({ areas }: Props) {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 p-4 backdrop-blur-sm">
+                  <div className={SUBTLE_PANEL_CLASS}>
                     <p className="text-sm font-medium text-primary">
                       Como consultar disponibilidade
                     </p>
@@ -394,13 +427,12 @@ export default function CoberturaClient({ areas }: Props) {
                               <Link
                                 href="/contratar#formulario-solicitacao"
                                 onClick={() =>
-                                  trackPublicEvent({
-                                    eventName: "cta_click",
-                                    page: "/cobertura",
-                                    component: "coverage_result",
-                                    target: "/contratar#formulario-solicitacao",
-                                    status: "click",
-                                  })
+                                  trackPublicEvent(
+                                    buildTrackingPayload(
+                                      "coverage_result",
+                                      "/contratar#formulario-solicitacao"
+                                    )
+                                  )
                                 }
                               >
                                 Ver disponibilidade
@@ -415,13 +447,12 @@ export default function CoberturaClient({ areas }: Props) {
                               <Link
                                 href="/contato#formulario-contato"
                                 onClick={() =>
-                                  trackPublicEvent({
-                                    eventName: "cta_click",
-                                    page: "/cobertura",
-                                    component: "coverage_result",
-                                    target: "/contato#formulario-contato",
-                                    status: "click",
-                                  })
+                                  trackPublicEvent(
+                                    buildTrackingPayload(
+                                      "coverage_result",
+                                      "/contato#formulario-contato"
+                                    )
+                                  )
                                 }
                               >
                                 Solicitar atendimento
@@ -438,13 +469,12 @@ export default function CoberturaClient({ areas }: Props) {
                               <Link
                                 href="/contato#formulario-contato"
                                 onClick={() =>
-                                  trackPublicEvent({
-                                    eventName: "cta_click",
-                                    page: "/cobertura",
-                                    component: "coverage_result",
-                                    target: "/contato#formulario-contato",
-                                    status: "click",
-                                  })
+                                  trackPublicEvent(
+                                    buildTrackingPayload(
+                                      "coverage_result",
+                                      "/contato#formulario-contato"
+                                    )
+                                  )
                                 }
                               >
                                 Solicitar atendimento
@@ -459,13 +489,12 @@ export default function CoberturaClient({ areas }: Props) {
                               <Link
                                 href="/contratar#formulario-solicitacao"
                                 onClick={() =>
-                                  trackPublicEvent({
-                                    eventName: "cta_click",
-                                    page: "/cobertura",
-                                    component: "coverage_result",
-                                    target: "/contratar#formulario-solicitacao",
-                                    status: "click",
-                                  })
+                                  trackPublicEvent(
+                                    buildTrackingPayload(
+                                      "coverage_result",
+                                      "/contratar#formulario-solicitacao"
+                                    )
+                                  )
                                 }
                               >
                                 Solicitar atendimento
@@ -504,13 +533,13 @@ export default function CoberturaClient({ areas }: Props) {
           </div>
 
           <aside className="xl:sticky xl:top-24">
-            <Card className="public-card rounded-[28px] border-cyan-100/16">
+            <Card className={PUBLIC_CARD_CLASS}>
               <CardHeader className="space-y-3">
                 <CardTitle className="text-lg">Resumo</CardTitle>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <div className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 p-4 backdrop-blur-sm">
+                <div className={SUBTLE_PANEL_CLASS}>
                   <p className="text-sm font-medium text-primary">
                     Total de áreas disponíveis
                   </p>
@@ -535,13 +564,12 @@ export default function CoberturaClient({ areas }: Props) {
                     <Link
                       href="/contratar#formulario-solicitacao"
                       onClick={() =>
-                        trackPublicEvent({
-                          eventName: "cta_click",
-                          page: "/cobertura",
-                          component: "coverage_sidebar",
-                          target: "/contratar#formulario-solicitacao",
-                          status: "click",
-                        })
+                        trackPublicEvent(
+                          buildTrackingPayload(
+                            "coverage_sidebar",
+                            "/contratar#formulario-solicitacao"
+                          )
+                        )
                       }
                     >
                       Contratar agora
@@ -552,13 +580,12 @@ export default function CoberturaClient({ areas }: Props) {
                     <Link
                       href="/contato#formulario-contato"
                       onClick={() =>
-                        trackPublicEvent({
-                          eventName: "cta_click",
-                          page: "/cobertura",
-                          component: "coverage_sidebar",
-                          target: "/contato#formulario-contato",
-                          status: "click",
-                        })
+                        trackPublicEvent(
+                          buildTrackingPayload(
+                            "coverage_sidebar",
+                            "/contato#formulario-contato"
+                          )
+                        )
                       }
                     >
                       Solicitar atendimento
@@ -583,45 +610,46 @@ export default function CoberturaClient({ areas }: Props) {
             </p>
           </div>
 
-          <Card className="public-card rounded-[28px] border-cyan-100/16">
+          <Card className={PUBLIC_CARD_CLASS}>
             <CardContent className="p-5 sm:p-6">
               {areas.length === 0 ? (
-                <div className="space-y-4 rounded-2xl border border-cyan-100/20 bg-slate-950/14 px-4 py-4 text-sm text-slate-200/90 backdrop-blur-sm">
+                <div className={`${SUBTLE_PANEL_CLASS} space-y-4 text-sm text-slate-200/90`}>
                   <p className="font-medium text-primary">
                     Estamos expandindo a cobertura para novas regiões.
                   </p>
                   <p>
-                    A lista pública de áreas será atualizada continuamente. Enquanto isso, use a
-                    consulta acima e fale com nosso atendimento para confirmar disponibilidade.
+                    A lista pública de áreas será atualizada continuamente.
+                    Enquanto isso, use a consulta acima e fale com nosso
+                    atendimento para confirmar disponibilidade.
                   </p>
+
                   <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <Button asChild variant="secondary" className="w-full sm:w-auto">
                       <Link
                         href="/contato#formulario-contato"
                         onClick={() =>
-                          trackPublicEvent({
-                            eventName: "cta_click",
-                            page: "/cobertura",
-                            component: "coverage_list_empty",
-                            target: "/contato#formulario-contato",
-                            status: "click",
-                          })
+                          trackPublicEvent(
+                            buildTrackingPayload(
+                              "coverage_list_empty",
+                              "/contato#formulario-contato"
+                            )
+                          )
                         }
                       >
                         Solicitar atendimento
                       </Link>
                     </Button>
+
                     <Button asChild variant="outline" className="w-full sm:w-auto">
                       <Link
                         href="/contratar#formulario-solicitacao"
                         onClick={() =>
-                          trackPublicEvent({
-                            eventName: "cta_click",
-                            page: "/cobertura",
-                            component: "coverage_list_empty",
-                            target: "/contratar#formulario-solicitacao",
-                            status: "click",
-                          })
+                          trackPublicEvent(
+                            buildTrackingPayload(
+                              "coverage_list_empty",
+                              "/contratar#formulario-solicitacao"
+                            )
+                          )
                         }
                       >
                         Solicitar prioridade
@@ -632,10 +660,7 @@ export default function CoberturaClient({ areas }: Props) {
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                   {areas.map((area) => (
-                    <article
-                      key={area.id}
-                      className="rounded-2xl border border-cyan-100/20 bg-slate-950/14 p-4 backdrop-blur-sm"
-                    >
+                    <article key={area.id} className={AREA_ITEM_CLASS}>
                       <h3 className="text-base font-semibold leading-6 text-primary">
                         {area.city} - {area.district}
                       </h3>
