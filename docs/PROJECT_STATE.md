@@ -14,6 +14,47 @@ Registrar o estado tecnico oficial do projeto **Verde Vale Connect** para contin
 
 ## Release documental
 
+### Versao: 1.3.0 (Central do Cliente — auth, login, registro, dashboard)
+
+Versao que introduz a Central do Cliente com autenticacao propria, mantendo separacao total da superficie administrativa.
+
+- modelo `ClientUser` no schema Prisma (sem alterar modelos existentes);
+- login via `POST /api/client/auth/login` com rate limit e JWT dedicado;
+- registro via `POST /api/client/register` com validacao e rate limit;
+- logout via `POST /api/client/logout` com invalidacao de cookie;
+- dashboard em `/cliente/dashboard` protegido pelo proxy existente;
+- cookie de sessao propio (`client-next-auth.session-token`);
+- proxy.ts atualizado para proteger `/cliente/dashboard` sem alterar protecao admin;
+- sem alteracao em contratos de API publica, auth admin ou schema existente.
+
+Validacao: `npx tsc --noEmit` passou sem erros.
+
+---
+
+### Versao: 1.3.1 (Central do Cliente - Bloco A: perfil, senha e recuperacao preparatoria)
+
+Evolucao incremental da Central do Cliente sem alterar contratos publicos/admin e sem mudar schema Prisma nesta fase:
+
+- `GET /api/client/me` com sessao obrigatoria e retorno minimizado de perfil;
+- `PATCH /api/client/me` com validacao Zod `.strict()`, parse JSON com limite e rate limit dedicado;
+- `POST /api/client/password/change` com validacao de senha atual e atualizacao de hash bcrypt (salt 12);
+- `POST /api/client/password-recovery/request` e `POST /api/client/password-recovery/reset` em modo preparatorio sem migration (store temporario em memoria);
+- nova pagina `/cliente/perfil` com leitura/edicao de cadastro e secao de seguranca;
+- nova pagina `/cliente/recuperar-senha` com UX de solicitacao e redefinicao por token;
+- gate de rota cliente ampliado no `proxy.ts` para proteger `/cliente/perfil`;
+- dashboard cliente atualizado com CTA de cadastro apontando para `/cliente/perfil`.
+
+Validacao tecnica:
+- `npm run typecheck` aprovado;
+- `npm run lint` aprovado;
+- `npm test` aprovado;
+- `npm run build` aprovado.
+
+Observacao operacional:
+- smoke de runtime para registro/login/senha ficou limitado por indisponibilidade de conectividade com o banco remoto (`aws-1-sa-east-1.pooler.supabase.com:5432`) no ambiente local de execucao atual.
+
+---
+
 ### Versao: 1.2.3 (hardening critico de mutacoes admin)
 
 Esta versao consolida o fechamento das etapas 2, 3, 4, 5 e 7 do ciclo 1.2:
@@ -153,6 +194,21 @@ Garantias:
 - sem alteracao de contratos publicos;
 - sem alteracao de sessao/auth NextAuth;
 - endurecimento restrito a superficie admin e governanca de deploy.
+
+---
+
+## Ajuste operacional local da Central do Cliente (2026-04-06)
+
+Contexto:
+- o fluxo `registro/login` da Central estava bloqueado em runtime local por indisponibilidade de conexao no pooler `:6543` (`Can't reach database server`).
+
+Mitigacao aplicada:
+- `DATABASE_URL` local ajustado para conexao direta em `:5432` (mantido `DIRECT_URL` em `:5432`);
+- sem alteracao de schema Prisma, migrations, contratos de API ou auth/admin.
+
+Validacao operacional:
+- `prisma migrate status` retornou `Database schema is up to date!`;
+- fluxo da Central revalidado com `start` + smoke de `registro/login/dashboard/logout`.
 
 ---
 

@@ -278,3 +278,213 @@ Expor visao operacional de eventos first-party, rate limit e erros publicos para
 ### Erros
 - `401` `UNAUTHORIZED`
 - `500` `INTERNAL_SERVER_ERROR`
+
+---
+
+## Contratos da Central do Cliente (interno)
+
+### `POST /api/client/auth/login`
+
+#### Objetivo
+Autenticar cliente com email e senha, retornando cookie de sessao JWT HttpOnly.
+
+#### Body esperado
+```json
+{
+  "email": "string",
+  "password": "string"
+}
+```
+
+#### Seguranca/validacao
+- rate limit por IP (5 tentativas/min);
+- validacao de formato de email;
+- resposta neutra em falha (sem revelar se email existe);
+- sessao JWT em cookie HttpOnly (`client-next-auth.session-token`);
+- sem stack trace ou erro interno ao cliente.
+
+#### Respostas tipicas
+- `200` sucesso: `{ success: true }`
+- `400` JSON invalido / campos faltando
+- `401` `Credenciais invalidadas.`
+- `429` `RATE_LIMITED`
+
+---
+
+### `POST /api/client/register`
+
+#### Objetivo
+Criar conta de cliente nova no sistema.
+
+#### Body esperado
+```json
+{
+  "name": "string",
+  "email": "string",
+  "phone": "string | optional",
+  "password": "string"
+}
+```
+
+#### Seguranca/validacao
+- rate limit por IP (3 tentativas/min);
+- nome min 2 caracteres, max 120;
+- email valido e unico;
+- senha min 8 caracteres;
+- hash bcrypt com salt 12;
+- sanitizacao de entrada.
+
+#### Respostas tipicas
+- `201` sucesso: `{ success: true }`
+- `409` `Ja existe uma conta com este e-mail.`
+- `422` validacao falhou
+- `429` `RATE_LIMITED`
+- `500` `Nao foi possivel criar a conta.`
+
+---
+
+### `POST /api/client/logout`
+
+#### Objetivo
+Invalidar sessao do cliente (limpar cookies).
+
+#### Respostas tipicas
+- `200` sucesso: `{ success: true }`
+
+---
+
+### `GET /api/client/me`
+
+#### Objetivo
+Retornar dados de perfil do cliente autenticado.
+
+#### Autenticacao
+- sessao de cliente obrigatoria.
+
+#### Resposta de sucesso
+- `200` com `data`:
+  - `name`
+  - `email`
+  - `phone`
+  - `cpfCnpj`
+  - `isActive`
+  - `createdAt`
+
+#### Erros tipicos
+- `401` `UNAUTHORIZED`
+- `404` `NOT_FOUND`
+- `500` `INTERNAL_SERVER_ERROR`
+
+---
+
+### `PATCH /api/client/me`
+
+#### Objetivo
+Atualizar dados cadastrais permitidos da conta autenticada.
+
+#### Body esperado
+```json
+{
+  "name": "string | optional",
+  "phone": "string | optional",
+  "cpfCnpj": "string | optional"
+}
+```
+
+#### Seguranca/validacao
+- sessao de cliente obrigatoria;
+- schema Zod `.strict()` (campos fora da whitelist sao rejeitados);
+- parse JSON com limite de payload;
+- rate limit dedicado.
+
+#### Erros tipicos
+- `400` `INVALID_JSON`
+- `401` `UNAUTHORIZED`
+- `413` `PAYLOAD_TOO_LARGE`
+- `415` `UNSUPPORTED_MEDIA_TYPE`
+- `422` `VALIDATION_ERROR`
+- `429` `RATE_LIMITED`
+- `500` `INTERNAL_SERVER_ERROR`
+
+---
+
+### `POST /api/client/password/change`
+
+#### Objetivo
+Trocar senha para cliente autenticado.
+
+#### Body esperado
+```json
+{
+  "currentPassword": "string",
+  "newPassword": "string",
+  "confirmPassword": "string"
+}
+```
+
+#### Seguranca/validacao
+- sessao obrigatoria;
+- validacao de senha atual com hash;
+- atualizacao com bcrypt (salt 12);
+- rate limit dedicado;
+- mensagens seguras sem enumeracao de conta.
+
+#### Erros tipicos
+- `400` `INVALID_CREDENTIALS` ou `PASSWORD_REUSE_NOT_ALLOWED`
+- `401` `UNAUTHORIZED`
+- `422` `VALIDATION_ERROR`
+- `429` `RATE_LIMITED`
+- `500` `INTERNAL_SERVER_ERROR`
+
+---
+
+### `POST /api/client/password-recovery/request`
+
+#### Objetivo
+Solicitar recuperacao de senha da Central do Cliente.
+
+#### Body esperado
+```json
+{
+  "email": "string"
+}
+```
+
+#### Seguranca/validacao
+- resposta neutra para evitar enumeracao de conta;
+- rate limit por origem e por hash de e-mail;
+- parse JSON com limite e schema Zod `.strict()`;
+- envio de email em modo stub quando provider nao configurado.
+
+#### Respostas tipicas
+- `200` sucesso neutro
+- `422` `VALIDATION_ERROR`
+- `429` `RATE_LIMITED`
+
+---
+
+### `POST /api/client/password-recovery/reset`
+
+#### Objetivo
+Redefinir senha com token de recuperacao.
+
+#### Body esperado
+```json
+{
+  "token": "string",
+  "newPassword": "string",
+  "confirmPassword": "string"
+}
+```
+
+#### Seguranca/validacao
+- token validado em backend (fase A: store temporario em memoria);
+- token invalido/expirado retorna erro seguro;
+- atualizacao de senha com bcrypt (salt 12);
+- rate limit dedicado.
+
+#### Erros tipicos
+- `400` `INVALID_OR_EXPIRED_TOKEN` ou `PASSWORD_REUSE_NOT_ALLOWED`
+- `422` `VALIDATION_ERROR`
+- `429` `RATE_LIMITED`
+- `500` `INTERNAL_SERVER_ERROR`

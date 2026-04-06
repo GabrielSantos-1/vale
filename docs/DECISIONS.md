@@ -156,6 +156,37 @@ Impacto:
 
 ---
 
+## Decisao 024 - Central do Cliente com autenticacao separada da admin
+
+Criar fluxo completo de autenticacao de cliente (login, registro, logout, dashboard) com modelo `ClientUser` no Prisma, sem compartilhar sessao, cookies ou rotas com a superficie administrativa.
+
+**Motivo:** permitir que usuarios finais acessem uma area dedicada sem risco de escalacao para superficies administrativas, mantendo fronteiras de seguranca claras (conforme Decisao 014).
+
+Impacto:
+- novo model `ClientUser` no schema Prisma (sem alterar modelos existentes);
+- cookie de sessao dedicado (`client-next-auth.session-token` / `__Secure-client-*`);
+- login via `POST /api/client/auth/login` com rate limit e JWT customizado;
+- registro via `POST /api/client/register` com validacao e rate limit;
+- logout via `POST /api/client/logout` com invalidacao de cookie;
+- dashboard `/cliente/dashboard` protegido por `proxy.ts`;
+- sem alteracao em schema de modelos existentes, contratos publicos ou auth admin.
+
+---
+
+## Decisao 025 - Proxy do projeto atualizado para proteger rotas do cliente
+
+Adicionar verificacao de sessao do cliente no `proxy.ts` para rotas `/cliente/dashboard`, separada da logica de protecao admin existente.
+
+**Motivo:** proteger rotas de cliente sem depender de middleware de pagina, centralizando no proxy ja existente.
+
+Impacto:
+- `/cliente/dashboard` redireciona para `/cliente/login` se nao autenticado;
+- `/cliente/login` e `/cliente/registro` sao paginas publicas;
+- `/api/client/auth/*` passa sem redirecionamento;
+- sem alteracao na protecao de rotas admin existentes.
+
+---
+
 ## Regra
 
 Toda decisao que altere seguranca, deploy, auth/session, API publica, banco ou governanca documental deve ser registrada aqui.
@@ -256,3 +287,16 @@ Impacto:
 - frontend admin passa a enviar o token CSRF em mutacoes;
 - trilha de bloqueio CSRF e mutacoes sensiveis passa a ser persistida em `AuditLog`;
 - contratos publicos permanecem inalterados.
+
+---
+
+## Decisao 026 - Recuperacao de senha da Central em duas fases (A sem migration, B persistente)
+
+No Bloco A da Central do Cliente, adotar recuperacao de senha com contratos internos e UX completos, mas com armazenamento temporario de token em memoria, sem alterar schema Prisma.
+
+**Motivo:** entregar fluxo funcional e seguro de forma incremental, preservando anti-regressao e evitando mudanca estrutural no mesmo ciclo de refinamento de frontend/auth.
+
+Impacto:
+- endpoints internos `POST /api/client/password-recovery/request` e `POST /api/client/password-recovery/reset` passam a existir com rate limit, validacao estrita e resposta neutra no request;
+- reset funciona localmente com token temporario (validacao backend + invalidador de uso unico);
+- persistencia duravel de token fica explicitamente planejada para o Bloco B, com migration dedicada.

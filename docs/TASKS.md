@@ -155,15 +155,55 @@ Ciclo 1.2.3 - Hardening critico para deploy/producao.
 
 ---
 
+## Ciclo 1.3.0 - Central do Cliente (autenticacao propria)
+
+- [x] Modelo `ClientUser` adicionado ao schema Prisma (sem alterar models existentes)
+- [x] Auth de cliente propria em `lib/auth/client-auth-options.ts`
+- [x] API de login: `POST /api/client/auth/login` com rate limit e JWT customizado
+- [x] API de registro: `POST /api/client/register` com validacao e rate limit
+- [x] API de logout: `POST /api/client/logout` com invalidacao de cookie
+- [x] Formulario de login em `components/ui/forms/client-login-form.tsx`
+- [x] Formulario de registro em `components/ui/forms/client-register-form.tsx`
+- [x] Pagina `/cliente/login` substitui placeholder anterior
+- [x] Pagina `/cliente/registro` criada
+- [x] Dashboard `/cliente/dashboard` protegido por proxy
+- [x] `proxy.ts` atualizado para proteger `/cliente/dashboard` separadamente do admin
+- [x] Helper de sessao em `lib/auth/client-session.ts`
+- [x] Validacao tecnica: `npx tsc --noEmit` aprovado
+- [x] Mitigacao operacional local aplicada: `DATABASE_URL` ajustado de `:6543` para `:5432` para destravar runtime de login/registro
+- [x] Confirmacao operacional: migracoes Prisma em dia (`prisma migrate status` = schema up to date)
+
+---
+
+## Ciclo 1.3.1 - Bloco A (perfil, senha e recuperacao)
+
+- [x] Endpoint `GET /api/client/me` com sessao obrigatoria e resposta minimizada
+- [x] Endpoint `PATCH /api/client/me` com Zod `.strict()`, limite de payload e rate limit
+- [x] Endpoint `POST /api/client/password/change` com validacao de senha atual e hash bcrypt (salt 12)
+- [x] Endpoints preparatorios de recuperacao:
+  - [x] `POST /api/client/password-recovery/request`
+  - [x] `POST /api/client/password-recovery/reset`
+- [x] Nova pagina `/cliente/perfil` com leitura/edicao de perfil e secao de seguranca
+- [x] Nova pagina `/cliente/recuperar-senha` com fluxo request/reset por token
+- [x] `proxy.ts` atualizado para proteger `/cliente/perfil` com mesmo gate da sessao cliente
+- [x] `quick-actions` do dashboard atualizado para "Atualizar cadastro" -> `/cliente/perfil`
+- [x] Regressao tecnica local aprovada:
+  - [x] `npm run typecheck`
+  - [x] `npm run lint`
+  - [x] `npm test`
+  - [x] `npm run build`
+- [ ] Smoke completo de registro/login/senha em runtime depende de conectividade DB no ambiente local (host remoto indisponivel no teste atual)
+
+---
+
 ## Proximas tarefas objetivas
 
-1. [x] Executar E2E Playwright manual no PR de fechamento e anexar evidencia final.
-   Evidencia: execucao manual concluida em 2026-04-04T09:44:35-03:00 no commit `25365bd8f306c32efe9bf635e624977c262e03d3` com `npm run e2e` -> `1 passed` (`tests/e2e/home.spec.ts`).
-2. [x] Monitorar calibracao de alertas em staging por 24h e ajustar thresholds se necessario.
-   Evidencia: janela operacional completa de 24h (2026-04-03T12:52:00Z -> 2026-04-04T12:52:00Z) via runtime logs Vercel (`preview` + `production`), sem ocorrencias de `PUBLIC_API_RATE_LIMITED`/`PUBLIC_API_ERROR`; calibracao mantida sem ajuste de thresholds/cooldown.
-3. [x] Iniciar proxima etapa de produto com base no runbook e sinais reais de observabilidade (apos fechamento oficial da Etapa 4 visual publica).
-4. [ ] Monitorar janela pos-implementacao (T+24h / T+72h) e registrar tendencia das metricas dos fluxos publicos criticos.
-5. [ ] Validar execucao do novo cenário e2e admin-csrf em ambiente remoto com segredos `E2E_ADMIN_EMAIL`/`E2E_ADMIN_PASSWORD`.
+1. [ ] Monitorar janela pos-implementacao (T+24h / T+72h) e registrar tendencia das metricas dos fluxos publicos criticos.
+2. [ ] Validar execucao do novo cenário e2e admin-csrf em ambiente remoto com segredos `E2E_ADMIN_EMAIL`/`E2E_ADMIN_PASSWORD`.
+3. [ ] Implementar `prisma migrate dev` para modelo `ClientUser` em ambiente local.
+4. [ ] Adicionar cenários e2e para fluxo de cliente (registro, login, dashboard).
+5. [ ] Bloco B: persistir tokens de recuperacao de senha de cliente em schema dedicado (substituir store em memoria).
+6. [ ] Vincular `ClientUser` ao `Lead` existente para rastrear conversao de clientes registrados.
 
 ---
 
