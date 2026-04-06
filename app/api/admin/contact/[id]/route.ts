@@ -2,9 +2,12 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
-import { prisma } from '@/lib/db/prisma';
 import { requireAdmin } from '@/lib/api/admin';
+import { enforceAdminCsrf, parseAdminJsonBody } from '@/lib/api/admin-mutation';
+import { prisma } from '@/lib/db/prisma';
+import { getSessionActorUserId, logAudit } from '@/lib/security/audit';
 import { logger } from '@/lib/security/logger';
+import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
 import {
   fail,
   internalError,
@@ -12,16 +15,19 @@ import {
   ok,
   validationError,
 } from '@/lib/security/response';
-import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
 import { sanitizeString } from '@/lib/security/sanitize';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-const patchBodySchema = z.object({
-  status: z.nativeEnum(ContactMessageStatus),
-});
+const CONTACT_JSON_LIMIT_BYTES = 4 * 1024;
+
+const patchBodySchema = z
+  .object({
+    status: z.nativeEnum(ContactMessageStatus),
+  })
+  .strict();
 
 function normalizeId(value: string) {
   const sanitized = sanitizeString(value, {
@@ -144,17 +150,15 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       );
     }
 
-    const contentType = req.headers.get('content-type') ?? '';
-    if (!contentType.toLowerCase().includes('application/json')) {
-      return withRequestMeta(
-        fail('Content-Type inválido.', {
-          status: 415,
-          code: 'UNSUPPORTED_MEDIA_TYPE',
-          correlationId,
-        }),
-        { correlationId },
-      );
-    }
+    const csrfFailure = await enforceAdminCsrf({
+      req,
+      session,
+      correlationId,
+      route: '/api/admin/contact/[id]',
+      entity: 'ContactMessage',
+    });
+
+    if (csrfFailure) return csrfFailure;
 
     const { id: rawId } = await params;
     const id = normalizeId(rawId);
@@ -170,22 +174,14 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       );
     }
 
-    let body: unknown;
+    const parsedBody = await parseAdminJsonBody(req, {
+      maxBytes: CONTACT_JSON_LIMIT_BYTES,
+      correlationId,
+    });
 
-    try {
-      body = await req.json();
-    } catch {
-      return withRequestMeta(
-        fail('JSON inválido.', {
-          status: 400,
-          code: 'INVALID_JSON',
-          correlationId,
-        }),
-        { correlationId },
-      );
-    }
+    if (!parsedBody.ok) return parsedBody.response;
 
-    const parsed = patchBodySchema.safeParse(body);
+    const parsed = patchBodySchema.safeParse(parsedBody.data);
 
     if (!parsed.success) {
       logger.warn('Invalid admin contact patch payload', {
@@ -272,6 +268,18 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       status,
     });
 
+    await logAudit({
+      actorUserId: getSessionActorUserId(session),
+      action: 'ADMIN_CONTACT_MESSAGE_UPDATED',
+      entity: 'ContactMessage',
+      entityId: id,
+      metadata: {
+        correlationId,
+        route: '/api/admin/contact/[id]',
+        status,
+      },
+    });
+
     return withRequestMeta(ok(updated), { correlationId });
   } catch (error) {
     logger.error('Unhandled error updating admin contact message', {
@@ -307,6 +315,16 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
         { correlationId },
       );
     }
+
+    const csrfFailure = await enforceAdminCsrf({
+      req,
+      session,
+      correlationId,
+      route: '/api/admin/contact/[id]',
+      entity: 'ContactMessage',
+    });
+
+    if (csrfFailure) return csrfFailure;
 
     const { id: rawId } = await params;
     const id = normalizeId(rawId);
@@ -361,6 +379,17 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
       correlationId,
       route: '/api/admin/contact/[id]',
       id,
+    });
+
+    await logAudit({
+      actorUserId: getSessionActorUserId(session),
+      action: 'ADMIN_CONTACT_MESSAGE_DELETED',
+      entity: 'ContactMessage',
+      entityId: id,
+      metadata: {
+        correlationId,
+        route: '/api/admin/contact/[id]',
+      },
     });
 
     return withRequestMeta(ok(deleted), { correlationId });

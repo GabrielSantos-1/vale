@@ -8,9 +8,8 @@ export const statusSchema = z.object({
   startedAt: z.string().optional(),
   resolvedAt: z.string().optional(),
   isVisible: z.boolean().optional()
-})
+}).strict()
 
 export type StatusInput = z.infer<typeof statusSchema>
 
 export default statusSchema
-

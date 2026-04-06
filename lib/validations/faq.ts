@@ -6,9 +6,8 @@ export const faqSchema = z.object({
   category: z.string().optional(),
   order: z.number().int().optional(),
   isPublished: z.boolean().optional()
-})
+}).strict()
 
 export type FAQInput = z.infer<typeof faqSchema>
 
 export default faqSchema
-

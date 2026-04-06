@@ -1,9 +1,12 @@
 ﻿import { Prisma } from '@prisma/client';
 import { ZodError } from 'zod';
 
-import { prisma } from '@/lib/db/prisma';
 import { requireAdmin } from '@/lib/api/admin';
+import { enforceAdminCsrf, parseAdminJsonBody } from '@/lib/api/admin-mutation';
+import { prisma } from '@/lib/db/prisma';
+import { getSessionActorUserId, logAudit } from '@/lib/security/audit';
 import { logger } from '@/lib/security/logger';
+import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
 import {
   fail,
   internalError,
@@ -11,7 +14,6 @@ import {
   ok,
   validationError,
 } from '@/lib/security/response';
-import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
 import {
   normalizeSlug,
   sanitizeOptionalString,
@@ -22,6 +24,8 @@ import statusSchema from '@/lib/validations/status';
 type Context = {
   params: Promise<{ id: string }>;
 };
+
+const STATUS_JSON_LIMIT_BYTES = 8 * 1024;
 
 function normalizeId(value: string) {
   const sanitized = sanitizeString(value, {
@@ -61,17 +65,15 @@ export async function PUT(req: Request, context: Context) {
       );
     }
 
-    const contentType = req.headers.get('content-type') ?? '';
-    if (!contentType.toLowerCase().includes('application/json')) {
-      return withRequestMeta(
-        fail('Content-Type inválido.', {
-          status: 415,
-          code: 'UNSUPPORTED_MEDIA_TYPE',
-          correlationId,
-        }),
-        { correlationId },
-      );
-    }
+    const csrfFailure = await enforceAdminCsrf({
+      req,
+      session,
+      correlationId,
+      route: '/api/admin/status/[id]',
+      entity: 'NetworkStatus',
+    });
+
+    if (csrfFailure) return csrfFailure;
 
     const { id: rawId } = await context.params;
     const id = normalizeId(rawId);
@@ -87,22 +89,14 @@ export async function PUT(req: Request, context: Context) {
       );
     }
 
-    let body: unknown;
+    const parsedBody = await parseAdminJsonBody(req, {
+      maxBytes: STATUS_JSON_LIMIT_BYTES,
+      correlationId,
+    });
 
-    try {
-      body = await req.json();
-    } catch {
-      return withRequestMeta(
-        fail('JSON inválido.', {
-          status: 400,
-          code: 'INVALID_JSON',
-          correlationId,
-        }),
-        { correlationId },
-      );
-    }
+    if (!parsedBody.ok) return parsedBody.response;
 
-    const parsed = statusSchema.parse(body);
+    const parsed = statusSchema.parse(parsedBody.data);
 
     const data = {
       title: sanitizeString(parsed.title, { maxLength: 160 }),
@@ -113,7 +107,7 @@ export async function PUT(req: Request, context: Context) {
       }),
       startedAt: parsed.startedAt ?? null,
       resolvedAt: parsed.resolvedAt ?? null,
-      isVisible: parsed.isVisible,
+      isVisible: parsed.isVisible ?? false,
     };
 
     const updated = await prisma.networkStatus.update({
@@ -139,6 +133,18 @@ export async function PUT(req: Request, context: Context) {
       id,
       slug: updated.slug,
       status: updated.status,
+    });
+
+    await logAudit({
+      actorUserId: getSessionActorUserId(session),
+      action: 'ADMIN_NETWORK_STATUS_UPDATED',
+      entity: 'NetworkStatus',
+      entityId: id,
+      metadata: {
+        correlationId,
+        route: '/api/admin/status/[id]',
+        status: updated.status,
+      },
     });
 
     return withRequestMeta(ok(updated), { correlationId });
@@ -205,6 +211,16 @@ export async function DELETE(req: Request, context: Context) {
       );
     }
 
+    const csrfFailure = await enforceAdminCsrf({
+      req,
+      session,
+      correlationId,
+      route: '/api/admin/status/[id]',
+      entity: 'NetworkStatus',
+    });
+
+    if (csrfFailure) return csrfFailure;
+
     const { id: rawId } = await context.params;
     const id = normalizeId(rawId);
 
@@ -227,6 +243,17 @@ export async function DELETE(req: Request, context: Context) {
       correlationId,
       route: '/api/admin/status/[id]',
       id,
+    });
+
+    await logAudit({
+      actorUserId: getSessionActorUserId(session),
+      action: 'ADMIN_NETWORK_STATUS_DELETED',
+      entity: 'NetworkStatus',
+      entityId: id,
+      metadata: {
+        correlationId,
+        route: '/api/admin/status/[id]',
+      },
     });
 
     return withRequestMeta(ok({ deleted: true, id }), {

@@ -1,10 +1,12 @@
 ﻿import { LeadStatus } from '@prisma/client';
 
-import { prisma } from '@/lib/db/prisma';
 import { requireAdmin } from '@/lib/api/admin';
+import { enforceAdminCsrf } from '@/lib/api/admin-mutation';
+import { prisma } from '@/lib/db/prisma';
+import { getSessionActorUserId, logAudit } from '@/lib/security/audit';
 import { logger } from '@/lib/security/logger';
-import { fail, internalError, notFound, ok } from '@/lib/security/response';
 import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
+import { fail, internalError, notFound, ok } from '@/lib/security/response';
 import { sanitizeString } from '@/lib/security/sanitize';
 
 type RouteContext = {
@@ -43,6 +45,16 @@ export async function PATCH(request: Request, context: RouteContext) {
         { correlationId },
       );
     }
+
+    const csrfFailure = await enforceAdminCsrf({
+      req: request,
+      session,
+      correlationId,
+      route: '/api/admin/leads/[id]/archive',
+      entity: 'Lead',
+    });
+
+    if (csrfFailure) return csrfFailure;
 
     const { id: rawId } = await context.params;
     const id = isValidId(rawId);
@@ -99,6 +111,17 @@ export async function PATCH(request: Request, context: RouteContext) {
       correlationId,
       route: '/api/admin/leads/[id]/archive',
       id,
+    });
+
+    await logAudit({
+      actorUserId: getSessionActorUserId(session),
+      action: 'ADMIN_LEAD_ARCHIVED',
+      entity: 'Lead',
+      entityId: id,
+      metadata: {
+        correlationId,
+        route: '/api/admin/leads/[id]/archive',
+      },
     });
 
     return withRequestMeta(ok(archivedLead), { correlationId });

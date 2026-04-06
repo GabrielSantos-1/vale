@@ -13,6 +13,7 @@
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
+    "test:security-smoke": "npm test",
     "test:watch": "vitest --watch",
     "e2e": "playwright test"
   },

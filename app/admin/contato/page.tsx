@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/forms/input";
 import { Label } from "@/components/ui/forms/label";
 import { Select } from "@/components/ui/forms/select";
 import { AdminHero } from "@/components/admin/layout/admin-hero";
+import { createAdminMutationHeaders } from "@/lib/security/csrf-client";
 
 type ContactStatus = "NOVA" | "LIDA" | "RESPONDIDA" | "ARQUIVADA";
 
@@ -229,7 +230,7 @@ export default function AdminContatoPage() {
 
       const response = await fetch(`/api/admin/contact/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: createAdminMutationHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ status: newStatus }),
       });
 
@@ -267,6 +268,7 @@ export default function AdminContatoPage() {
 
       const response = await fetch(`/api/admin/contact/${id}`, {
         method: "DELETE",
+        headers: createAdminMutationHeaders(),
       });
 
       if (!response.ok) {
@@ -796,5 +798,4 @@ export default function AdminContatoPage() {
     </div>
   );
 }
-
 

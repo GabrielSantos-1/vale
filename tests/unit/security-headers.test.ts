@@ -20,7 +20,7 @@ describe('security headers CSP rollout', () => {
   });
 
   it('uses report-only mode by default', () => {
-    const headers = securityHeaders();
+    const headers = securityHeaders() as Record<string, string | undefined>;
 
     expect(headers['Content-Security-Policy-Report-Only']).toBeDefined();
     expect(headers['Content-Security-Policy']).toBeUndefined();
@@ -29,20 +29,20 @@ describe('security headers CSP rollout', () => {
   it('uses enforce mode when configured', () => {
     process.env.CSP_MODE = 'enforce';
 
-    const headers = securityHeaders();
+    const headers = securityHeaders() as Record<string, string | undefined>;
 
     expect(headers['Content-Security-Policy']).toBeDefined();
     expect(headers['Content-Security-Policy-Report-Only']).toBeUndefined();
   });
 
   it('uses ws/wss in connect-src on development', () => {
-    process.env.NODE_ENV = 'development';
+    process.env = { ...process.env, NODE_ENV: 'development' };
     const policy = buildCspPolicy();
     expect(policy).toContain("connect-src 'self' ws: wss:");
   });
 
   it('uses self-only connect-src on production', () => {
-    process.env.NODE_ENV = 'production';
+    process.env = { ...process.env, NODE_ENV: 'production' };
     const policy = buildCspPolicy();
     expect(policy).toContain("connect-src 'self'");
     expect(policy).not.toContain('ws:');

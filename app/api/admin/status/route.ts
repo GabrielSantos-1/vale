@@ -1,8 +1,11 @@
 ﻿import { ZodError } from 'zod';
 
-import { prisma } from '@/lib/db/prisma';
 import { requireAdmin } from '@/lib/api/admin';
+import { enforceAdminCsrf, parseAdminJsonBody } from '@/lib/api/admin-mutation';
+import { prisma } from '@/lib/db/prisma';
+import { getSessionActorUserId, logAudit } from '@/lib/security/audit';
 import { logger } from '@/lib/security/logger';
+import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
 import {
   created,
   fail,
@@ -10,13 +13,14 @@ import {
   ok,
   validationError,
 } from '@/lib/security/response';
-import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
 import {
   normalizeSlug,
   sanitizeOptionalString,
   sanitizeString,
 } from '@/lib/security/sanitize';
 import statusSchema from '@/lib/validations/status';
+
+const STATUS_JSON_LIMIT_BYTES = 8 * 1024;
 
 function formatValidationErrors(error: ZodError) {
   return error.issues.map((issue) => ({
@@ -105,34 +109,24 @@ export async function POST(req: Request) {
       );
     }
 
-    const contentType = req.headers.get('content-type') ?? '';
-    if (!contentType.toLowerCase().includes('application/json')) {
-      return withRequestMeta(
-        fail('Content-Type inválido.', {
-          status: 415,
-          code: 'UNSUPPORTED_MEDIA_TYPE',
-          correlationId,
-        }),
-        { correlationId },
-      );
-    }
+    const csrfFailure = await enforceAdminCsrf({
+      req,
+      session,
+      correlationId,
+      route: '/api/admin/status',
+      entity: 'NetworkStatus',
+    });
 
-    let body: unknown;
+    if (csrfFailure) return csrfFailure;
 
-    try {
-      body = await req.json();
-    } catch {
-      return withRequestMeta(
-        fail('JSON inválido.', {
-          status: 400,
-          code: 'INVALID_JSON',
-          correlationId,
-        }),
-        { correlationId },
-      );
-    }
+    const parsedBody = await parseAdminJsonBody(req, {
+      maxBytes: STATUS_JSON_LIMIT_BYTES,
+      correlationId,
+    });
 
-    const parsed = statusSchema.parse(body);
+    if (!parsedBody.ok) return parsedBody.response;
+
+    const parsed = statusSchema.parse(parsedBody.data);
 
     const data = {
       title: sanitizeString(parsed.title, { maxLength: 160 }),
@@ -143,7 +137,7 @@ export async function POST(req: Request) {
       }),
       startedAt: parsed.startedAt ?? null,
       resolvedAt: parsed.resolvedAt ?? null,
-      isVisible: parsed.isVisible,
+      isVisible: parsed.isVisible ?? false,
     };
 
     const createdItem = await prisma.networkStatus.create({
@@ -168,6 +162,18 @@ export async function POST(req: Request) {
       id: createdItem.id,
       slug: createdItem.slug,
       status: createdItem.status,
+    });
+
+    await logAudit({
+      actorUserId: getSessionActorUserId(session),
+      action: 'ADMIN_NETWORK_STATUS_CREATED',
+      entity: 'NetworkStatus',
+      entityId: createdItem.id,
+      metadata: {
+        correlationId,
+        route: '/api/admin/status',
+        status: createdItem.status,
+      },
     });
 
     return withRequestMeta(created(createdItem), { correlationId });

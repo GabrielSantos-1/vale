@@ -38,6 +38,7 @@ export const coverageSchema = z
 
     notes: z.string().trim().max(1000, 'Observações muito longas').optional(),
   })
+  .strict()
   .superRefine((data, ctx) => {
     if (data.cepStart > data.cepEnd) {
       ctx.addIssue({
@@ -51,4 +52,3 @@ export const coverageSchema = z
 export type CoverageInput = z.infer<typeof coverageSchema>;
 
 export default coverageSchema;
-

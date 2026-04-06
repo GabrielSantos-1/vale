@@ -8,13 +8,13 @@ Registrar o estado tecnico oficial do projeto **Verde Vale Connect** para contin
 
 ## Data de referencia
 
-2026-04-05
+2026-04-06
 
 ---
 
 ## Release documental
 
-### Versao: 1.2.1 (calibracao operacional de alertas)
+### Versao: 1.2.3 (hardening critico de mutacoes admin)
 
 Esta versao consolida o fechamento das etapas 2, 3, 4, 5 e 7 do ciclo 1.2:
 - rate limit distribuido com fallback controlado;
@@ -25,6 +25,10 @@ Esta versao consolida o fechamento das etapas 2, 3, 4, 5 e 7 do ciclo 1.2:
 - fechamento oficial da Etapa 4 Visual Publica com padrao premium escuro transluzido consolidado.
 - inicio da Etapa de produto 1.2.2 com foco em fluxos publicos criticos guiados por observabilidade.
 - hotfix de tipagem em telemetria de cobertura para restabelecer `build`/`start` em ambiente local sem alterar contratos ou comportamento.
+- hardening critico de mutacoes admin com CSRF server-side obrigatorio.
+- migracao de rotas admin legadas para parser JSON com limite e envelope seguro padronizado.
+- trilha de auditoria persistente para mutacoes administrativas sensiveis.
+- reforco de governanca CI com `lint` e `typecheck` no gate obrigatorio.
 
 ---
 
@@ -43,6 +47,9 @@ Consolidado em 1.2.1:
 - separacao de incidentes de auth admin vs APIs publicas no painel de observabilidade (campos aditivos no resumo, sem quebra de contrato interno).
 - consistencia visual publica consolidada entre home e componentes base (cards/transparencia/contraste) sem alterar comportamento funcional.
 - telemetria first-party expandida de forma aditiva para cliques de CTA criticos em planos, cobertura, contato e status.
+- mutacoes admin protegidas contra CSRF por validacao de origem + token dupla-submissao.
+- payloads administrativos com limites explicitos e rejeicao consistente de input invalido.
+- trilha de auditoria persistente ampliada para create/update/delete/status/archive no admin.
 
 Sem mudanca estrutural:
 - sem alteracao de schema Prisma;
@@ -55,9 +62,11 @@ Sem mudanca estrutural:
 ## Evidencias da baseline 1.2.1
 
 - validacoes tecnicas locais:
-  - `npm test`
-  - `npm run build`
-  - smoke de rotas criticas publicas e admin
+- `npm test`
+- `npm run build`
+- `npm run lint`
+- `npm run typecheck`
+- smoke de rotas criticas publicas e admin
 - validacoes de seguranca/headers:
   - `X-Correlation-Id`, `X-RateLimit-*`, `Retry-After` preservados
   - `CSP_MODE=report-only` e `CSP_MODE=enforce` validados
@@ -73,6 +82,7 @@ Sem mudanca estrutural:
   - `docs/checkpoints/2026-04-03-v1-2-1-calibracao-alertas/`
   - `docs/checkpoints/2026-04-04-v1-2-1-etapa-4-polimento-visual-publico/`
   - `docs/checkpoints/2026-04-04-v1-2-2-fluxos-publicos-observabilidade/`
+  - `docs/checkpoints/2026-04-06-v1-2-3-hardening-critico-deploy/`
 
 ---
 
@@ -119,6 +129,30 @@ Garantias:
 - sem alteracao de contratos/public API;
 - sem alteracao de backend, auth, schema Prisma ou rotas;
 - sem mudanca de comportamento funcional de telemetria/CTAs.
+
+---
+
+## Hardening critico de mutacoes admin (2026-04-06)
+
+Escopo aplicado:
+- protecao CSRF centralizada (`enforceAdminCsrf`) para `POST|PUT|PATCH|DELETE` em `/api/admin/*`;
+- emissao de cookie `vv_csrf_token` no `proxy.ts` para superficie admin;
+- frontend admin ajustado para envio de `x-csrf-token` em mutacoes;
+- parse JSON com limite padronizado nas rotas admin mutaveis (`parseAdminJsonBody`);
+- consolidacao de rotas legadas (`faq`/`plans`) no envelope de seguranca (`withRequestMeta` + `fail|ok|created|internalError`);
+- auditoria persistente em `AuditLog` para mutacoes sensiveis e bloqueios CSRF.
+
+Validacao local:
+- `npm run typecheck` aprovado;
+- `npm run lint` aprovado;
+- `npm test` aprovado (inclui suite de smoke de seguranca);
+- `npm run build` aprovado.
+
+Garantias:
+- sem alteracao de schema Prisma/migrations;
+- sem alteracao de contratos publicos;
+- sem alteracao de sessao/auth NextAuth;
+- endurecimento restrito a superficie admin e governanca de deploy.
 
 ---
 

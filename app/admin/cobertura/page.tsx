@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/forms/input";
 import { Label } from "@/components/ui/forms/label";
 import { Textarea } from "@/components/ui/forms/textarea";
 import { AdminHero } from "@/components/admin/layout/admin-hero";
+import { createAdminMutationHeaders } from "@/lib/security/csrf-client";
 
 type CoverageArea = {
   id: string;
@@ -207,7 +208,7 @@ export default function CoberturaPage() {
 
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: createAdminMutationHeaders({ "Content-Type": "application/json" }),
         credentials: "include",
         body: JSON.stringify(payload),
       });
@@ -253,6 +254,7 @@ export default function CoberturaPage() {
 
       const response = await fetch(`/api/admin/coverage/${area.id}`, {
         method: "DELETE",
+        headers: createAdminMutationHeaders(),
         credentials: "include",
       });
 
@@ -543,5 +545,4 @@ export default function CoberturaPage() {
     </div>
   );
 }
-
 

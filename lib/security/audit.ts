@@ -1,13 +1,47 @@
-export function auditLogPlaceholder(entry: { actor?: string; action: string; entity?: string; entityId?: string; metadata?: any }) {
-  // Implement persistent audit logging later
-  // For now, write to console for development
-  if (process.env.NODE_ENV !== 'production') {
-    // eslint-disable-next-line no-console
-    console.log('[AUDIT]', JSON.stringify(entry))
-  }
+import { Prisma } from '@prisma/client';
+import type { Session } from 'next-auth';
+
+import { prisma } from '@/lib/db/prisma';
+import { logger } from '@/lib/security/logger';
+
+type AuditMetadata = Record<string, unknown>;
+
+export type AuditLogEntry = {
+  actorUserId?: string | null;
+  action: string;
+  entity: string;
+  entityId?: string | null;
+  metadata?: AuditMetadata;
+};
+
+export function getSessionActorUserId(session: Session | null | undefined) {
+  const user = session?.user as { id?: string } | undefined;
+  const id = user?.id;
+
+  if (typeof id !== 'string') return null;
+
+  const sanitized = id.trim();
+  return sanitized.length > 0 ? sanitized : null;
 }
 
-export default auditLogPlaceholder
-export function logAudit(action: string, metadata?: any) {
-  // TODO: send to AuditLog via prisma
+export async function logAudit(entry: AuditLogEntry) {
+  try {
+    await prisma.auditLog.create({
+      data: {
+        actorUserId: entry.actorUserId ?? null,
+        action: entry.action,
+        entity: entry.entity,
+        entityId: entry.entityId ?? null,
+        metadataJson: (entry.metadata ?? {}) as Prisma.InputJsonValue,
+      },
+    });
+  } catch (error) {
+    logger.error('Failed to persist audit log entry', {
+      action: entry.action,
+      entity: entry.entity,
+      entityId: entry.entityId ?? null,
+      actorUserId: entry.actorUserId ?? null,
+      error,
+    });
+  }
 }

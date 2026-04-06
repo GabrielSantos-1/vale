@@ -2,9 +2,12 @@
 import { LeadStatus } from '@prisma/client';
 import { z } from 'zod';
 
-import { prisma } from '@/lib/db/prisma';
 import { requireAdmin } from '@/lib/api/admin';
+import { enforceAdminCsrf, parseAdminJsonBody } from '@/lib/api/admin-mutation';
+import { prisma } from '@/lib/db/prisma';
+import { getSessionActorUserId, logAudit } from '@/lib/security/audit';
 import { logger } from '@/lib/security/logger';
+import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
 import {
   fail,
   internalError,
@@ -12,12 +15,15 @@ import {
   ok,
   validationError,
 } from '@/lib/security/response';
-import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
 import { sanitizeString } from '@/lib/security/sanitize';
 
-const bodySchema = z.object({
-  status: z.nativeEnum(LeadStatus),
-});
+const STATUS_JSON_LIMIT_BYTES = 4 * 1024;
+
+const bodySchema = z
+  .object({
+    status: z.nativeEnum(LeadStatus),
+  })
+  .strict();
 
 type RouteContext = {
   params: Promise<{
@@ -56,17 +62,15 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       );
     }
 
-    const contentType = request.headers.get('content-type') ?? '';
-    if (!contentType.toLowerCase().includes('application/json')) {
-      return withRequestMeta(
-        fail('Content-Type inválido.', {
-          status: 415,
-          code: 'UNSUPPORTED_MEDIA_TYPE',
-          correlationId,
-        }),
-        { correlationId },
-      );
-    }
+    const csrfFailure = await enforceAdminCsrf({
+      req: request,
+      session,
+      correlationId,
+      route: '/api/admin/leads/[id]/status',
+      entity: 'Lead',
+    });
+
+    if (csrfFailure) return csrfFailure;
 
     const { id: rawId } = await context.params;
     const id = isValidId(rawId);
@@ -82,22 +86,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       );
     }
 
-    let body: unknown;
+    const parsedBody = await parseAdminJsonBody(request, {
+      maxBytes: STATUS_JSON_LIMIT_BYTES,
+      correlationId,
+    });
 
-    try {
-      body = await request.json();
-    } catch {
-      return withRequestMeta(
-        fail('JSON inválido.', {
-          status: 400,
-          code: 'INVALID_JSON',
-          correlationId,
-        }),
-        { correlationId },
-      );
-    }
+    if (!parsedBody.ok) return parsedBody.response;
 
-    const parsed = bodySchema.safeParse(body);
+    const parsed = bodySchema.safeParse(parsedBody.data);
 
     if (!parsed.success) {
       logger.warn('Invalid lead status payload', {
@@ -155,6 +151,18 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       route: '/api/admin/leads/[id]/status',
       id,
       status: parsed.data.status,
+    });
+
+    await logAudit({
+      actorUserId: getSessionActorUserId(session),
+      action: 'ADMIN_LEAD_STATUS_UPDATED',
+      entity: 'Lead',
+      entityId: id,
+      metadata: {
+        correlationId,
+        route: '/api/admin/leads/[id]/status',
+        status: parsed.data.status,
+      },
     });
 
     return withRequestMeta(ok(updatedLead), { correlationId });

@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/forms/input";
 import { Label } from "@/components/ui/forms/label";
 import { Textarea } from "@/components/ui/forms/textarea";
 import { AdminHero } from "@/components/admin/layout/admin-hero";
+import { createAdminMutationHeaders } from "@/lib/security/csrf-client";
 
 type FAQItem = {
   id: string;
@@ -176,9 +177,9 @@ export default function FaqAdminPage() {
 
       const response = await fetch(url, {
         method,
-        headers: {
+        headers: createAdminMutationHeaders({
           "Content-Type": "application/json",
-        },
+        }),
         credentials: "include",
         body: JSON.stringify(payload),
       });
@@ -216,6 +217,7 @@ export default function FaqAdminPage() {
 
       const response = await fetch(`/api/admin/faq/${item.id}`, {
         method: "DELETE",
+        headers: createAdminMutationHeaders(),
         credentials: "include",
       });
 
@@ -478,5 +480,4 @@ export default function FaqAdminPage() {
     </div>
   );
 }
-
 

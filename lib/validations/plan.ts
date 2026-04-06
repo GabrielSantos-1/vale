@@ -21,7 +21,7 @@ export const planSchema = z.object({
   featured: z.boolean().optional().default(false),
   benefitsJson: z.array(jsonValueSchema).optional().default([]),
   badge: z.string().trim().optional(),
-})
+}).strict()
 
 export type PlanInput = z.infer<typeof planSchema>
 

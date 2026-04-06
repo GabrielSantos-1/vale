@@ -8,13 +8,13 @@ Registrar status de execucao por ciclo e proximas tarefas objetivas do projeto.
 
 ## Data de referencia
 
-2026-04-05
+2026-04-06
 
 ---
 
 ## Ciclo atual
 
-Ciclo 1.2.1 - Hardening residual + observabilidade first-party + governanca operacional.
+Ciclo 1.2.3 - Hardening critico para deploy/producao.
 
 ---
 
@@ -142,6 +142,19 @@ Ciclo 1.2.1 - Hardening residual + observabilidade first-party + governanca oper
 
 ---
 
+## Ciclo 1.2.3 - Hardening critico (deploy/producao)
+
+- [x] CSRF server-side centralizado em mutacoes admin com validacao de origem + `vv_csrf_token` + `x-csrf-token`
+- [x] Emissao de cookie CSRF na superficie admin via `proxy.ts`
+- [x] Frontend admin ajustado para enviar header CSRF em mutacoes (`faq`, `planos`, `cobertura`, `status`, `contato`, `leads`)
+- [x] Rotas admin legadas (`faq`/`plans`) migradas para envelope seguro + parser com limite + validacao Zod estrita
+- [x] Mutações admin criticas passaram a registrar auditoria persistente em `AuditLog` (create/update/delete/status/archive)
+- [x] Testes adicionados: `tests/unit/csrf.test.ts`, `tests/integration/admin-faq-security.test.ts`, `tests/integration/security-smoke.test.ts`
+- [x] Cenário e2e admin de CSRF adicionado em `tests/e2e/admin-security.spec.ts` (executa quando segredos E2E estão configurados)
+- [x] Gate CI endurecido com `lint` + `typecheck` + `test` + `build` + etapa de smoke de segurança
+
+---
+
 ## Proximas tarefas objetivas
 
 1. [x] Executar E2E Playwright manual no PR de fechamento e anexar evidencia final.
@@ -150,6 +163,7 @@ Ciclo 1.2.1 - Hardening residual + observabilidade first-party + governanca oper
    Evidencia: janela operacional completa de 24h (2026-04-03T12:52:00Z -> 2026-04-04T12:52:00Z) via runtime logs Vercel (`preview` + `production`), sem ocorrencias de `PUBLIC_API_RATE_LIMITED`/`PUBLIC_API_ERROR`; calibracao mantida sem ajuste de thresholds/cooldown.
 3. [x] Iniciar proxima etapa de produto com base no runbook e sinais reais de observabilidade (apos fechamento oficial da Etapa 4 visual publica).
 4. [ ] Monitorar janela pos-implementacao (T+24h / T+72h) e registrar tendencia das metricas dos fluxos publicos criticos.
+5. [ ] Validar execucao do novo cenário e2e admin-csrf em ambiente remoto com segredos `E2E_ADMIN_EMAIL`/`E2E_ADMIN_PASSWORD`.
 
 ---
 

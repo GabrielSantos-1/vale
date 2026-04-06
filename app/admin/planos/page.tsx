@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/forms/input";
 import { Label } from "@/components/ui/forms/label";
 import { Textarea } from "@/components/ui/forms/textarea";
 import { AdminHero } from "@/components/admin/layout/admin-hero";
+import { createAdminMutationHeaders } from "@/lib/security/csrf-client";
 
 type Plan = {
   id: string;
@@ -186,7 +187,9 @@ export default function PlanosPage() {
         editingPlan ? `/api/admin/plans/${editingPlan.id}` : "/api/admin/plans",
         {
           method: editingPlan ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: createAdminMutationHeaders({
+            "Content-Type": "application/json",
+          }),
           credentials: "include",
           body: JSON.stringify(payload),
         }
@@ -228,6 +231,7 @@ export default function PlanosPage() {
 
       const response = await fetch(`/api/admin/plans/${planId}`, {
         method: "DELETE",
+        headers: createAdminMutationHeaders(),
         credentials: "include",
       });
 

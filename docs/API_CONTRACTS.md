@@ -226,6 +226,30 @@ Receber eventos de conversão first-party sem PII.
 
 ## Contrato interno admin (observabilidade)
 
+## Regras de seguranca para mutacoes admin (interno)
+
+Aplicavel a:
+- `POST`, `PUT`, `PATCH`, `DELETE` em `/api/admin/*`.
+
+Requisitos:
+- sessao admin valida;
+- `origin`/`referer` valido para o mesmo host;
+- cookie CSRF `vv_csrf_token` presente;
+- header `x-csrf-token` presente e igual ao cookie (double-submit).
+
+Falha de CSRF:
+- `403` com envelope padrao:
+  - `error.code = CSRF_VALIDATION_FAILED`
+  - `error.message = Falha de validacao CSRF.`
+  - `error.correlationId` quando disponivel.
+
+Validação de body (mutações admin):
+- parse JSON com limite de payload por rota;
+- rejeicao de `Content-Type` invalido (`UNSUPPORTED_MEDIA_TYPE`);
+- rejeicao de payload acima do limite (`PAYLOAD_TOO_LARGE`);
+- rejeicao de JSON invalido (`INVALID_JSON`);
+- validacao Zod estrita (`.strict()`) com rejeicao de campos inesperados.
+
 ## `GET /api/admin/metrics/observability`
 
 ### Objetivo

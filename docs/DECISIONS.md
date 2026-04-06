@@ -239,3 +239,20 @@ Impacto:
 - status operacional do painel prioriza incidentes publicos;
 - contrato interno de observabilidade permanece compativel (sem remocao de campos existentes);
 - sem alteracao de schema Prisma, autenticacao/sessao ou contratos publicos.
+
+---
+
+## Decisao 023 - CSRF obrigatorio em mutacoes admin com cookie dupla-submissao
+
+Aplicar validacao CSRF obrigatoria em todas as rotas administrativas mutaveis (`POST`, `PUT`, `PATCH`, `DELETE`) usando estrategia de dupla-submissao:
+- cookie `vv_csrf_token` emitido na superficie admin;
+- header `x-csrf-token` exigido e validado no servidor;
+- validacao de origem (`origin`/`referer`) no mesmo host permitido.
+
+**Motivo:** reduzir risco de mutacoes indevidas em sessao baseada em cookie HttpOnly sem depender de protecao no frontend.
+
+Impacto:
+- mutacoes admin sem token valido passam a retornar `403` com `CSRF_VALIDATION_FAILED`;
+- frontend admin passa a enviar o token CSRF em mutacoes;
+- trilha de bloqueio CSRF e mutacoes sensiveis passa a ser persistida em `AuditLog`;
+- contratos publicos permanecem inalterados.

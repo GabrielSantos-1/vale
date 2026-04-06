@@ -16,6 +16,24 @@ const OBSERVABILITY_ACTIONS = [
   'PUBLIC_API_ERROR',
 ] as const;
 
+type AuditLogFindManyModel = {
+  findMany: (args: {
+    where: {
+      action: {
+        in: string[];
+      };
+    };
+    select: {
+      action: true;
+      createdAt: true;
+      metadataJson: true;
+    };
+    orderBy: {
+      createdAt: 'asc';
+    };
+  }) => Promise<ObservabilityAuditEntry[]>;
+};
+
 function deriveAlertHealthStatus(params: {
   totalRateLimited: number;
   totalErrors: number;
@@ -68,9 +86,7 @@ export async function GET(request: Request) {
     const now = new Date();
 
     const auditLogModel = (prisma as unknown as {
-      auditLog?: {
-        findMany: Function;
-      };
+      auditLog?: AuditLogFindManyModel;
     }).auditLog;
 
     const records = auditLogModel?.findMany

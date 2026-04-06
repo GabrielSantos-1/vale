@@ -19,9 +19,31 @@ type BaseMetadata = {
   [key: string]: unknown;
 };
 
+type AuditLogModel = {
+  create: (args: {
+    data: {
+      actorUserId: null;
+      action: AuditAction;
+      entity: string;
+      entityId: null;
+      metadataJson: Prisma.InputJsonValue;
+    };
+  }) => Promise<unknown>;
+  findMany: (args: {
+    where: {
+      action: AuditAction;
+      createdAt: {
+        gte: Date;
+      };
+    };
+    select: {
+      metadataJson: true;
+    };
+  }) => Promise<Array<{ metadataJson?: unknown }>>;
+};
+
 function getAuditLogModel() {
-  return (prisma as unknown as { auditLog?: { create: Function; findMany: Function } })
-    .auditLog;
+  return (prisma as unknown as { auditLog?: AuditLogModel }).auditLog;
 }
 
 export function sanitizeOperationalText(

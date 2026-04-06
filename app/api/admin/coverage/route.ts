@@ -1,8 +1,11 @@
 ﻿import { ZodError } from 'zod';
 
-import { prisma } from '@/lib/db/prisma';
 import { requireAdmin } from '@/lib/api/admin';
+import { enforceAdminCsrf, parseAdminJsonBody } from '@/lib/api/admin-mutation';
+import { prisma } from '@/lib/db/prisma';
+import { getSessionActorUserId, logAudit } from '@/lib/security/audit';
 import { logger } from '@/lib/security/logger';
+import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
 import {
   created,
   fail,
@@ -10,13 +13,14 @@ import {
   ok,
   validationError,
 } from '@/lib/security/response';
-import { getCorrelationId, withRequestMeta } from '@/lib/security/request-meta';
 import {
   normalizeCep,
   sanitizeOptionalString,
   sanitizeString,
 } from '@/lib/security/sanitize';
 import coverageSchema from '@/lib/validations/coverage';
+
+const COVERAGE_JSON_LIMIT_BYTES = 8 * 1024;
 
 function formatValidationErrors(error: ZodError) {
   return error.issues.map((issue) => ({
@@ -104,34 +108,24 @@ export async function POST(req: Request) {
       );
     }
 
-    const contentType = req.headers.get('content-type') ?? '';
-    if (!contentType.toLowerCase().includes('application/json')) {
-      return withRequestMeta(
-        fail('Content-Type inválido.', {
-          status: 415,
-          code: 'UNSUPPORTED_MEDIA_TYPE',
-          correlationId,
-        }),
-        { correlationId },
-      );
-    }
+    const csrfFailure = await enforceAdminCsrf({
+      req,
+      session,
+      correlationId,
+      route: '/api/admin/coverage',
+      entity: 'CoverageArea',
+    });
 
-    let body: unknown;
+    if (csrfFailure) return csrfFailure;
 
-    try {
-      body = await req.json();
-    } catch {
-      return withRequestMeta(
-        fail('JSON inválido.', {
-          status: 400,
-          code: 'INVALID_JSON',
-          correlationId,
-        }),
-        { correlationId },
-      );
-    }
+    const parsedBody = await parseAdminJsonBody(req, {
+      maxBytes: COVERAGE_JSON_LIMIT_BYTES,
+      correlationId,
+    });
 
-    const parsed = coverageSchema.parse(body);
+    if (!parsedBody.ok) return parsedBody.response;
+
+    const parsed = coverageSchema.parse(parsedBody.data);
 
     const data = {
       city: sanitizeString(parsed.city, { maxLength: 120 }),
@@ -166,6 +160,17 @@ export async function POST(req: Request) {
       city: createdItem.city,
       district: createdItem.district,
       isAvailable: createdItem.isAvailable,
+    });
+
+    await logAudit({
+      actorUserId: getSessionActorUserId(session),
+      action: 'ADMIN_COVERAGE_AREA_CREATED',
+      entity: 'CoverageArea',
+      entityId: createdItem.id,
+      metadata: {
+        correlationId,
+        route: '/api/admin/coverage',
+      },
     });
 
     return withRequestMeta(created(createdItem), { correlationId });

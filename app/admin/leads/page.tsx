@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/data-display/data-table";
 import { Select } from "@/components/ui/forms/select";
 import { AdminHero } from "@/components/admin/layout/admin-hero";
+import { createAdminMutationHeaders } from "@/lib/security/csrf-client";
 
 type LeadStatus =
   | "NOVO"
@@ -264,9 +265,9 @@ export default function LeadsPage() {
         const res = await fetch(`/api/admin/leads/${id}/status`, {
           method: "PATCH",
           credentials: "include",
-          headers: {
+          headers: createAdminMutationHeaders({
             "Content-Type": "application/json",
-          },
+          }),
           body: JSON.stringify({ status }),
         });
 
@@ -299,6 +300,7 @@ export default function LeadsPage() {
         const res = await fetch(`/api/admin/leads/${id}/archive`, {
           method: "PATCH",
           credentials: "include",
+          headers: createAdminMutationHeaders(),
         });
 
         const payload: LeadMutationResponse = await res.json();
@@ -336,6 +338,7 @@ export default function LeadsPage() {
         const res = await fetch(`/api/admin/leads/${id}`, {
           method: "DELETE",
           credentials: "include",
+          headers: createAdminMutationHeaders(),
         });
 
         const payload: LeadMutationResponse = await res.json();
@@ -690,4 +693,3 @@ export default function LeadsPage() {
     </div>
   );
 }
-
