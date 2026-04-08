@@ -157,3 +157,18 @@ model AuditLog {
   metadataJson Json?
   createdAt    DateTime @default(now())
 }
+
+model ClientUser {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  phone        String?
+  cpfCnpj      String?
+  passwordHash String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([email])
+  @@index([isActive])
+}
