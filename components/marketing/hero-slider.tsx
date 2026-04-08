@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
@@ -135,8 +135,8 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: "campaign-image-slide",
-    eyebrow: "Atendimento premium â€¢ experiÃªncia clara â€¢ contrataÃ§Ã£o rÃ¡pida",
-    title: "Conecte tecnologia, confianÃ§a e uma jornada visual mais forte",
+    eyebrow: "Atendimento premium e experiência clara na contratação rápida",
+    title: "Conecte tecnologia, confiansa e uma jornada visual mais forte",
     description:
       "Use slides visuais para destacar campanhas, atendimento, planos e diferenciais com clareza, profundidade e melhor percepÃ§Ã£o de produto.",
     primaryCta: {
