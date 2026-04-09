@@ -12,6 +12,39 @@ Registrar o estado tecnico oficial do projeto **Verde Vale Connect** para contin
 
 ---
 
+## Atualizacao pontual (2026-04-08) - desbloqueio de CI
+
+Contexto:
+- o CI Gate falhava em `npm run typecheck` no commit remoto `9a3d990` com:
+  - `TS2339` para `prisma.clientUser`;
+  - `TS2306` para `components/ui/feedback/loading-state.tsx` e `empty-state.tsx`.
+
+Causa raiz:
+- o remoto estava sem os commits de correcao ja presentes localmente;
+- faltava sincronizacao do Prisma Client no pipeline para garantir delegate `clientUser` disponivel em tempo de typecheck/build.
+
+Correcao aplicada:
+- publicacao dos commits de correcao em `origin/main`:
+  - `8cc2166` (`fix(ci): unblock typecheck with prisma client and feedback modules`);
+  - `12f5fc0` (`chore: consolidar ajustes pendentes de paginas publicas e layout`);
+- workflows com etapa explicita `npx prisma generate` antes de validacoes;
+- componentes de feedback mantidos como modulos React validos com export runtime.
+
+Validacao:
+- local:
+  - `npm run typecheck` aprovado;
+  - `npx prisma validate` aprovado;
+  - `npx prisma generate` aprovado.
+- remoto:
+  - CI Gate reexecutado apos push e concluido com sucesso (status verde).
+
+Garantias:
+- sem alteracao de contrato de API;
+- sem alteracao de schema/migrations alem do que ja estava aprovado no ciclo da Central do Cliente;
+- sem regressao funcional fora do escopo do incidente de CI.
+
+---
+
 ## Release documental
 
 ### Versao: 1.3.0 (Central do Cliente — auth, login, registro, dashboard)
