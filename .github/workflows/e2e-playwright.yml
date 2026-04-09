@@ -29,7 +29,12 @@ jobs:
 
       - name: Prepare auth secrets for E2E
         run: |
-          secret="${NEXTAUTH_SECRET:-ci-fallback-nextauth-secret-change-me-32chars}"
+          if [ -n "${NEXTAUTH_SECRET:-}" ]; then
+            secret="$NEXTAUTH_SECRET"
+          else
+            # Ephemeral fallback only for CI runtime when repo secret is absent.
+            secret="$(openssl rand -hex 32)"
+          fi
           auth_secret="${AUTH_SECRET:-$secret}"
           echo "NEXTAUTH_SECRET=$secret" >> "$GITHUB_ENV"
           echo "AUTH_SECRET=$auth_secret" >> "$GITHUB_ENV"

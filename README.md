@@ -85,6 +85,10 @@ Antes de qualquer alteração, seguir:
 10. `docs/PROMPTING_RULES.md`
 11. `docs/DECISIONS.md`
 
+Para publicação pública e hardening operacional:
+- `docs/OPEN_SOURCE_SECURITY_CHECKLIST.md`
+- `docs/PUBLIC_DOCS_POLICY.md`
+
 ## Princípios inegociáveis
 
 - segurança como requisito estrutural;
