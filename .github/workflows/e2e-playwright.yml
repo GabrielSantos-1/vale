@@ -89,7 +89,7 @@ jobs:
 
       - name: Upload app log
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: e2e-app-log
           path: e2e-app.log
