@@ -17,7 +17,16 @@
     "test:watch": "vitest --watch",
     "e2e": "playwright test"
   },
-  "keywords": [],
+  "keywords": [
+    "nextjs",
+    "typescript",
+    "prisma",
+    "postgresql",
+    "security",
+    "customer-portal",
+    "admin-dashboard",
+    "telecom"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {

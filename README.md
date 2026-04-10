@@ -96,7 +96,7 @@ O repositorio possui automacoes em `.github/workflows` para:
 - CI Gate (lint, typecheck e build)
 - E2E Playwright
 - varredura de segredos
-- analise estica com CodeQL (quando habilitada no repositório)
+- analise estatica com CodeQL (quando habilitada no repositorio)
 
 ## Documentacao publica
 
@@ -117,6 +117,17 @@ Trilha recomendada:
 - evolucao continua de hardening e governanca para operacao publica
 - monitoramento constante de dependencias e vulnerabilidades reportadas
 - refinamentos incrementais de testes e observabilidade
+
+## Status do projeto
+
+- estado atual: ativo e em evolucao incremental
+- foco atual: hardening, governanca open source e qualidade continua
+- maturidade: base funcional consolidada para publico, admin e central do cliente
+
+## Demo e screenshots (opcional)
+
+- demo publica: definir URL quando ambiente publico estiver estabilizado
+- screenshots: adicionar capturas em `docs/` quando a identidade visual final estiver congelada
 
 ## Licenca
 
