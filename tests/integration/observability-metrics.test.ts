@@ -1,4 +1,4 @@
-import { expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
 import { GET } from '../../app/api/admin/metrics/observability/route';
 
@@ -18,6 +18,15 @@ vi.mock('@/lib/db/prisma', () => ({
     },
   },
 }));
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2026-04-10T12:00:00.000Z'));
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 test('observability metrics returns 401 without admin session', async () => {
   requireAdminMock.mockReset();
@@ -43,17 +52,17 @@ test('observability metrics returns aggregated payload for admin', async () => {
   findManyMock.mockResolvedValueOnce([
     {
       action: 'PUBLIC_EVENT_TRACKED',
-      createdAt: new Date('2026-04-03T10:00:00.000Z'),
+      createdAt: new Date('2026-04-09T10:00:00.000Z'),
       metadataJson: { route: '/api/events' },
     },
     {
       action: 'PUBLIC_API_RATE_LIMITED',
-      createdAt: new Date('2026-04-03T10:10:00.000Z'),
+      createdAt: new Date('2026-04-09T10:10:00.000Z'),
       metadataJson: { route: '/api/leads' },
     },
     {
       action: 'PUBLIC_API_ERROR',
-      createdAt: new Date('2026-04-03T10:15:00.000Z'),
+      createdAt: new Date('2026-04-09T10:15:00.000Z'),
       metadataJson: { route: '/api/contact' },
     },
   ]);
@@ -90,7 +99,7 @@ test('observability metrics keeps status stable when only auth rate-limit exists
   findManyMock.mockResolvedValueOnce([
     {
       action: 'PUBLIC_API_RATE_LIMITED',
-      createdAt: new Date('2026-04-03T10:10:00.000Z'),
+      createdAt: new Date('2026-04-09T10:10:00.000Z'),
       metadataJson: { route: '/api/auth/[...nextauth]' },
     },
   ]);
