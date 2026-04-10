@@ -1,16 +1,23 @@
 # ARCHITECTURE.md
 
-## Visão geral da arquitetura
+## Objetivo
 
-Este projeto utiliza arquitetura full-stack baseada em Next.js com separação clara entre:
+Descrever a arquitetura publica de alto nivel do projeto Verde Vale Connect.
 
-- UI (interface)
-- validação
-- domínio
-- persistência
-- segurança
+---
 
-A arquitetura deve permanecer modular e previsível para permitir evolução futura sem reescrita completa.
+## Visao geral
+
+Arquitetura full-stack com Next.js App Router e separacao clara entre:
+
+- interface (UI)
+- validacao
+- autenticacao/autorizacao
+- regras de negocio
+- persistencia
+- seguranca e observabilidade
+
+A evolucao e incremental, com foco em manutencao e baixo acoplamento.
 
 ---
 
@@ -31,21 +38,15 @@ A arquitetura deve permanecer modular e previsível para permitir evolução fut
 - Node.js runtime
 - TypeScript
 
-### Banco de dados
+### Dados
 
 - PostgreSQL
+- Prisma ORM
 
-### ORM
-
-- Prisma
-
-### Validação
+### Validacao e auth
 
 - Zod
-
-### Autenticação
-
-- Auth.js com sessão baseada em cookie HttpOnly
+- Auth.js com sessao baseada em cookie HttpOnly
 
 ### Testes
 
@@ -54,364 +55,20 @@ A arquitetura deve permanecer modular e previsível para permitir evolução fut
 
 ---
 
-## Estrutura de diretórios
-
-```text
-project-root/
-
-app/
-components/
-lib/
-prisma/
-public/
-tests/
-docs/
-
-AGENTS.md
-README.md
-Estrutura detalhada
-app/
-
-Responsável por rotas e páginas.
-
-app/
-  (public)/
-  admin/
-  api/
-  layout.tsx
-  globals.css
-  sitemap.ts
-(public)
-
-Contém páginas públicas do site.
-
-Exemplos:
-
-home
-
-planos
-
-cobertura
-
-suporte
-
-contato
-
-status
-
-admin
-
-Contém interface administrativa.
-
-Exemplos:
-
-dashboard
-
-leads
-
-planos
-
-cobertura
-
-faq
-
-status
-
-Todas as rotas admin devem exigir autenticação.
-
-api
-
-Contém rotas backend.
-
-Exemplos:
-
-api/
-  contact/
-  coverage-check/
-  lead/
-  admin/
-
-Rotas administrativas devem verificar autenticação e autorização.
-
-components/
-
-Contém componentes reutilizáveis.
-
-Divididos em:
-
-components/
-  ui/
-  marketing/
-  layout/
-  forms/
-  admin/
-ui
-
-Componentes base reutilizáveis.
-
-Exemplos:
-
-button
-
-card
-
-badge
-
-input
-
-textarea
-
-skeleton
-
-modal
-
-marketing
-
-Componentes usados nas páginas públicas.
-
-Exemplos:
-
-hero
-
-features-grid
-
-plan-card
-
-bento-grid
-
-status-banner
-
-layout
-
-Componentes estruturais.
-
-Exemplos:
-
-navbar
-
-footer
-
-page-shell
-
-mobile-tabbar
-
-forms
-
-Componentes de formulário.
-
-Exemplos:
-
-contact-form
-
-lead-form
-
-login-form
-
-admin
-
-Componentes específicos da área administrativa.
-
-Exemplos:
-
-leads-table
-
-plans-table
-
-coverage-table
-
-lib/
-
-Contém lógica compartilhada.
-
-lib/
-  auth/
-  db/
-  validations/
-  security/
-  constants/
-  utils/
-  types/
-auth
-
-Responsável por autenticação.
-
-Exemplos:
-
-auth-options
-
-session
-
-roles
-
-db
-
-Responsável por acesso ao banco.
-
-db/
-  prisma.ts
-  queries/
-validations
-
-Schemas Zod.
-
-Cada entrada de dados deve possuir schema.
-
-Exemplos:
-
-contact
-
-coverage
-
-lead
-
-auth
-
-plan
-
-faq
-
-security
-
-Módulos de segurança.
-
-Exemplos:
-
-headers
-
-csrf
-
-rate-limit
-
-sanitize
-
-audit
-
-constants
-
-Valores fixos do projeto.
-
-Exemplos:
-
-theme
-
-metadata
-
-site config
-
-utils
-
-Funções auxiliares.
-
-Exemplos:
-
-logger
-
-formatters
-
-helpers
-
-types
-
-Tipos TypeScript compartilhados.
-
-prisma/
-
-Contém schema e migrations do banco.
-
-prisma/
-  schema.prisma
-  migrations/
-public/
-
-Arquivos públicos.
-
-public/
-  images/
-  icons/
-  logos/
-  favicons/
-tests/
-
-Testes do projeto.
-
-tests/
-  unit/
-  integration/
-  e2e/
-Regras de arquitetura
-
-Separar UI de lógica de negócio.
-
-Não colocar acesso a banco dentro de componentes.
-
-Não colocar validação apenas no frontend.
-
-Reutilizar módulos existentes antes de criar novos.
-
-Não criar dependências cíclicas.
-
-Não criar arquivos gigantes.
-
-Preferir composição a herança.
-
-Evitar abstração prematura.
-
-Server Components
-
-Por padrão:
-
-usar Server Components.
-
-Adicionar "use client" apenas quando necessário.
-
-Exemplos de casos client:
-
-interatividade
-
-formulários dinâmicos
-
-animações complexas
-
-Responsividade
-
-O projeto é mobile-first.
-
-Breakpoints devem ser planejados para:
-
-mobile pequeno
-
-mobile grande
-
-tablet
-
-desktop
-
-widescreen
-
-Escalabilidade
-
-A arquitetura deve permitir expansão futura para:
-
-área do cliente
-
-billing
-
-integração com sistemas ISP
-
-analytics
-
-observabilidade
-
-Sem reescrever a base.
-
-Regra final
-
-Se houver dúvida arquitetural:
-
-preferir
-
-simplicidade
-
-legibilidade
-
-modularidade
+## Modulos principais
+
+- `app/`: rotas e superficies (publico, admin, cliente, APIs)
+- `components/`: componentes reutilizaveis por dominio
+- `lib/`: autenticacao, seguranca, validacoes, utilitarios e acesso a dados
+- `prisma/`: schema, migrations e seed
+- `tests/`: testes unitarios, integracao e e2e
+
+---
+
+## Diretrizes arquiteturais
+
+1. Server Components por padrao.
+2. Validacao server-side obrigatoria para entrada externa.
+3. Regras de negocio fora de camada visual.
+4. Separacao de fronteira entre admin e cliente.
+5. Mudancas estruturais devem preservar contratos e compatibilidade.

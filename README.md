@@ -1,102 +1,123 @@
 # Verde Vale Connect
 
-Site institucional e plataforma operacional da Verde Vale Connect, construído com Next.js App Router, TypeScript, Prisma e PostgreSQL, com foco em segurança, conversão e continuidade de produção.
+Aplicacao web full-stack para operacao comercial e suporte de um provedor de internet, com foco em conversao no site publico, operacao interna e autosservico do cliente.
 
-## Estado atual
+## Visao geral
 
-Baseline documental: **v1.1.0** (2026-04-01).
+O sistema foi estruturado em tres superficies com responsabilidades separadas:
 
-Esta baseline consolida:
-- etapas 1 a 8 do roadmap incremental de conversão + segurança;
-- hardening API-first em rotas públicas críticas;
-- telemetria first-party sem PII (`POST /api/events`);
-- integração segura de recuperação de senha admin;
-- placeholder público de futura central do cliente (`/cliente/login`);
-- hotfix do loop de redirecionamento admin em ambiente local.
+- site publico para apresentacao de servicos e captura de interesse
+- painel administrativo para operacao e acompanhamento interno
+- central do cliente para autenticacao, perfil e fluxos de conta
 
-Referências:
-- checkpoint principal: `docs/CHECKPOINT_2026-04-01_v1.1.0.md`
-- checkpoint detalhado: `docs/checkpoints/2026-04-01-v1-1-0-hardening-conversao/`
+## Funcionalidades principais
+
+- navegacao publica institucional/comercial com foco em UX responsiva
+- autenticacao com sessao por cookie HttpOnly para contextos admin e cliente
+- endpoints server-side com validacao Zod e contratos tipados
+- fluxos de conta do cliente (cadastro, login, perfil e senha)
+- base de dados relacional com Prisma + PostgreSQL
+
+## Arquitetura
+
+Arquitetura orientada a separacao de camadas:
+
+- interface: `app/` e `components/`
+- aplicacao e dominio: `lib/` (auth, seguranca, validacao e regras)
+- persistencia: `prisma/` (schema, migrations, seed)
+- qualidade: `tests/` (unitario/integracao/e2e) e workflows de CI
+
+Documentacao tecnica de arquitetura: `docs/ARCHITECTURE.md`.
 
 ## Stack
 
-### Frontend
-- Next.js (App Router)
-- React
-- TypeScript
-- Tailwind CSS
-- Framer Motion
-- Lucide React
+- Next.js 16 (App Router) + React 19 + TypeScript
+- Prisma ORM + PostgreSQL
+- Auth.js
+- Zod
+- Tailwind CSS + Framer Motion
+- Vitest + Playwright
 
-### Backend
-- Next.js Route Handlers
-- TypeScript
+## Seguranca
 
-### Dados
-- PostgreSQL
-- Prisma ORM
+Controles implementados por padrao:
 
-### Segurança e autenticação
-- Auth.js com sessão por cookie HttpOnly
-- Zod para validação server-side
+- validacao de entrada server-side em mutacoes e endpoints sensiveis
+- protecao CSRF nas mutacoes administrativas baseadas em cookie
+- rate limiting em rotas criticas
+- separacao de contexto admin/cliente
+- respostas de erro seguras sem vazamento de detalhes internos
+- higiene de segredos com variaveis de ambiente e pipeline de secret scan
 
-### Testes
-- Vitest
-- Playwright
+Regras e politica detalhadas:
 
-## Configuracao de ambiente (rate limit e CSP)
+- `docs/SECURITY_RULES.md`
+- `docs/OPEN_SOURCE_SECURITY_CHECKLIST.md`
+- `docs/PUBLIC_DOCS_POLICY.md`
+- `docs/GITHUB_PUBLICATION_RUNBOOK.md`
 
-Use `.env.example` como base e configure:
+## Estrutura do projeto
 
-- `RATE_LIMIT_DRIVER=memory|upstash`
-- `RATE_LIMIT_FAILOVER_TO_MEMORY=true|false`
-- `UPSTASH_REDIS_REST_URL` (obrigatorio quando `upstash`)
-- `UPSTASH_REDIS_REST_TOKEN` (obrigatorio quando `upstash`)
-- `CSP_MODE=report-only|enforce`
-- `CSP_REPORT_URI` (opcional)
-- `OBS_ALERT_ENABLED=true|false`
-- `OBS_ALERT_WEBHOOK_URL` (opcional)
-- `OBS_ALERT_COOLDOWN_SECONDS`
-- `OBS_ALERT_WINDOW_MINUTES`
-- `OBS_ALERT_RATE_LIMIT_THRESHOLD`
-- `OBS_ALERT_ERROR_THRESHOLD`
-- `OBS_ALERT_RATE_LIMIT_THRESHOLD_WARNING`
-- `OBS_ALERT_RATE_LIMIT_THRESHOLD_CRITICAL`
-- `OBS_ALERT_ERROR_THRESHOLD_WARNING`
-- `OBS_ALERT_ERROR_THRESHOLD_CRITICAL`
+```text
+app/          rotas, paginas e route handlers
+components/   UI reutilizavel e blocos por dominio
+lib/          autenticacao, seguranca, validacao e utilitarios
+prisma/       schema, migrations e seed
+tests/        testes unitarios, integracao e e2e
+.github/      workflows de CI, e2e, codeql e secret scan
+docs/         documentacao publica do projeto
+```
 
-Matriz operacional recomendada:
-- `dev`: `RATE_LIMIT_DRIVER=memory`
-- `staging`: `RATE_LIMIT_DRIVER=upstash` e `RATE_LIMIT_FAILOVER_TO_MEMORY=true`
-- `prod`: `RATE_LIMIT_DRIVER=upstash` e `RATE_LIMIT_FAILOVER_TO_MEMORY=true`
+## Como executar localmente
 
-## Documentação obrigatória
+1. Instalar dependencias:
+   - `npm ci`
+2. Configurar ambiente:
+   - copiar `.env.example` para `.env`
+   - preencher variaveis obrigatorias
+3. Preparar Prisma:
+   - `npx prisma generate`
+   - `npx prisma migrate deploy` (ou fluxo de migracao local)
+4. Rodar aplicacao:
+   - `npm run dev`
 
-Antes de qualquer alteração, seguir:
-1. `AGENTS.md`
-2. `docs/PROJECT_BRIEF.md`
-3. `docs/ARCHITECTURE.md`
-4. `docs/SECURITY_RULES.md`
-5. `docs/CODING_STANDARDS.md`
-6. `docs/BACKLOG.md`
-7. `docs/TASKS.md`
-8. `docs/API_CONTRACTS.md`
-9. `docs/UI_GUIDELINES.md`
-10. `docs/PROMPTING_RULES.md`
-11. `docs/DECISIONS.md`
+## Qualidade e testes
 
-Para publicação pública e hardening operacional:
+- lint: `npm run lint`
+- typecheck: `npm run typecheck`
+- testes unitarios/integracao: `npm test`
+- e2e: `npm run e2e`
+- build de producao: `npm run build`
+
+## CI/CD
+
+O repositorio possui automacoes em `.github/workflows` para:
+
+- CI Gate (lint, typecheck e build)
+- E2E Playwright
+- varredura de segredos
+- analise estica com CodeQL (quando habilitada no repositório)
+
+## Documentacao publica
+
+Trilha recomendada:
+
+- `docs/README_PUBLIC.md`
+- `docs/PROJECT_BRIEF.md`
+- `docs/ARCHITECTURE.md`
+- `docs/API_CONTRACTS.md`
+- `docs/SECURITY_RULES.md`
+- `docs/CODING_STANDARDS.md`
+- `docs/UI_GUIDELINES.md`
 - `docs/OPEN_SOURCE_SECURITY_CHECKLIST.md`
 - `docs/PUBLIC_DOCS_POLICY.md`
 
-## Princípios inegociáveis
+## Limitacoes atuais e roadmap
 
-- segurança como requisito estrutural;
-- validação server-side em toda entrada externa;
-- tratamento seguro de erros (sem leak de stack/segredo);
-- separação clara de camadas (UI, validação, dados, segurança);
-- evolução incremental com checkpoint auditável.
+- evolucao continua de hardening e governanca para operacao publica
+- monitoramento constante de dependencias e vulnerabilidades reportadas
+- refinamentos incrementais de testes e observabilidade
 
-## Observação de governança
+## Licenca
 
-Mudanças relevantes de segurança, autenticação, API pública, deploy, schema ou decisões arquiteturais devem ser registradas em `docs/DECISIONS.md` e no checkpoint vigente.
+Este repositorio utiliza a licenca definida no `package.json` (ISC), salvo alteracao posterior.

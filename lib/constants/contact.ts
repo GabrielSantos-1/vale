@@ -5,7 +5,8 @@
 };
 
 export const whatsappSupportUrl =
-  'https://wa.me/080008764?text=Ol%C3%A1%2C%20quero%20suporte%20t%C3%A9cnico';
+  process.env.NEXT_PUBLIC_WHATSAPP_SUPPORT_URL ??
+  'https://wa.me/5500000000000?text=Ol%C3%A1%2C%20quero%20suporte%20t%C3%A9cnico';
 
 export const CUSTOMER_PORTAL_COMING_SOON_ITEMS = [
   'Central do Cliente',

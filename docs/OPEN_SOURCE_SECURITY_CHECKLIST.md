@@ -2,81 +2,74 @@
 
 ## Objetivo
 
-Checklist operacional para publicar e manter este repositório com risco reduzido de exposição de segredos e governança de segurança contínua.
+Checklist operacional para publicar e manter este repositorio com risco reduzido de exposicao de segredos e com governanca continua de seguranca.
 
 ---
 
-## 1) Bloqueio de exposição imediata (obrigatório)
+## 1) Contencao e rotacao de segredos (obrigatorio)
 
-Antes de tornar público:
+Antes de tornar publico:
 
-1. rotacionar segredos ativos:
+1. Rotacionar segredos ativos:
    - `NEXTAUTH_SECRET`
    - `AUTH_SECRET`
    - `DATABASE_URL`
    - `DIRECT_URL`
    - `UPSTASH_REDIS_REST_TOKEN`
-   - webhooks operacionais (`OBS_ALERT_WEBHOOK_URL`)
-2. rotacionar senha de qualquer conta admin criada via seed antiga.
-3. invalidar tokens/chaves legadas eventualmente expostas em histórico.
+   - `OBS_ALERT_WEBHOOK_URL`
+2. Rotacionar credenciais administrativas ja utilizadas em ambientes reais.
+3. Invalidar tokens/chaves legadas potencialmente expostas no historico.
 
 Regra:
 - nunca manter segredo real em arquivo versionado.
 
 ---
 
-## 2) GitHub Security (obrigatório)
+## 2) Recursos de seguranca do GitHub (obrigatorio)
 
 Ativar no repositório:
 
-1. Secret Scanning
-2. Push Protection
+1. Secret scanning
+2. Push protection
 3. Dependabot alerts
 4. Dependabot security updates
-5. Code scanning com CodeQL
+5. Code scanning (CodeQL)
 
 Status esperado:
-- alertas críticos resolvidos ou justificados com prazo.
+- alertas criticos resolvidos, mitigados ou com plano formal de tratamento.
 
 ---
 
-## 3) Proteção de branch `main` (obrigatório)
+## 3) Protecao da branch `main` (obrigatorio)
 
 Configurar branch protection com:
 
-1. pull request obrigatório
-2. bloqueio de push direto
-3. mínimo de 1 aprovação
-4. checks obrigatórios:
-   - `Run lint`
-   - `Run typecheck`
-   - `Run unit and integration tests`
-   - `Run production build`
+1. Pull request obrigatorio para merge
+2. Bloqueio de push direto em `main`
+3. Minimo de 1 aprovacao
+4. Required status checks (nomes exatos atuais dos jobs):
+   - `Test and Build`
    - `Gitleaks`
-   - `CodeQL`
+   - `Analyze (javascript-typescript)`
+
+Observacao:
+- o workflow `E2E Playwright` esta configurado para `workflow_dispatch` e `schedule`; ele nao roda automaticamente em PR e nao deve ser marcado como required check nesse formato.
 
 ---
 
-## 4) Política de documentação pública
+## 4) Politica de documentacao publica
 
-Antes de abrir público, revisar docs com potencial de inteligência operacional:
+Antes de abrir publico, revisar e remover/sanitizar documentacao interna com risco operacional.
 
-- `docs/PROJECT_STATE.md`
-- `docs/TASKS.md`
-- `docs/BACKLOG.md`
-- `docs/checkpoints/**`
-- `AGENTS.md`
-- `docs/PROMPTING_RULES.md`
-- `docs/SAFE_EXECUTION_RULES.md`
+Acoes permitidas:
 
-Ações permitidas:
-1. remover do repositório público;
-2. mover para base privada;
-3. sanitizar (hostnames, incidentes, janelas e detalhes internos).
+1. remover do repositorio publico
+2. mover para base privada
+3. sanitizar hostnames, janelas operacionais, incidentes e detalhes internos
 
 ---
 
-## 5) Verificações obrigatórias pré-publicação
+## 5) Verificacoes tecnicas obrigatorias pre-publicacao
 
 Executar:
 
@@ -86,25 +79,25 @@ Executar:
 4. `npm run build`
 5. `npx prisma validate`
 
-Critério de aprovação:
-- pipeline verde;
-- nenhuma credencial em `HEAD`;
-- nenhum alerta crítico aberto sem plano explícito.
+Criterio de aprovacao:
+- pipeline verde
+- nenhum segredo real em `HEAD`
+- nenhum alerta critico aberto sem plano explicito
 
 ---
 
 ## 6) Procedimento em caso de vazamento
 
-1. revogar segredo imediatamente;
-2. rotacionar no provedor;
-3. atualizar `secrets` no GitHub;
-4. registrar incidente e impacto;
-5. reexecutar scanner de segredos;
-6. avaliar reescrita de histórico Git quando aplicável.
+1. revogar segredo imediatamente
+2. rotacionar no provedor
+3. atualizar GitHub Secrets
+4. registrar impacto e janela de exposicao
+5. reexecutar scanner de segredos
+6. avaliar reescrita de historico Git quando aplicavel
 
 ---
 
 ## Regra final
 
-Se houver dúvida entre velocidade de publicação e redução de risco:
-- priorizar redução de risco.
+Se houver conflito entre velocidade de publicacao e reducao de risco:
+- priorizar reducao de risco.

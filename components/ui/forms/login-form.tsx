@@ -154,7 +154,7 @@ export default function LoginForm({
       >
         <Input
           type="email"
-          placeholder="admin@verdevaleconnect.com"
+          placeholder="admin@exemplo.com"
           value={form.email}
           onChange={(e) => updateField('email', e.target.value)}
           autoComplete="email"
