@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
+import { z } from "zod";
 
 import { prisma } from "@/lib/db/prisma";
 import { logger } from "@/lib/security/logger";
@@ -10,6 +11,8 @@ import {
 } from "@/lib/security/rate-limit";
 
 export async function POST(req: NextRequest) {
+  const emailSchema = z.string().email().max(160);
+
   const rlKey = buildRateLimitKey("client_register", req);
   const rl = await rateLimit({
     key: rlKey,
@@ -55,10 +58,14 @@ export async function POST(req: NextRequest) {
     errors.push("Nome deve ter pelo menos 2 caracteres.");
   }
 
+  let normalizedEmail: string | null = null;
   if (!rawEmail || typeof rawEmail !== "string") {
     errors.push("E-mail é obrigatório.");
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
-    errors.push("E-mail inválido.");
+  } else {
+    normalizedEmail = normalizeEmail(rawEmail);
+    if (!emailSchema.safeParse(normalizedEmail).success) {
+      errors.push("E-mail inválido.");
+    }
   }
 
   if (rawPhone && typeof rawPhone === "string" && rawPhone.length > 20) {
@@ -77,7 +84,7 @@ export async function POST(req: NextRequest) {
   }
 
   const name = sanitizeString(rawName!, { maxLength: 120 });
-  const email = normalizeEmail(rawEmail!);
+  const email = normalizedEmail!;
   const phone = rawPhone ? sanitizeString(rawPhone, { maxLength: 20 }) : null;
   const password = rawPassword!;
 
