@@ -18,7 +18,7 @@
     "e2e": "playwright test"
   },
   "keywords": [],
-  "author": "",
+  "author": "Gabriel Santos",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.19.3",
