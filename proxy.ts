@@ -1,3 +1,7 @@
+/**
+ * Proxy configuration for local development.
+ * No sensitive values — safe for public repository.
+ */
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { decode as decodeNextAuthJwt, getToken } from 'next-auth/jwt';
